@@ -1,5 +1,5 @@
-Fiducial Registration Educational Demonstration
-===============================================
+Fiducial Registration Educational Demonstration Web App
+=======================================================
 
 .. image:: https://github.com/UCL/scikit-surgeryfredwebapp/raw/master/project-icon.png
    :height: 128px
