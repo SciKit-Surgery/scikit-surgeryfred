@@ -1,5 +1,4 @@
-//========================================================================
-// Drag and drop image handling
+//======================================================================== // Drag and drop image handling
 //========================================================================
 
 var fileDragL = document.getElementById("file-drag-l");
@@ -132,8 +131,6 @@ function previewFile(file, target_id) {
 function contourImage(image_l) {
   console.log("contour");
 
-  var left_right = {};
-
   fetch("/contour", {
       method: "POST",
       headers: {
@@ -143,12 +140,14 @@ function contourImage(image_l) {
     })
     .then(resp => {
       console.log("resp");
-      if (resp.ok)
+      if (resp.ok) {
+      	console.log("resp OK");
         resp.json().then(data => {
           console.log("resp2");
 
           displayResult(data);
         });
+      }
     })
     .catch(err => {
       console.log("error");
@@ -175,8 +174,10 @@ function displayResult(data) {
   //TODO Display properly
   show(imageDisplay);
   let display = document.getElementById("image-display");
-  display.src = data.image_url;
-  console.log(data.image_url);
+  display.src = data;
+ // display.src = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+  display.alt = "Result"
+  console.log(data);
   imageDisplay.classList.remove("loading");
   hide(loader);
 

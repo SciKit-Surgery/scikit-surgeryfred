@@ -5,7 +5,7 @@ import json
 from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect, send_file
 import numpy as np
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
-from util import base64_to_pil, contour_to_image
+from util import base64_to_pil, contour_to_image, np_to_base64
 # Declare a flask app
 app = Flask(__name__)
 
@@ -29,10 +29,11 @@ def contour():
         # Make prediction
         contour, init = find_outer_contour(np_image)
         contour_image = contour_to_image(pil_image, contour)
-        contour_image.save('static/contour_image.png')
+        contour_image.save('/tmp/contour_image.png')
         
         # Serialize the result, you can add additional fields
-        return jsonify({'image_url': 'static/contour_image.png'})
+        #return jsonify({'image_url': '/tmp/contour_image.png'})
+        return jsonify(np_to_base64(np.array(contour_image)[:,:,:3]))
 #  return jsonify({'contour': contour})
         #return send_file('disp.png', mimetype='image/png')
     return None
