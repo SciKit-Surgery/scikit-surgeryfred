@@ -11,15 +11,6 @@ fileDragL.addEventListener("dragleave", fileDragHover, false);
 fileDragL.addEventListener("drop", fileSelectHandler, false);
 fileSelectL.addEventListener("change", fileSelectHandler, false);
 
-var fileDragR = document.getElementById("file-drag-r");
-var fileSelectR = document.getElementById("file-upload-r");
-
-// Add event listeners
-fileDragR.addEventListener("dragover", fileDragHover, false);
-fileDragR.addEventListener("dragleave", fileDragHover, false);
-fileDragR.addEventListener("drop", fileSelectHandler, false);
-fileSelectR.addEventListener("change", fileSelectHandler, false);
-
 function fileDragHover(e) {
   // prevent default behaviour
   e.preventDefault();
@@ -63,8 +54,8 @@ function submitImage() {
   // action for the submit button
   console.log("submit");
 
-  if (!imageLeft || !imageRight) {
-    window.alert("Please select images!");
+  if (!imageLeft) {
+    window.alert("Please select image!");
     return;
   }
 
@@ -72,7 +63,7 @@ function submitImage() {
   imageDisplay.classList.add("loading");
 
   // call the predict function of the backend
-  predictImage(imageLeft, imageRight);
+  contourImage(imageLeft, imageRight);
 }
 
 function clearImage() {
@@ -138,19 +129,17 @@ function previewFile(file, target_id) {
 // Helper functions
 //========================================================================
 
-function predictImage(image_l, image_r) {
-  console.log("predict");
+function contourImage(image_l) {
+  console.log("contour");
 
   var left_right = {};
-  left_right.left = image_l;
-  left_right.right = image_r;
 
-  fetch("/predict", {
+  fetch("/contour", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(left_right)
+      body: JSON.stringify(image_l)
     })
     .then(resp => {
       console.log("resp");
@@ -187,6 +176,7 @@ function displayResult(data) {
   show(imageDisplay);
   let display = document.getElementById("image-display");
   display.src = data.image_url;
+  console.log(data.image_url);
   imageDisplay.classList.remove("loading");
   hide(loader);
 
