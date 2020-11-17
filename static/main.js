@@ -19,6 +19,16 @@ function fileDragHover(e) {
   fileDragL.className = e.type === "dragover" ? "upload-box dragover" : "upload-box";
 }
 
+function loadDefaultImage() {
+  var file = new File(["default-image"], "static/brain512.png", {type: "image/x-png"});
+
+  var reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = () => {
+      imageLeft = reader.result;
+  }
+}
+
 function fileSelectHandler(e) {
   // handle file selecting
   var files = e.target.files || e.dataTransfer.files;
@@ -41,6 +51,7 @@ var uploadCaptionL = document.getElementById("upload-caption-l");
 var loader = document.getElementById("loader");
 var imageLeft = 0;
 
+loadDefaultImage();
 //========================================================================
 // Main button events
 //========================================================================
@@ -58,7 +69,8 @@ function submitImage() {
   imageDisplay.classList.add("loading");
 
   // call the predict function of the backend
-  contourImage(imageLeft)
+  console.log(imageLeft);
+  contourImage(imageLeft);
 }
 
 function drawBlank(){
@@ -104,19 +116,12 @@ function previewFile(file, target_id) {
   reader.onloadend = () => {
     if ((target_id == "file-upload-l") || (target_id == "file-drag-l")) {
       imagePreviewL.src = URL.createObjectURL(file);
-
       show(imagePreviewL);
-    } else {
-
-    }
-    // reset
-    imageDisplay.classList.remove("loading");
-
-    if ((target_id == "file-upload-l") || (target_id == "file-drag-l")) {
-      //displayImage(reader.result, "image-display");
       console.log('Saving left');
       imageLeft = reader.result;
     } 
+
+    imageDisplay.classList.remove("loading");
   }
 }
 
@@ -148,13 +153,6 @@ function contourImage(image_l) {
       console.log("An error occured", err.message);
       window.alert("Oops! Something went wrong.");
     });
-}
-
-function displayImage(image, id) {
-  // display image on given id <img> element
-  let display = document.getElementById(id);
-  display.src = image;
-  show(display);
 }
 
 function displayResult(data) {
