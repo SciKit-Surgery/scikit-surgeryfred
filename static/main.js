@@ -38,7 +38,6 @@ function fileSelectHandler(e) {
 var imagePreviewL = document.getElementById("image-preview-l");
 var imageDisplay = document.getElementById("image-display");
 var uploadCaptionL = document.getElementById("upload-caption-l");
-var predResult = document.getElementById("pred-result");
 var loader = document.getElementById("loader");
 var imageLeft = 0;
 
@@ -85,13 +84,11 @@ function clearImage() {
   imagePreviewL.src = "";
 
   imageDisplay.src = "";
-  predResult.innerHTML = "";
 
   hide(imagePreviewL);
 	
   drawBlank();
   hide(loader);
-  hide(predResult);
   show(uploadCaptionL);
 
   imageDisplay.classList.remove("loading");
@@ -163,7 +160,6 @@ function displayImage(image, id) {
 function displayResult(data) {
   console.log("received");
   var canvas = document.getElementById("image-display");
-  console.log(data.contour);
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
 
