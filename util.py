@@ -26,7 +26,7 @@ def np_to_base64(img_np):
     img = Image.fromarray(img_np.astype('uint8'), 'RGB')
     buffered = BytesIO()
     img.save(buffered, format="PNG")
-    return u"data:image/png;base64," + base64.b64encode(buffered.getvalue()).decode("ascii")
+    return "data:image/png;base64," + base64.b64encode(buffered.getvalue()).decode("ascii")
 
 
 def contour_to_image(template_image, contour):

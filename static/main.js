@@ -36,14 +36,11 @@ function fileSelectHandler(e) {
 //========================================================================
 
 var imagePreviewL = document.getElementById("image-preview-l");
-var imagePreviewR = document.getElementById("image-preview-r");
 var imageDisplay = document.getElementById("image-display");
 var uploadCaptionL = document.getElementById("upload-caption-l");
-var uploadCaptionR = document.getElementById("upload-caption-r");
 var predResult = document.getElementById("pred-result");
 var loader = document.getElementById("loader");
 var imageLeft = 0;
-var imageRight = 0;
 
 //========================================================================
 // Main button events
@@ -62,7 +59,21 @@ function submitImage() {
   imageDisplay.classList.add("loading");
 
   // call the predict function of the backend
-  contourImage(imageLeft, imageRight);
+  contourImage(imageLeft)
+}
+
+function drawBlank(){
+  
+  var canvas = document.getElementById('image-display');
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = 'rgb(200, 0, 0)';
+    ctx.fillRect(10, 10, 50, 50);
+
+    ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
+    ctx.fillRect(30, 30, 50, 50);
+  }
 }
 
 function clearImage() {
@@ -71,21 +82,17 @@ function clearImage() {
 
   // remove image sources and hide them
   imageLeft = 0;
-  imageRight = 0;
   imagePreviewL.src = "";
-  imagePreviewR.src = "";
 
   imageDisplay.src = "";
   predResult.innerHTML = "";
 
   hide(imagePreviewL);
-  hide(imagePreviewR);
-
-  hide(imageDisplay);
+	
+  drawBlank();
   hide(loader);
   hide(predResult);
   show(uploadCaptionL);
-  show(uploadCaptionR);
 
   imageDisplay.classList.remove("loading");
 }
@@ -102,25 +109,17 @@ function previewFile(file, target_id) {
       imagePreviewL.src = URL.createObjectURL(file);
 
       show(imagePreviewL);
-      hide(uploadCaptionL);
     } else {
-      imagePreviewR.src = URL.createObjectURL(file);
 
-      show(imagePreviewR);
-      hide(uploadCaptionR);
     }
     // reset
-    predResult.innerHTML = "";
     imageDisplay.classList.remove("loading");
 
     if ((target_id == "file-upload-l") || (target_id == "file-drag-l")) {
       //displayImage(reader.result, "image-display");
       console.log('Saving left');
       imageLeft = reader.result;
-    } else {
-      console.log('Saving right');
-      imageRight = reader.result;
-    }
+    } 
   }
 }
 
@@ -140,14 +139,11 @@ function contourImage(image_l) {
     })
     .then(resp => {
       console.log("resp");
-      if (resp.ok) {
-      	console.log("resp OK");
-        resp.json().then(data => {
-          console.log("resp2");
-
+      if (resp.ok) 
+      	resp.json().then(data => {
+	  console.log("resp OK");
           displayResult(data);
-        });
-      }
+      });
     })
     .catch(err => {
       console.log("error");
@@ -165,22 +161,21 @@ function displayImage(image, id) {
 }
 
 function displayResult(data) {
-  // display the result
-  // imageDisplay.classList.remove("loading");
-  // hide(loader);
-  // predResult.innerHTML = data.result;
-  // show(predResult);
   console.log("received");
-  //TODO Display properly
-  show(imageDisplay);
-  let display = document.getElementById("image-display");
-  display.src = data;
- // display.src = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-  display.alt = "Result"
-  console.log(data);
-  imageDisplay.classList.remove("loading");
-  hide(loader);
+  var canvas = document.getElementById("image-display");
+  console.log(data.contour);
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
 
+    ctx.lineStyle = 'rgb(255, 0, 0)';
+    ctx.beginPath();
+    data.contour.forEach(function (item, index) {
+      ctx.lineTo(item[1], item[0]);
+    });
+    ctx.closePath();
+    ctx.stroke();
+
+  } 
 
 }
 

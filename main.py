@@ -18,6 +18,7 @@ def index():
 
 @app.route('/contour', methods=['GET', 'POST'])
 def contour():
+    print("called contour")
     if request.method == 'POST':
         # Get the image from post request
         s1 = json.dumps(request.json)
@@ -26,17 +27,11 @@ def contour():
         np_image = np.array(pil_image)[:,:,:3]
         print(f'Left: {np_image.shape}')
     
-        # Make prediction
         contour, init = find_outer_contour(np_image)
-        contour_image = contour_to_image(pil_image, contour)
-        contour_image.save('/tmp/contour_image.png')
-        
-        # Serialize the result, you can add additional fields
-        #return jsonify({'image_url': '/tmp/contour_image.png'})
-        return jsonify(np_to_base64(np.array(contour_image)[:,:,:3]))
-#  return jsonify({'contour': contour})
-        #return send_file('disp.png', mimetype='image/png')
-    return None
+        contour = contour.astype(int) # cast to int
+        contour = contour[1::5] #subsample every 5th element
+
+        return jsonify({'contour': contour.tolist()})
 
 
 if __name__ == '__main__':
