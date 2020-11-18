@@ -2,9 +2,16 @@
 // SciKit-SurgeryFRED front end
 //========================================================================
 
+//global variables
+
+//store the contour for the intra-opimage
+var intraOpContour = 0;
+
+//page elements for convenience
+var preOpImage = document.getElementById("pre-operative-image");
+var intraOpImage = document.getElementById("intra-operative-image");
+
 // Add event listeners
-preOpImage = document.getElementById("pre-operative-image");
-intraOpImage = document.getElementById("intra-operative-image");
 
 preOpImage.addEventListener("click", preOpImageClick)
 intraOpImage.addEventListener("click", intraOpImageClick)
@@ -63,8 +70,29 @@ function changeImage() {
   // call the predict function of the backend
 }
 
-function reset() {
-  console.log("Reset not Implemented");
+function resetTarget() {
+  fetch("/gettarget", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify(intraOpContour)
+    })
+    .then(resp => {
+      console.log("New Target");
+      if (resp.ok)
+        resp.json().then(data => {
+          displayResult(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured fetching new target", err.message);
+      window.alert("An error occured fetching new target");
+    });
+
+
   // not implemented
 }
 
@@ -100,18 +128,19 @@ function contourImage(image_l) {
 
 function displayResult(data) {
   console.log("received");
+  intraOpContour = data.contour;
   var canvas = intraOpImage; 
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
 
-    ctx.lineStyle = 'rgb(255, 0, 0)';
+    ctx.strokeStyle = "#808080";
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    data.contour.forEach(function (item, index) {
+    intraOpContour.forEach(function (item, index) {
       ctx.lineTo(item[1], item[0]);
     });
     ctx.closePath();
     ctx.stroke();
-
   }
 
 }
