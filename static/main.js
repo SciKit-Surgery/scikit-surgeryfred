@@ -9,6 +9,7 @@ var intraOpContour = 0;
 
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
+var preOpCanvas = document.getElementById("pre-operative-canvas");
 var intraOpImage = document.getElementById("intra-operative-image");
 
 // Add event listeners
@@ -82,7 +83,7 @@ function resetTarget() {
       console.log("New Target");
       if (resp.ok)
         resp.json().then(data => {
-          displayResult(data);
+          drawTarget(data);
       });
     })
     .catch(err => {
@@ -142,9 +143,20 @@ function displayResult(data) {
     ctx.closePath();
     ctx.stroke();
   }
-
+ 
 }
 
+function drawTarget(data) {
+  var canvas = preOpCanvas;
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#880000";
+    ctx.beginPath();
+    ctx.arc(data.target[0][1], data.target[0][0], 5, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+}
 function hide(el) {
   // hide an element
   el.classList.add("hidden");
