@@ -4,8 +4,8 @@ import json
 # Flask
 from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect, send_file
 import numpy as np
-from sksurgeryfred.algorithms.fit_contour import find_outer_contour
-from sksurgeryfred.algorithms.fred import make_target_point
+from sksurgeryfredbe.algorithms.fit_contour import find_outer_contour
+from sksurgeryfredbe.algorithms.fred import make_target_point
 from util import base64_to_pil, contour_to_image, np_to_base64
 # Declare a flask app
 app = Flask(__name__)
