@@ -47,13 +47,10 @@ def defaultcontour():
 
 @app.route('/gettarget', methods=['GET', 'POST'])
 def gettarget():
-    print("called gettarget")
     if request.method == 'POST':
         s1 = json.dumps(request.json)
         outline =json.loads(s1)
-        print(outline[1::20])
         target = make_target_point(outline, edge_buffer=0.9)
-        print(target)
 
         returnjson = jsonify({'target': target.tolist()})
         return returnjson
