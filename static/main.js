@@ -1,7 +1,13 @@
-//======================================================================== // Drag and drop image handling
+//========================================================================
+// SciKit-SurgeryFRED front end
 //========================================================================
 
 // Add event listeners
+preOpImage = document.getElementById("pre-operative-image");
+intraOpImage = document.getElementById("intra-operative-image");
+
+preOpImage.addEventListener("click", preOpImageClick)
+intraOpImage.addEventListener("click", intraOpImageClick)
 
 
 function loadDefaultContour() {
@@ -29,7 +35,6 @@ function loadDefaultContour() {
 // Web page elements for functions to use
 //========================================================================
 
-var preOpImage = document.getElementById("pre-operative-image");
 var uploadCaptionL = document.getElementById("upload-caption-l");
 var loader = document.getElementById("loader");
 
@@ -39,6 +44,14 @@ loadDefaultContour();
 //========================================================================
 // Main button events
 //========================================================================
+
+function preOpImageClick(evt) {
+	console.log("PreOp Image Clicked", evt);
+}
+
+function intraOpImageClick(evt) {
+	console.log("IntraOp Image Clicked", evt);
+}
 
 function changeImage() {
   // action for the change image button
@@ -87,7 +100,7 @@ function contourImage(image_l) {
 
 function displayResult(data) {
   console.log("received");
-  var canvas = document.getElementById("intra-operative-image");
+  var canvas = intraOpImage; 
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
 
