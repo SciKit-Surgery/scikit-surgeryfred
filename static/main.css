@@ -58,21 +58,14 @@ body {
   opacity: 0.2;
 }
 
-#image-result {
+#pre-operative-image {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  max-height: 20rem;
+  margin-right: 20px; float: left;
 }
 
-#image-box {
-  position: relative;
-  width: auto;
-  float: left;
-  margin-bottom: 2rem;
-}
-
-#image-display {
+.intra-operative-image {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  max-height: 20rem;
+  margin-left: 100px; float: right;
 }
 
 #image-display.loading {

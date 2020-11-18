@@ -20,7 +20,7 @@ function loadDefaultContour() {
       console.log("error");
 
       console.log("An error occured", err.message);
-      window.alert("Oops! Something went wrong.");
+      window.alert("An error occured when loading default contour.");
     });
 
 }
@@ -29,11 +29,9 @@ function loadDefaultContour() {
 // Web page elements for functions to use
 //========================================================================
 
-var imagePreviewL = document.getElementById("image-preview-l");
-var imageDisplay = document.getElementById("image-display");
+var preOpImage = document.getElementById("pre-operative-image");
 var uploadCaptionL = document.getElementById("upload-caption-l");
 var loader = document.getElementById("loader");
-var imageLeft = 0;
 
 //Do this at start up
 loadDefaultContour();
@@ -42,40 +40,19 @@ loadDefaultContour();
 // Main button events
 //========================================================================
 
-function submitImage() {
-  // action for the submit button
-  console.log("submit", imageLeft);
+function changeImage() {
+  // action for the change image button
+  console.log("Change Image not Implemented");
 
-  if (!imageLeft) {
-    window.alert("Please select image!");
-    return;
-  }
-
-  loader.classList.remove("hidden");
-  imageDisplay.classList.add("loading");
+  window.alert("Change image not implemented!");
+  return;
 
   // call the predict function of the backend
-  console.log(imageLeft);
-  contourImage(imageLeft);
 }
 
-function clearImage() {
-  // reset selected files
-  fileSelectL.value = "";
-
-  // remove image sources and hide them
-  imageLeft = 0;
-  imagePreviewL.src = "";
-
-  imageDisplay.src = "";
-
-  hide(imagePreviewL);
-	
-  drawBlank();
-  hide(loader);
-  show(uploadCaptionL);
-
-  imageDisplay.classList.remove("loading");
+function reset() {
+  console.log("Reset not Implemented");
+  // not implemented
 }
 
 //========================================================================
@@ -110,7 +87,7 @@ function contourImage(image_l) {
 
 function displayResult(data) {
   console.log("received");
-  var canvas = document.getElementById("image-display");
+  var canvas = document.getElementById("intra-operative-image");
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
 
