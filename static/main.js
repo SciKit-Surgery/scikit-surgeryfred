@@ -1,23 +1,8 @@
 //======================================================================== // Drag and drop image handling
 //========================================================================
 
-var fileDragL = document.getElementById("file-drag-l");
-var fileSelectL = document.getElementById("file-upload-l");
-
 // Add event listeners
-fileDragL.addEventListener("dragover", fileDragHover, false);
-fileDragL.addEventListener("dragleave", fileDragHover, false);
-fileDragL.addEventListener("drop", fileSelectHandler, false);
-fileSelectL.addEventListener("change", fileSelectHandler, false);
 
-function fileDragHover(e) {
-  // prevent default behaviour
-  e.preventDefault();
-  e.stopPropagation();
-  target_id = e.target.id;
-  console.log('Target id ' + target_id)
-  fileDragL.className = e.type === "dragover" ? "upload-box dragover" : "upload-box";
-}
 
 function loadDefaultContour() {
   fetch("/defaultcontour", {
@@ -40,18 +25,6 @@ function loadDefaultContour() {
 
 }
 
-function fileSelectHandler(e) {
-  // handle file selecting
-  var files = e.target.files || e.dataTransfer.files;
-  fileDragHover(e);
-  target_id = e.target.id;
-  console.log(target_id);
-  for (var i = 0, f;
-    (f = files[i]); i++) {
-    previewFile(f, target_id);
-  }
-}
-
 //========================================================================
 // Web page elements for functions to use
 //========================================================================
@@ -62,7 +35,9 @@ var uploadCaptionL = document.getElementById("upload-caption-l");
 var loader = document.getElementById("loader");
 var imageLeft = 0;
 
+//Do this at start up
 loadDefaultContour();
+
 //========================================================================
 // Main button events
 //========================================================================
@@ -101,28 +76,6 @@ function clearImage() {
   show(uploadCaptionL);
 
   imageDisplay.classList.remove("loading");
-}
-
-function previewFile(file, target_id) {
-  // show the preview of the image
-  console.log(file);
-  var fileName = encodeURI(file.name);
-
-  var reader = new FileReader();
-  reader.readAsDataURL(file);
-  console.log("loading");
-  reader.onloadend = () => {
-    if ((target_id == "file-upload-l") || (target_id == "file-drag-l")) {
-      imagePreviewL.src = URL.createObjectURL(file);
-      show(imagePreviewL);
-      console.log('Saving left');
-      imageLeft = reader.result;
-    }
-    else{console.log("not", target_id);}
-  console.log("loaded");
-
-    imageDisplay.classList.remove("loading");
-  }
 }
 
 //========================================================================
