@@ -20,19 +20,27 @@ def index():
 def contour():
     print("called contour")
     if request.method == 'POST':
-        # Get the image from post request
         s1 = json.dumps(request.json)
         data =json.loads(s1)
         pil_image = base64_to_pil(data) # Returns pillow image
         np_image = np.array(pil_image)[:,:,:3]
         print(f'Left: {np_image.shape}')
-    
+
         contour, init = find_outer_contour(np_image)
         contour = contour.astype(int) # cast to int
         contour = contour[1::5] #subsample every 5th element
+        #with open('brain512.npy', 'wb') as fileout:
+        #    np.save(fileout, contour)
+        returnjson = jsonify({'contour': contour.tolist()})
+        return returnjson
 
-        return jsonify({'contour': contour.tolist()})
-
+@app.route('/defaultcontour', methods=['GET', 'POST'])
+def defaultcontour():
+    print("called default contour")
+    if request.method == 'POST':
+        contour = np.load('static/brain512.npy')
+        returnjson = jsonify({'contour': contour.tolist()})
+        return returnjson
 
 if __name__ == '__main__':
      app.run(port=5002, threaded=True)

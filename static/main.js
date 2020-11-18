@@ -19,14 +19,25 @@ function fileDragHover(e) {
   fileDragL.className = e.type === "dragover" ? "upload-box dragover" : "upload-box";
 }
 
-function loadDefaultImage() {
-  var file = new File(["default-image"], "static/brain512.png", {type: "image/x-png"});
+function loadDefaultContour() {
+  fetch("/defaultcontour", {
+    method: "POST",
+    })
+    .then(resp => {
+      console.log("resp");
+      if (resp.ok)
+        resp.json().then(data => {
+	  console.log("resp OK");
+          displayResult(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
 
-  var reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onloadend = () => {
-      imageLeft = reader.result;
-  }
+      console.log("An error occured", err.message);
+      window.alert("Oops! Something went wrong.");
+    });
+
 }
 
 function fileSelectHandler(e) {
@@ -51,14 +62,14 @@ var uploadCaptionL = document.getElementById("upload-caption-l");
 var loader = document.getElementById("loader");
 var imageLeft = 0;
 
-loadDefaultImage();
+loadDefaultContour();
 //========================================================================
 // Main button events
 //========================================================================
 
 function submitImage() {
   // action for the submit button
-  console.log("submit");
+  console.log("submit", imageLeft);
 
   if (!imageLeft) {
     window.alert("Please select image!");
@@ -71,20 +82,6 @@ function submitImage() {
   // call the predict function of the backend
   console.log(imageLeft);
   contourImage(imageLeft);
-}
-
-function drawBlank(){
-  
-  var canvas = document.getElementById('image-display');
-  if (canvas.getContext) {
-    var ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'rgb(200, 0, 0)';
-    ctx.fillRect(10, 10, 50, 50);
-
-    ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
-    ctx.fillRect(30, 30, 50, 50);
-  }
 }
 
 function clearImage() {
@@ -108,18 +105,21 @@ function clearImage() {
 
 function previewFile(file, target_id) {
   // show the preview of the image
-  console.log(file.name);
+  console.log(file);
   var fileName = encodeURI(file.name);
 
   var reader = new FileReader();
   reader.readAsDataURL(file);
+  console.log("loading");
   reader.onloadend = () => {
     if ((target_id == "file-upload-l") || (target_id == "file-drag-l")) {
       imagePreviewL.src = URL.createObjectURL(file);
       show(imagePreviewL);
       console.log('Saving left');
       imageLeft = reader.result;
-    } 
+    }
+    else{console.log("not", target_id);}
+  console.log("loaded");
 
     imageDisplay.classList.remove("loading");
   }
@@ -141,7 +141,7 @@ function contourImage(image_l) {
     })
     .then(resp => {
       console.log("resp");
-      if (resp.ok) 
+      if (resp.ok)
       	resp.json().then(data => {
 	  console.log("resp OK");
           displayResult(data);
@@ -169,7 +169,7 @@ function displayResult(data) {
     ctx.closePath();
     ctx.stroke();
 
-  } 
+  }
 
 }
 
@@ -181,4 +181,12 @@ function hide(el) {
 function show(el) {
   // show an element
   el.classList.remove("hidden");
+}
+
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
 }
