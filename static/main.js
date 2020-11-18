@@ -1,127 +1,100 @@
-//======================================================================== // Drag and drop image handling
+//========================================================================
+// SciKit-SurgeryFRED front end
 //========================================================================
 
-var fileDragL = document.getElementById("file-drag-l");
-var fileSelectL = document.getElementById("file-upload-l");
+//global variables
+
+//store the contour for the intra-opimage
+var intraOpContour = 0;
+
+//page elements for convenience
+var preOpImage = document.getElementById("pre-operative-image");
+var preOpCanvas = document.getElementById("pre-operative-canvas");
+var intraOpImage = document.getElementById("intra-operative-image");
 
 // Add event listeners
-fileDragL.addEventListener("dragover", fileDragHover, false);
-fileDragL.addEventListener("dragleave", fileDragHover, false);
-fileDragL.addEventListener("drop", fileSelectHandler, false);
-fileSelectL.addEventListener("change", fileSelectHandler, false);
 
-function fileDragHover(e) {
-  // prevent default behaviour
-  e.preventDefault();
-  e.stopPropagation();
-  target_id = e.target.id;
-  console.log('Target id ' + target_id)
-  fileDragL.className = e.type === "dragover" ? "upload-box dragover" : "upload-box";
-}
+preOpImage.addEventListener("click", preOpImageClick)
+intraOpImage.addEventListener("click", intraOpImageClick)
 
-function fileSelectHandler(e) {
-  // handle file selecting
-  var files = e.target.files || e.dataTransfer.files;
-  fileDragHover(e);
-  target_id = e.target.id;
-  console.log(target_id);
-  for (var i = 0, f;
-    (f = files[i]); i++) {
-    previewFile(f, target_id);
-  }
+
+function loadDefaultContour() {
+  fetch("/defaultcontour", {
+    method: "POST",
+    })
+    .then(resp => {
+      console.log("resp");
+      if (resp.ok)
+        resp.json().then(data => {
+	  console.log("resp OK");
+          displayResult(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured", err.message);
+      window.alert("An error occured when loading default contour.");
+    });
+
 }
 
 //========================================================================
 // Web page elements for functions to use
 //========================================================================
 
-var imagePreviewL = document.getElementById("image-preview-l");
-var imagePreviewR = document.getElementById("image-preview-r");
-var imageDisplay = document.getElementById("image-display");
 var uploadCaptionL = document.getElementById("upload-caption-l");
-var uploadCaptionR = document.getElementById("upload-caption-r");
-var predResult = document.getElementById("pred-result");
 var loader = document.getElementById("loader");
-var imageLeft = 0;
-var imageRight = 0;
+
+//Do this at start up
+loadDefaultContour();
 
 //========================================================================
 // Main button events
 //========================================================================
 
-function submitImage() {
-  // action for the submit button
-  console.log("submit");
+function preOpImageClick(evt) {
+	console.log("PreOp Image Clicked", evt);
+}
 
-  if (!imageLeft) {
-    window.alert("Please select image!");
-    return;
-  }
+function intraOpImageClick(evt) {
+	console.log("IntraOp Image Clicked", evt);
+}
 
-  loader.classList.remove("hidden");
-  imageDisplay.classList.add("loading");
+function changeImage() {
+  // action for the change image button
+  console.log("Change Image not Implemented");
+
+  window.alert("Change image not implemented!");
+  return;
 
   // call the predict function of the backend
-  contourImage(imageLeft, imageRight);
 }
 
-function clearImage() {
-  // reset selected files
-  fileSelectL.value = "";
+function resetTarget() {
+  fetch("/gettarget", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify(intraOpContour)
+    })
+    .then(resp => {
+      console.log("New Target");
+      if (resp.ok)
+        resp.json().then(data => {
+          drawTarget(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
 
-  // remove image sources and hide them
-  imageLeft = 0;
-  imageRight = 0;
-  imagePreviewL.src = "";
-  imagePreviewR.src = "";
+      console.log("An error occured fetching new target", err.message);
+      window.alert("An error occured fetching new target");
+    });
 
-  imageDisplay.src = "";
-  predResult.innerHTML = "";
 
-  hide(imagePreviewL);
-  hide(imagePreviewR);
-
-  hide(imageDisplay);
-  hide(loader);
-  hide(predResult);
-  show(uploadCaptionL);
-  show(uploadCaptionR);
-
-  imageDisplay.classList.remove("loading");
-}
-
-function previewFile(file, target_id) {
-  // show the preview of the image
-  console.log(file.name);
-  var fileName = encodeURI(file.name);
-
-  var reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onloadend = () => {
-    if ((target_id == "file-upload-l") || (target_id == "file-drag-l")) {
-      imagePreviewL.src = URL.createObjectURL(file);
-
-      show(imagePreviewL);
-      hide(uploadCaptionL);
-    } else {
-      imagePreviewR.src = URL.createObjectURL(file);
-
-      show(imagePreviewR);
-      hide(uploadCaptionR);
-    }
-    // reset
-    predResult.innerHTML = "";
-    imageDisplay.classList.remove("loading");
-
-    if ((target_id == "file-upload-l") || (target_id == "file-drag-l")) {
-      //displayImage(reader.result, "image-display");
-      console.log('Saving left');
-      imageLeft = reader.result;
-    } else {
-      console.log('Saving right');
-      imageRight = reader.result;
-    }
-  }
+  // not implemented
 }
 
 //========================================================================
@@ -140,14 +113,11 @@ function contourImage(image_l) {
     })
     .then(resp => {
       console.log("resp");
-      if (resp.ok) {
-      	console.log("resp OK");
-        resp.json().then(data => {
-          console.log("resp2");
-
+      if (resp.ok)
+      	resp.json().then(data => {
+	  console.log("resp OK");
           displayResult(data);
-        });
-      }
+      });
     })
     .catch(err => {
       console.log("error");
@@ -157,33 +127,36 @@ function contourImage(image_l) {
     });
 }
 
-function displayImage(image, id) {
-  // display image on given id <img> element
-  let display = document.getElementById(id);
-  display.src = image;
-  show(display);
-}
-
 function displayResult(data) {
-  // display the result
-  // imageDisplay.classList.remove("loading");
-  // hide(loader);
-  // predResult.innerHTML = data.result;
-  // show(predResult);
   console.log("received");
-  //TODO Display properly
-  show(imageDisplay);
-  let display = document.getElementById("image-display");
-  display.src = data;
- // display.src = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-  display.alt = "Result"
-  console.log(data);
-  imageDisplay.classList.remove("loading");
-  hide(loader);
+  intraOpContour = data.contour;
+  var canvas = intraOpImage; 
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
 
-
+    ctx.strokeStyle = "#808080";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    intraOpContour.forEach(function (item, index) {
+      ctx.lineTo(item[1], item[0]);
+    });
+    ctx.closePath();
+    ctx.stroke();
+  }
+ 
 }
 
+function drawTarget(data) {
+  var canvas = preOpCanvas;
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#880000";
+    ctx.beginPath();
+    ctx.arc(data.target[0][1], data.target[0][0], 5, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+}
 function hide(el) {
   // hide an element
   el.classList.add("hidden");
@@ -192,4 +165,12 @@ function hide(el) {
 function show(el) {
   // show an element
   el.classList.remove("hidden");
+}
+
+function download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
 }

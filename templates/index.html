@@ -12,28 +12,31 @@
   <div class="title">
     <h3>SciKit-SurgeryFRED</h3>
     <!-- <p>
-      <small>A web app demo</small>
+      <small>Front end for SciKit-SurgeryFRED</small>
     </p> -->
   </div>
-  <div class="panel" style="width:60%; float: left;">
-    <input id="file-upload-l" class="hidden" type="file" accept="image/x-png,image/gif,image/jpeg" />
-    <label for="file-upload-l" id="file-drag-l" class="upload-box">
-      <div id="upload-caption-l">Drop left image here or click to select</div>
-      <img id="image-preview-l" class="hidden" />
-    </label>
-  </div>
-  <div style="margin-bottom: 2rem;">
-    <input type="button" value="Submit" class="button" onclick="submitImage();" />
-    <input type="button" value="Clear" class="button" onclick="clearImage();" />
-  </div>
 
-  <div id="image-box">
-    <img id="image-display" />
-    <div id="pred-result" class="hidden"></div>
+  <div id="image-box" 
+     style="position:absolute; left:0px; top:120px;">
+    <img id="pre-operative-image" src = "static/brain512.png" 
+      width="458px" height="512px" type="image/x-png"
+      style="z-index:1; position:absolute; left:50px; top:0px;"/>
+    <canvas id="pre-operative-canvas" width="458px" height="512px"
+      style="z-index:2; position:absolute; left:50px; top:0px;">
+    </canvas>
+    <canvas id="intra-operative-image" width="512px" height="512px"
+      style="z-index:3; position:absolute; left:650px; top:0px;">
+	    Browser doesn't support canvas's </canvas>
     <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
       <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
     </svg>
   </div>
+
+  <div style="margin-bottom: 2rem;">
+    <input type="button" value="Change Image" class="button" onclick="changeImage();" />
+    <input type="button" value="New Target" class="button" onclick="resetTarget();" />
+  </div>
+
 </div>
 
 {% endblock %}
