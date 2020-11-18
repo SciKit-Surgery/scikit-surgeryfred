@@ -56,6 +56,17 @@ def gettarget():
         return returnjson
 
 
+@app.route('/placefiducial', methods=['GET', 'POST'])
+def placefiducial():
+    if request.method == 'POST':
+        s1 = json.dumps(request.json)
+        outline =json.loads(s1)
+        print (outline)
+
+        returnjson = jsonify({'target': outline})
+        return returnjson
+
+
 if __name__ == '__main__':
      app.run(port=5002, threaded=True)
 

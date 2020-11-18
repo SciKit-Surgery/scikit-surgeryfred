@@ -14,7 +14,7 @@ var intraOpImage = document.getElementById("intra-operative-image");
 
 // Add event listeners
 
-preOpImage.addEventListener("click", preOpImageClick)
+preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpImage.addEventListener("click", intraOpImageClick)
 
 
@@ -55,10 +55,12 @@ loadDefaultContour();
 
 function preOpImageClick(evt) {
 	console.log("PreOp Image Clicked", evt);
+	placeFiducial(evt.layerX, evt.layerY);
 }
 
 function intraOpImageClick(evt) {
 	console.log("IntraOp Image Clicked", evt);
+	placeFiducial(evt.layerX, evt.layerY);
 }
 
 function changeImage() {
@@ -94,8 +96,34 @@ function resetTarget() {
     });
 
 
-  // not implemented
 }
+
+function placeFiducial(x, y) {
+	console.log("Place fidicuial,",x, y);
+  fetch("/placefiducial", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify([x, y])
+    })
+    .then(resp => {
+      console.log("New Target");
+      if (resp.ok)
+        resp.json().then(data => {
+          console.log(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured fetching new target", err.message);
+      window.alert("An error occured fetching new target");
+    });
+
+
+}
+
 
 //========================================================================
 // Helper functions
@@ -157,6 +185,10 @@ function drawTarget(data) {
     ctx.fill();
   }
 }
+
+function drawFiducial(actual_position, measured_position){
+}
+
 function hide(el) {
   // hide an element
   el.classList.add("hidden");
