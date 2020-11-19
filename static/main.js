@@ -5,20 +5,35 @@
 //global variables
 
 //store the contour for the intra-opimage
-var intraOpContour = 0;
+var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
+var canvasScale = 4; //scale the canvases so we can zoom in
+
+//lists of fiducial markers and target
+const preOpFids = [];   //moving
+const intraOpFids = []; //fixed
+var target = [];
+
+//the fiducial localisation errors
+var preOpFLEStdDev = [];
+var intraOpFLEStdDev = [];
+var preOpFLEEAV = 0;
+var intraOpFLEEAV = 0;
 
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
 var preOpCanvas = document.getElementById("pre-operative-canvas");
-var intraOpImage = document.getElementById("intra-operative-image");
+var intraOpContourCanvas = document.getElementById("intra-operative-contour");
+var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials");
+var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
 // Add event listeners
 
-preOpImage.addEventListener("click", preOpImageClick)
-intraOpImage.addEventListener("click", intraOpImageClick)
+preOpCanvas.addEventListener("click", preOpImageClick)
+intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
 
 
-function loadDefaultContour() {
+async function loadDefaultContour() {
+  console.log("Default contour");
   fetch("/defaultcontour", {
     method: "POST",
     })
@@ -26,8 +41,8 @@ function loadDefaultContour() {
       console.log("resp");
       if (resp.ok)
         resp.json().then(data => {
-	  console.log("resp OK");
-          displayResult(data);
+          intraOpContour = data.contour;
+          drawOutline(intraOpContour);
       });
     })
     .catch(err => {
@@ -36,7 +51,7 @@ function loadDefaultContour() {
       console.log("An error occured", err.message);
       window.alert("An error occured when loading default contour.");
     });
-
+    return 1;
 }
 
 //========================================================================
@@ -47,18 +62,27 @@ var uploadCaptionL = document.getElementById("upload-caption-l");
 var loader = document.getElementById("loader");
 
 //Do this at start up
-loadDefaultContour();
+startup();
 
 //========================================================================
 // Main button events
 //========================================================================
 
+async function startup() {
+    const result = await loadDefaultContour();	
+    console.log(result);
+    resetTarget();
+    init_fles();
+}
+
 function preOpImageClick(evt) {
 	console.log("PreOp Image Clicked", evt);
+	placeFiducial(evt.layerX, evt.layerY);
 }
 
 function intraOpImageClick(evt) {
 	console.log("IntraOp Image Clicked", evt);
+	placeFiducial(evt.layerX, evt.layerY);
 }
 
 function changeImage() {
@@ -67,23 +91,44 @@ function changeImage() {
 
   window.alert("Change image not implemented!");
   return;
-
-  // call the predict function of the backend
 }
 
-function resetTarget() {
-  fetch("/gettarget", {
+function reset(){
+  console.log('reset');
+  resetTarget();
+  clearCanvas(intraOpTargetCanvas);
+  clearCanvas(intraOpFiducialCanvas);
+  init_fles();
+
+  preOpFids.length = 0;
+  intraOpFids.length = 0;
+}
+
+function placeFiducial(x, y) {
+      fetch("/placefiducial", {
       method: "POST",
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify(intraOpContour)
+      body: JSON.stringify([x, y, preOpFLEStdDev, intraOpFLEStdDev])
     })
     .then(resp => {
-      console.log("New Target");
       if (resp.ok)
         resp.json().then(data => {
-          drawTarget(data);
+	  if ( data.valid_fid ) {
+          var intraOpFid = data.fixed_fid;
+          var preOpFid = data.moving_fid;
+	  drawMeasuredFiducial(preOpFid, preOpCanvas);
+	  drawActualFiducial([x,y], preOpCanvas);
+	  drawMeasuredFiducial(intraOpFid, intraOpFiducialCanvas);
+	  drawActualFiducial([x,y], intraOpFiducialCanvas);
+
+	  preOpFids.push(preOpFid);
+	  intraOpFids.push(intraOpFid);
+	  register();
+          console.log(preOpFids);
+          console.log(intraOpFids);
+	  };
       });
     })
     .catch(err => {
@@ -92,9 +137,35 @@ function resetTarget() {
       console.log("An error occured fetching new target", err.message);
       window.alert("An error occured fetching new target");
     });
+}
+ 
+function register(){
+      fetch("/register", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify([target, preOpFLEEAV, intraOpFLEEAV, preOpFids, intraOpFids])
+    })
+    .then(resp => {
+      if (resp.ok)
+        resp.json().then(data => {
+		if ( data.success ){
+		  console.log(data.fre);
+		  console.log(data.actual_tre);
+		  clearCanvas(intraOpTargetCanvas);
+          	  drawTarget(data.transformed_target, intraOpTargetCanvas);
+          	  drawActualTarget(target, intraOpTargetCanvas);
+		};
+	});
+    })
+    .catch(err => {
+      console.log("error");
 
+      console.log("An error occured during registration", err.message);
+      window.alert("An error occured during registration");
+    });
 
-  // not implemented
 }
 
 //========================================================================
@@ -116,7 +187,8 @@ function contourImage(image_l) {
       if (resp.ok)
       	resp.json().then(data => {
 	  console.log("resp OK");
-          displayResult(data);
+          intraOpContour = data.contour;
+          drawOutline(intraOpContour);
       });
     })
     .catch(err => {
@@ -127,18 +199,72 @@ function contourImage(image_l) {
     });
 }
 
-function displayResult(data) {
+function resetTarget() {
+  console.log("reset target called");
+  fetch("/gettarget", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify(intraOpContour)
+    })
+    .then(resp => {
+      console.log("New Target");
+      if (resp.ok)
+        resp.json().then(data => {
+          target = [data.target[0][1], data.target[0][0], 0.0]
+	  clearCanvas(preOpCanvas);
+          drawTarget(target, preOpCanvas);
+      });
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured fetching new target", err.message);
+      window.alert("An error occured fetching new target");
+    });
+
+}
+
+function init_fles() {
+  fetch("/getfle", {
+      method: "POST",
+    })
+    .then(resp => {
+      console.log("Setting fle");
+      if (resp.ok)
+        resp.json().then(data => {
+
+	preOpFLEStdDev = data.moving_fle_sd;
+        intraOpFLEStdDev = data.fixed_fle_sd;
+        preOpFLEEAV = data.moving_fle_eav;
+        intraOpFLEEAV = data.fixed_fle_eav;
+	console.log(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured fetching new target", err.message);
+      window.alert("An error occured fetching new target");
+    });
+
+}
+
+//========================================================================
+// Drawing Functions
+//========================================================================
+function drawOutline(contour) {
   console.log("received");
-  intraOpContour = data.contour;
-  var canvas = intraOpImage; 
+  var canvas = intraOpContourCanvas; 
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
 
     ctx.strokeStyle = "#808080";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 3 * canvasScale;
     ctx.beginPath();
-    intraOpContour.forEach(function (item, index) {
-      ctx.lineTo(item[1], item[0]);
+    contour.forEach(function (item, index) {
+      ctx.lineTo(item[1] * canvasScale, item[0] * canvasScale);
     });
     ctx.closePath();
     ctx.stroke();
@@ -146,17 +272,55 @@ function displayResult(data) {
  
 }
 
-function drawTarget(data) {
-  var canvas = preOpCanvas;
+function clearCanvas(canvas) {
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+function drawTarget(local_target, canvas) {
+  if (canvas.getContext) {
+	  console.log(local_target);
+    var ctx = canvas.getContext('2d');
     ctx.fillStyle = "#880000";
     ctx.beginPath();
-    ctx.arc(data.target[0][1], data.target[0][0], 5, 0, 2 * Math.PI);
+    ctx.arc(local_target[0] * canvasScale , local_target[1] * canvasScale, 5 * canvasScale, 0, 2 * Math.PI);
     ctx.fill();
   }
 }
+
+function drawCross(position, canvas, strokeStyle, linewidth, length){
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = linewidth;
+    ctx.beginPath();
+    ctx.moveTo(position[0] * canvasScale - length * canvasScale, position[1] * canvasScale)
+    ctx.lineTo(position[0] * canvasScale + length * canvasScale, position[1] * canvasScale)
+    ctx.moveTo(position[0] * canvasScale, position[1] * canvasScale - length * canvasScale)
+    ctx.lineTo(position[0] * canvasScale, position[1] * canvasScale + length * canvasScale)
+    ctx.stroke();
+  }
+}
+
+function drawActualFiducial(position, canvas){
+	drawCross(position, canvas, "#000000", 1, 3)
+}
+function drawActualTarget(position, canvas){
+	drawCross(position, canvas, "#0000FF", 2, 5)
+}
+
+function drawMeasuredFiducial(position, canvas){
+ if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#ff0000";
+    ctx.beginPath();
+    ctx.arc(position[0] * canvasScale, position[1] * canvasScale, 3 * canvasScale, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+}
+
 function hide(el) {
   // hide an element
   el.classList.add("hidden");
