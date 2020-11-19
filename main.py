@@ -7,6 +7,7 @@ import numpy as np
 from sksurgeryfredbe.algorithms.fit_contour import find_outer_contour
 from sksurgeryfredbe.algorithms.fred import make_target_point
 from sksurgeryfredbe.algorithms.errors import expected_absolute_value
+from sksurgeryfredbe.algorithms.fle import FLE
 from util import base64_to_pil, contour_to_image, np_to_base64
 # Declare a flask app
 app = Flask(__name__)
@@ -61,7 +62,7 @@ def gettarget():
 def getfle():
     if request.method == 'POST':
         fle_sd = np.random.uniform(low=0.5, high=5.0)
-        moving_fle = np.zeros((1, 3), dtype=np.float64)
+        moving_fle = np.array([0., 0., 0.], dtype=np.float64)
         fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
         fixed_fle_eavs = expected_absolute_value(fixed_fle)
         moving_fle_eavs = expected_absolute_value(moving_fle)
@@ -79,14 +80,19 @@ def getfle():
 def placefiducial():
     if request.method == 'POST':
         s1 = json.dumps(request.json)
-        position =json.loads(s1)
+        position = [json.loads(s1)[0], json.loads(s1)[1], 0.0]
+        moving_fle = json.loads(s1)[2]
+        fixed_fle = json.loads(s1)[3]
 
-        fixed_fid = position + [1,1];
-        moving_fid = position;
+        fixed_fle = FLE(independent_fle = fixed_fle)
+        moving_fle = FLE(independent_fle = moving_fle)
+
+        fixed_fid = fixed_fle.perturb_fiducial(position);
+        moving_fid = moving_fle.perturb_fiducial(position);
 
         returnjson = jsonify({
-                'fixed_fid': fixed_fid,
-                'moving_fid': fixed_fid,
+                'fixed_fid': fixed_fid.tolist(),
+                'moving_fid': moving_fid.tolist(),
                 })
         return returnjson
 

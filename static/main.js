@@ -90,12 +90,12 @@ function reset(){
 
 function placeFiducial(x, y) {
 	console.log("Place fidicuial,",x, y);
-  fetch("/placefiducial", {
+      fetch("/placefiducial", {
       method: "POST",
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify([x, y])
+      body: JSON.stringify([x, y, preOpFLEStdDev, intraOpFLEStdDev])
     })
     .then(resp => {
       console.log("New Target");
