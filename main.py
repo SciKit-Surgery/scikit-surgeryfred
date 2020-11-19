@@ -5,7 +5,7 @@ import json
 from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect, send_file
 import numpy as np
 from sksurgeryfredbe.algorithms.fit_contour import find_outer_contour
-from sksurgeryfredbe.algorithms.fred import make_target_point
+from sksurgeryfredbe.algorithms.fred import make_target_point, _is_valid_fiducial
 from sksurgeryfredbe.algorithms.errors import expected_absolute_value
 from sksurgeryfredbe.algorithms.fle import FLE
 from util import base64_to_pil, contour_to_image, np_to_base64
@@ -32,8 +32,6 @@ def contour():
         contour, init = find_outer_contour(np_image)
         contour = contour.astype(int) # cast to int
         contour = contour[1::5] #subsample every 5th element
-        #with open('brain512.npy', 'wb') as fileout:
-        #    np.save(fileout, contour)
         returnjson = jsonify({'contour': contour.tolist()})
         return returnjson
 
@@ -81,20 +79,24 @@ def placefiducial():
     if request.method == 'POST':
         s1 = json.dumps(request.json)
         position = [json.loads(s1)[0], json.loads(s1)[1], 0.0]
-        moving_fle = json.loads(s1)[2]
-        fixed_fle = json.loads(s1)[3]
+        if _is_valid_fiducial(position):
+            moving_fle = json.loads(s1)[2]
+            fixed_fle = json.loads(s1)[3]
 
-        fixed_fle = FLE(independent_fle = fixed_fle)
-        moving_fle = FLE(independent_fle = moving_fle)
+            fixed_fle = FLE(independent_fle = fixed_fle)
+            moving_fle = FLE(independent_fle = moving_fle)
 
-        fixed_fid = fixed_fle.perturb_fiducial(position);
-        moving_fid = moving_fle.perturb_fiducial(position);
+            fixed_fid = fixed_fle.perturb_fiducial(position);
+            moving_fid = moving_fle.perturb_fiducial(position);
 
-        returnjson = jsonify({
+            returnjson = jsonify({
+                'valid_fid': True,
                 'fixed_fid': fixed_fid.tolist(),
                 'moving_fid': moving_fid.tolist(),
                 })
-        return returnjson
+            return returnjson
+        else:
+            return jsonify({'valid_fid': False})
 
 
 if __name__ == '__main__':

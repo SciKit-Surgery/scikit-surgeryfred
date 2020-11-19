@@ -98,15 +98,21 @@ function placeFiducial(x, y) {
       body: JSON.stringify([x, y, preOpFLEStdDev, intraOpFLEStdDev])
     })
     .then(resp => {
-      console.log("New Target");
       if (resp.ok)
         resp.json().then(data => {
+	  if ( data.valid_fid ) {
           var intraOpFid = data.fixed_fid;
           var preOpFid = data.moving_fid;
 	  drawMeasuredFiducial(preOpFid, preOpCanvas);
 	  drawActualFiducial([x,y], preOpCanvas);
 	  drawMeasuredFiducial(intraOpFid, intraOpCanvas);
 	  drawActualFiducial([x,y], intraOpCanvas);
+
+	  preOpFids.push(preOpFid);
+	  intraOpFids.push(intraOpFid);
+          console.log(preOpFids);
+          console.log(intraOpFids);
+	  };
       });
     })
     .catch(err => {
