@@ -99,7 +99,38 @@ def placefiducial():
         else:
             return jsonify({'valid_fid': False})
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        s1 = json.dumps(request.json)
+        position = [json.loads(s1)[0], json.loads(s1)[1], 0.0]
+        target = np.array(json.loads(s1)[0])
+        target = target.reshape(1,3)
+        moving_fle_eav = json.loads(s1)[1]
+        fixed_fle_eav = json.loads(s1)[2]
+        moving_fids = np.array(json.loads(s1)[3])
+        fixed_fids = np.array(json.loads(s1)[4])
+        print (target)
+        registerer = PointBasedRegistration(target, 
+                        fixed_fle_eav, moving_fle_eav)
 
+        [success, fre, fixed_fle_esv, expected_tre_squared,
+                expected_fre_sq, transformed_target, actual_tre,
+                no_fids] = registerer.register(fixed_fids, moving_fids)
+        
+        returnjson = jsonify({
+                'success': success,
+                'fre': fre,
+                'fixed_fle_esv': fixed_fle_esv,
+                'expected_tre_squared': expected_tre_squared,
+                'expected_fre_sq': expected_fre_sq,
+                'transformed_target': transformed_target.tolist(),
+                'actual_tre': actual_tre,
+                'no_fids': no_fids
+                })
+
+        return returnjson
+ 
 if __name__ == '__main__':
      app.run(port=5002, threaded=True)
 

@@ -11,6 +11,7 @@ var canvasScale = 4; //scale the canvases so we can zoom in
 //lists of fiducial markers and target
 const preOpFids = [];   //moving
 const intraOpFids = []; //fixed
+var target = [];
 
 //the fiducial localisation errors
 var preOpFLEStdDev = [];
@@ -21,12 +22,14 @@ var intraOpFLEEAV = 0;
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
 var preOpCanvas = document.getElementById("pre-operative-canvas");
-var intraOpCanvas = document.getElementById("intra-operative-image");
+var intraOpContourCanvas = document.getElementById("intra-operative-contour");
+var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials");
+var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
 // Add event listeners
 
 preOpCanvas.addEventListener("click", preOpImageClick)
-intraOpCanvas.addEventListener("click", intraOpImageClick)
+intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
 
 
 async function loadDefaultContour() {
@@ -93,11 +96,15 @@ function changeImage() {
 function reset(){
   console.log('reset');
   resetTarget();
+  clearCanvas(intraOpTargetCanvas);
+  clearCanvas(intraOpFiducialCanvas);
   init_fles();
+
+  preOpFids.length = 0;
+  intraOpFids.length = 0;
 }
 
 function placeFiducial(x, y) {
-	console.log("Place fidicuial,",x, y);
       fetch("/placefiducial", {
       method: "POST",
       headers: {
@@ -113,8 +120,8 @@ function placeFiducial(x, y) {
           var preOpFid = data.moving_fid;
 	  drawMeasuredFiducial(preOpFid, preOpCanvas);
 	  drawActualFiducial([x,y], preOpCanvas);
-	  drawMeasuredFiducial(intraOpFid, intraOpCanvas);
-	  drawActualFiducial([x,y], intraOpCanvas);
+	  drawMeasuredFiducial(intraOpFid, intraOpFiducialCanvas);
+	  drawActualFiducial([x,y], intraOpFiducialCanvas);
 
 	  preOpFids.push(preOpFid);
 	  intraOpFids.push(intraOpFid);
@@ -133,6 +140,32 @@ function placeFiducial(x, y) {
 }
  
 function register(){
+      fetch("/register", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify([target, preOpFLEEAV, intraOpFLEEAV, preOpFids, intraOpFids])
+    })
+    .then(resp => {
+      if (resp.ok)
+        resp.json().then(data => {
+		if ( data.success ){
+		  console.log(data.fre);
+		  console.log(data.actual_tre);
+		  clearCanvas(intraOpTargetCanvas);
+          	  drawTarget(data.transformed_target, intraOpTargetCanvas);
+          	  drawActualTarget(target, intraOpTargetCanvas);
+		};
+	});
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured during registration", err.message);
+      window.alert("An error occured during registration");
+    });
+
 }
 
 //========================================================================
@@ -179,7 +212,9 @@ function resetTarget() {
       console.log("New Target");
       if (resp.ok)
         resp.json().then(data => {
-          drawTarget(data);
+          target = [data.target[0][1], data.target[0][0], 0.0]
+	  clearCanvas(preOpCanvas);
+          drawTarget(target, preOpCanvas);
       });
     })
     .catch(err => {
@@ -221,7 +256,7 @@ function init_fles() {
 //========================================================================
 function drawOutline(contour) {
   console.log("received");
-  var canvas = intraOpCanvas; 
+  var canvas = intraOpContourCanvas; 
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
 
@@ -237,26 +272,30 @@ function drawOutline(contour) {
  
 }
 
-
-function drawTarget(data) {
-  var canvas = preOpCanvas;
+function clearCanvas(canvas) {
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+function drawTarget(local_target, canvas) {
+  if (canvas.getContext) {
+	  console.log(local_target);
+    var ctx = canvas.getContext('2d');
     ctx.fillStyle = "#880000";
     ctx.beginPath();
-    ctx.arc(data.target[0][1] * canvasScale , data.target[0][0] * canvasScale, 5 * canvasScale, 0, 2 * Math.PI);
+    ctx.arc(local_target[0] * canvasScale , local_target[1] * canvasScale, 5 * canvasScale, 0, 2 * Math.PI);
     ctx.fill();
   }
 }
 
-function drawActualFiducial(position, canvas){
+function drawCross(position, canvas, strokeStyle, linewidth, length){
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = linewidth;
     ctx.beginPath();
-    var length = 3;
     ctx.moveTo(position[0] * canvasScale - length * canvasScale, position[1] * canvasScale)
     ctx.lineTo(position[0] * canvasScale + length * canvasScale, position[1] * canvasScale)
     ctx.moveTo(position[0] * canvasScale, position[1] * canvasScale - length * canvasScale)
@@ -265,6 +304,12 @@ function drawActualFiducial(position, canvas){
   }
 }
 
+function drawActualFiducial(position, canvas){
+	drawCross(position, canvas, "#000000", 1, 3)
+}
+function drawActualTarget(position, canvas){
+	drawCross(position, canvas, "#0000FF", 2, 5)
+}
 
 function drawMeasuredFiducial(position, canvas){
  if (canvas.getContext) {
