@@ -56,6 +56,25 @@ def gettarget():
         return returnjson
 
 
+@app.route('/getfle', methods=['GET', 'POST'])
+def getfle():
+    if request.method == 'POST':
+        fle_sd = np.random.uniform(low=0.5, high=5.0)
+        moving_fle = np.zeros((1, 3), dtype=np.float64)
+        fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
+        fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
+        fixed_fle_eavs = expected_absolute_value(fixed_fle)
+        moving_fle_eavs = expected_absolute_value(moving_fle)
+
+        returnjson = jsonify({
+                'fixed fle sd': fixed_fle.tolist(),
+                'moving fle sd': moving_fle.tolist(),
+                'fixed fle eav': fixed_fle.tolist(),
+                'moving fle eav': fixed_fle.tolist()
+                })
+        return returnjson
+
+
 @app.route('/placefiducial', methods=['GET', 'POST'])
 def placefiducial():
     if request.method == 'POST':

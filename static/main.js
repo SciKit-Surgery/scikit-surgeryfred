@@ -5,7 +5,17 @@
 //global variables
 
 //store the contour for the intra-opimage
-var intraOpContour = 0;
+var intraOpContour = [];
+
+//lists of fiducial markers and target
+const preOpFids = []   //moving
+const intraOpFids = [] //fixed
+
+//the fiducial localisation errors
+const preOpFLEStdDev = []
+const intraOpFLEStdDev = []
+const preOpFLEStdEAV = []
+const intraOpFLEStdEAV = []
 
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
@@ -27,7 +37,7 @@ function loadDefaultContour() {
       if (resp.ok)
         resp.json().then(data => {
 	  console.log("resp OK");
-          displayResult(data);
+          drawOutline(data);
       });
     })
     .catch(err => {
@@ -69,33 +79,12 @@ function changeImage() {
 
   window.alert("Change image not implemented!");
   return;
-
-  // call the predict function of the backend
 }
 
-function resetTarget() {
-  fetch("/gettarget", {
-      method: "POST",
-      headers: {
-	"Content-Type": "application/json"
-      },
-      body: JSON.stringify(intraOpContour)
-    })
-    .then(resp => {
-      console.log("New Target");
-      if (resp.ok)
-        resp.json().then(data => {
-          drawTarget(data);
-      });
-    })
-    .catch(err => {
-      console.log("error");
-
-      console.log("An error occured fetching new target", err.message);
-      window.alert("An error occured fetching new target");
-    });
-
-
+function reset(){
+  console.log('reset');
+  resetTarget();
+//  init_fles();
 }
 
 function placeFiducial(x, y) {
@@ -144,7 +133,7 @@ function contourImage(image_l) {
       if (resp.ok)
       	resp.json().then(data => {
 	  console.log("resp OK");
-          displayResult(data);
+          drawOutline(data);
       });
     })
     .catch(err => {
@@ -155,7 +144,60 @@ function contourImage(image_l) {
     });
 }
 
-function displayResult(data) {
+function resetTarget() {
+  fetch("/gettarget", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify(intraOpContour)
+    })
+    .then(resp => {
+      console.log("New Target");
+      if (resp.ok)
+        resp.json().then(data => {
+          drawTarget(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured fetching new target", err.message);
+      window.alert("An error occured fetching new target");
+    });
+
+}
+
+function init_fles() {
+  fetch("/getfle", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify(intraOpContour)
+    })
+    .then(resp => {
+      console.log("New Target");
+      if (resp.ok)
+        resp.json().then(data => {
+	console.log(data);
+      });
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured fetching new target", err.message);
+      window.alert("An error occured fetching new target");
+    });
+
+}
+
+
+
+//========================================================================
+// Drawing Functions
+//========================================================================
+function drawOutline(data) {
   console.log("received");
   intraOpContour = data.contour;
   var canvas = intraOpImage; 
@@ -173,6 +215,7 @@ function displayResult(data) {
   }
  
 }
+
 
 function drawTarget(data) {
   var canvas = preOpCanvas;
