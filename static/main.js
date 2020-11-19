@@ -156,6 +156,7 @@ function register(){
 		  clearCanvas(intraOpTargetCanvas);
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
+		  writeresults(data.fre, data.actual_tre);
 		};
 	});
     })
@@ -166,6 +167,22 @@ function register(){
       window.alert("An error occured during registration");
     });
 
+}
+
+function writeresults(fre, tre){
+  fetch("/writeresults", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify([fre, tre])
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured during write", err.message);
+      window.alert("An error occured during registration");
+    });
 }
 
 //========================================================================

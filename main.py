@@ -10,6 +10,8 @@ from sksurgeryfredbe.algorithms.fred import make_target_point, _is_valid_fiducia
 from sksurgeryfredbe.algorithms.errors import expected_absolute_value
 from sksurgeryfredbe.algorithms.fle import FLE
 from util import base64_to_pil, contour_to_image, np_to_base64
+from google.cloud import firestore
+
 # Declare a flask app
 app = Flask(__name__)
 
@@ -131,6 +133,24 @@ def register():
 
         return returnjson
  
+@app.route('/writeresults', methods=['GET', 'POST'])
+def writeresults():
+    if request.method == 'POST':
+        s1 = json.dumps(request.json)
+        fre=json.loads(s1)[0]
+        tre=json.loads(s1)[1]
+        print ("writing results",fre, tre)
+        db = firestore.Client()
+        doc_ref = db.collection(u'results').document(u'gcloud')
+        doc_ref.set({
+                u'fre': fre,
+                u'tre': tre
+                })
+        return jsonify({'write OK': True})
+
+
+
+
 if __name__ == '__main__':
      app.run(port=5002, threaded=True)
 
