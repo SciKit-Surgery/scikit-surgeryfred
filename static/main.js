@@ -6,6 +6,7 @@
 
 //store the contour for the intra-opimage
 var intraOpContour = [];
+var canvasScale = 4; //scale the canvases so we can zoom in
 
 //lists of fiducial markers and target
 const preOpFids = [];   //moving
@@ -20,12 +21,12 @@ var intraOpFLEEAV = 0;
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
 var preOpCanvas = document.getElementById("pre-operative-canvas");
-var intraOpImage = document.getElementById("intra-operative-image");
+var intraOpCanvas = document.getElementById("intra-operative-image");
 
 // Add event listeners
 
 preOpCanvas.addEventListener("click", preOpImageClick)
-intraOpImage.addEventListener("click", intraOpImageClick)
+intraOpCanvas.addEventListener("click", intraOpImageClick)
 
 
 function loadDefaultContour() {
@@ -100,7 +101,12 @@ function placeFiducial(x, y) {
       console.log("New Target");
       if (resp.ok)
         resp.json().then(data => {
-          console.log(data);
+          var intraOpFid = data.fixed_fid;
+          var preOpFid = data.moving_fid;
+	  drawMeasuredFiducial(preOpFid, preOpCanvas);
+	  drawActualFiducial([x,y], preOpCanvas);
+	  drawMeasuredFiducial(intraOpFid, intraOpCanvas);
+	  drawActualFiducial([x,y], intraOpCanvas);
       });
     })
     .catch(err => {
@@ -197,23 +203,21 @@ function init_fles() {
 
 }
 
-
-
 //========================================================================
 // Drawing Functions
 //========================================================================
 function drawOutline(data) {
   console.log("received");
   intraOpContour = data.contour;
-  var canvas = intraOpImage; 
+  var canvas = intraOpCanvas; 
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
 
     ctx.strokeStyle = "#808080";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 3 * canvasScale;
     ctx.beginPath();
     intraOpContour.forEach(function (item, index) {
-      ctx.lineTo(item[1], item[0]);
+      ctx.lineTo(item[1] * canvasScale, item[0] * canvasScale);
     });
     ctx.closePath();
     ctx.stroke();
@@ -229,12 +233,35 @@ function drawTarget(data) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#880000";
     ctx.beginPath();
-    ctx.arc(data.target[0][1], data.target[0][0], 5, 0, 2 * Math.PI);
+    ctx.arc(data.target[0][1] * canvasScale , data.target[0][0] * canvasScale, 5 * canvasScale, 0, 2 * Math.PI);
     ctx.fill();
   }
 }
 
-function drawFiducial(actual_position, measured_position){
+function drawActualFiducial(position, canvas){
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    var length = 3;
+    ctx.moveTo(position[0] * canvasScale - length * canvasScale, position[1] * canvasScale)
+    ctx.lineTo(position[0] * canvasScale + length * canvasScale, position[1] * canvasScale)
+    ctx.moveTo(position[0] * canvasScale, position[1] * canvasScale - length * canvasScale)
+    ctx.lineTo(position[0] * canvasScale, position[1] * canvasScale + length * canvasScale)
+    ctx.stroke();
+  }
+}
+
+
+function drawMeasuredFiducial(position, canvas){
+ if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#ff0000";
+    ctx.beginPath();
+    ctx.arc(position[0] * canvasScale, position[1] * canvasScale, 3 * canvasScale, 0, 2 * Math.PI);
+    ctx.fill();
+  }
 }
 
 function hide(el) {

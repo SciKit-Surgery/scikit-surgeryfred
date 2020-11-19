@@ -79,10 +79,15 @@ def getfle():
 def placefiducial():
     if request.method == 'POST':
         s1 = json.dumps(request.json)
-        outline =json.loads(s1)
-        print (outline)
+        position =json.loads(s1)
 
-        returnjson = jsonify({'target': outline})
+        fixed_fid = position + [1,1];
+        moving_fid = position;
+
+        returnjson = jsonify({
+                'fixed_fid': fixed_fid,
+                'moving_fid': fixed_fid,
+                })
         return returnjson
 
 
