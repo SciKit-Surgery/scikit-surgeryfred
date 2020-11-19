@@ -5,7 +5,7 @@
 //global variables
 
 //store the contour for the intra-opimage
-var intraOpContour = [];
+var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
 var canvasScale = 4; //scale the canvases so we can zoom in
 
 //lists of fiducial markers and target
@@ -29,7 +29,8 @@ preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpCanvas.addEventListener("click", intraOpImageClick)
 
 
-function loadDefaultContour() {
+async function loadDefaultContour() {
+  console.log("Default contour");
   fetch("/defaultcontour", {
     method: "POST",
     })
@@ -37,8 +38,8 @@ function loadDefaultContour() {
       console.log("resp");
       if (resp.ok)
         resp.json().then(data => {
-	  console.log("resp OK");
-          drawOutline(data);
+          intraOpContour = data.contour;
+          drawOutline(intraOpContour);
       });
     })
     .catch(err => {
@@ -47,7 +48,7 @@ function loadDefaultContour() {
       console.log("An error occured", err.message);
       window.alert("An error occured when loading default contour.");
     });
-
+    return 1;
 }
 
 //========================================================================
@@ -58,11 +59,18 @@ var uploadCaptionL = document.getElementById("upload-caption-l");
 var loader = document.getElementById("loader");
 
 //Do this at start up
-loadDefaultContour();
+startup();
 
 //========================================================================
 // Main button events
 //========================================================================
+
+async function startup() {
+    const result = await loadDefaultContour();	
+    console.log(result);
+    resetTarget();
+    init_fles();
+}
 
 function preOpImageClick(evt) {
 	console.log("PreOp Image Clicked", evt);
@@ -110,6 +118,7 @@ function placeFiducial(x, y) {
 
 	  preOpFids.push(preOpFid);
 	  intraOpFids.push(intraOpFid);
+	  register();
           console.log(preOpFids);
           console.log(intraOpFids);
 	  };
@@ -121,10 +130,10 @@ function placeFiducial(x, y) {
       console.log("An error occured fetching new target", err.message);
       window.alert("An error occured fetching new target");
     });
-
-
 }
-
+ 
+function register(){
+}
 
 //========================================================================
 // Helper functions
@@ -145,7 +154,8 @@ function contourImage(image_l) {
       if (resp.ok)
       	resp.json().then(data => {
 	  console.log("resp OK");
-          drawOutline(data);
+          intraOpContour = data.contour;
+          drawOutline(intraOpContour);
       });
     })
     .catch(err => {
@@ -157,6 +167,7 @@ function contourImage(image_l) {
 }
 
 function resetTarget() {
+  console.log("reset target called");
   fetch("/gettarget", {
       method: "POST",
       headers: {
@@ -183,13 +194,9 @@ function resetTarget() {
 function init_fles() {
   fetch("/getfle", {
       method: "POST",
-      headers: {
-	"Content-Type": "application/json"
-      },
-      body: JSON.stringify(intraOpContour)
     })
     .then(resp => {
-      console.log("New Target");
+      console.log("Setting fle");
       if (resp.ok)
         resp.json().then(data => {
 
@@ -212,9 +219,8 @@ function init_fles() {
 //========================================================================
 // Drawing Functions
 //========================================================================
-function drawOutline(data) {
+function drawOutline(contour) {
   console.log("received");
-  intraOpContour = data.contour;
   var canvas = intraOpCanvas; 
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
@@ -222,7 +228,7 @@ function drawOutline(data) {
     ctx.strokeStyle = "#808080";
     ctx.lineWidth = 3 * canvasScale;
     ctx.beginPath();
-    intraOpContour.forEach(function (item, index) {
+    contour.forEach(function (item, index) {
       ctx.lineTo(item[1] * canvasScale, item[0] * canvasScale);
     });
     ctx.closePath();

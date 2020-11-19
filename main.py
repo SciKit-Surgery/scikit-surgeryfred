@@ -5,6 +5,7 @@ import json
 from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect, send_file
 import numpy as np
 from sksurgeryfredbe.algorithms.fit_contour import find_outer_contour
+from sksurgeryfredbe.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfredbe.algorithms.fred import make_target_point, _is_valid_fiducial
 from sksurgeryfredbe.algorithms.errors import expected_absolute_value
 from sksurgeryfredbe.algorithms.fle import FLE
