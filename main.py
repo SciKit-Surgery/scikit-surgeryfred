@@ -6,6 +6,7 @@ from flask import Flask, redirect, url_for, request, render_template, Response, 
 import numpy as np
 from sksurgeryfredbe.algorithms.fit_contour import find_outer_contour
 from sksurgeryfredbe.algorithms.fred import make_target_point
+from sksurgeryfredbe.algorithms.errors import expected_absolute_value
 from util import base64_to_pil, contour_to_image, np_to_base64
 # Declare a flask app
 app = Flask(__name__)
@@ -62,15 +63,14 @@ def getfle():
         fle_sd = np.random.uniform(low=0.5, high=5.0)
         moving_fle = np.zeros((1, 3), dtype=np.float64)
         fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
-        fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
         fixed_fle_eavs = expected_absolute_value(fixed_fle)
         moving_fle_eavs = expected_absolute_value(moving_fle)
 
         returnjson = jsonify({
-                'fixed fle sd': fixed_fle.tolist(),
-                'moving fle sd': moving_fle.tolist(),
-                'fixed fle eav': fixed_fle.tolist(),
-                'moving fle eav': fixed_fle.tolist()
+                'fixed_fle_sd': fixed_fle.tolist(),
+                'moving_fle_sd': moving_fle.tolist(),
+                'fixed_fle_eav': fixed_fle_eavs.tolist(),
+                'moving_fle_eav': moving_fle_eavs.tolist()
                 })
         return returnjson
 

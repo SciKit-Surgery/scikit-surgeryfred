@@ -8,14 +8,14 @@
 var intraOpContour = [];
 
 //lists of fiducial markers and target
-const preOpFids = []   //moving
-const intraOpFids = [] //fixed
+const preOpFids = [];   //moving
+const intraOpFids = []; //fixed
 
 //the fiducial localisation errors
-const preOpFLEStdDev = []
-const intraOpFLEStdDev = []
-const preOpFLEStdEAV = []
-const intraOpFLEStdEAV = []
+var preOpFLEStdDev = [];
+var intraOpFLEStdDev = [];
+var preOpFLEEAV = 0;
+var intraOpFLEEAV = 0;
 
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
@@ -84,7 +84,7 @@ function changeImage() {
 function reset(){
   console.log('reset');
   resetTarget();
-//  init_fles();
+  init_fles();
 }
 
 function placeFiducial(x, y) {
@@ -180,6 +180,11 @@ function init_fles() {
       console.log("New Target");
       if (resp.ok)
         resp.json().then(data => {
+
+	preOpFLEStdDev = data.moving_fle_sd;
+        intraOpFLEStdDev = data.fixed_fle_sd;
+        preOpFLEEAV = data.moving_fle_eav;
+        intraOpFLEEAV = data.fixed_fle_eav;
 	console.log(data);
       });
     })
