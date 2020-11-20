@@ -141,11 +141,10 @@ def writeresults():
         tre=json.loads(s1)[1]
         print ("writing results",fre, tre)
         db = firestore.Client()
-        doc_ref = db.collection(u'results').document(u'gcloud')
-        doc_ref.set({
-                u'fre': fre,
-                u'tre': tre
-                })
+        db.collection("results").add({
+             'fre': fre,
+             'tre': tre
+        })
         return jsonify({'write OK': True})
 
 
