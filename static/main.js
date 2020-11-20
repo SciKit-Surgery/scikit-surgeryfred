@@ -7,6 +7,7 @@
 //store the contour for the intra-opimage
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
 var canvasScale = 4; //scale the canvases so we can zoom in
+var dbreference = 0; //reference to the database document
 
 //lists of fiducial markers and target
 const preOpFids = [];   //moving
@@ -73,6 +74,7 @@ async function startup() {
     console.log(result);
     resetTarget();
     init_fles();
+    initdatabase();
 }
 
 function preOpImageClick(evt) {
@@ -170,12 +172,14 @@ function register(){
 }
 
 function writeresults(fre, tre){
+  console.log("Writing results to ", dbreference)
   fetch("/writeresults", {
       method: "POST",
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify([fre, tre])
+      body: JSON.stringify([dbreference, fre, tre])
+
     })
     .catch(err => {
       console.log("error");
@@ -184,6 +188,30 @@ function writeresults(fre, tre){
       window.alert("An error occured during registration");
     });
 }
+
+function initdatabase(){
+  fetch("/initdatabase", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+    })
+    .then(resp => {
+      if (resp.ok)
+        resp.json().then(data => {
+		console.log("Get write ref:", data, data.reference);
+		dbreference = data.reference;
+		console.log(dbreference);
+	});
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured during write", err.message);
+      window.alert("An error occured during registration");
+    });
+}
+
 
 //========================================================================
 // Helper functions

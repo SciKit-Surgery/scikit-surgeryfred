@@ -9,6 +9,7 @@ from sksurgeryfredbe.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfredbe.algorithms.fred import make_target_point, _is_valid_fiducial
 from sksurgeryfredbe.algorithms.errors import expected_absolute_value
 from sksurgeryfredbe.algorithms.fle import FLE
+from sksurgeryfredbe import __version__ as fredversion
 from util import base64_to_pil, contour_to_image, np_to_base64
 from google.cloud import firestore
 
@@ -132,16 +133,36 @@ def register():
                 })
 
         return returnjson
- 
+
+@app.route('/initdatabase', methods=['GET', 'POST'])
+def initdatabase():
+        """
+        here we will create a new document in collection results and 
+        return the name of the document. Write some stuff about the date 
+        and the versions of fred, core, and fredweb. Create a sub 
+        collection of results within the document
+        """
+        db = firestore.Client()
+        #create a new document in the results collection
+        docRef = db.collection("results").add({
+             'fred verion': fredversion,
+             'fred web verion': '0.0.0'
+        })
+        print (docRef[1].id)
+        return jsonify({'success': True,
+                        'reference': docRef[1].id});
+
 @app.route('/writeresults', methods=['GET', 'POST'])
 def writeresults():
     if request.method == 'POST':
         s1 = json.dumps(request.json)
-        fre=json.loads(s1)[0]
-        tre=json.loads(s1)[1]
+        print(s1)
+        reference=json.loads(s1)[0]
+        fre=json.loads(s1)[1]
+        tre=json.loads(s1)[2]
         print ("writing results",fre, tre)
         db = firestore.Client()
-        db.collection("results").add({
+        db.collection("results").document(reference).collection("results").add({
              'fre': fre,
              'tre': tre
         })
