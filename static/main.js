@@ -12,8 +12,6 @@ var dbreference = 0; //reference to the database document
 //arrays of the results, decided to store these locally, to 
 //avoid problems when we're not connected to a data base, and 
 //to avoid many read calls.
-const fres = [];
-const tres = [];
 const results = [];
 
 //lists of fiducial markers and target
@@ -102,7 +100,7 @@ function changeImage() {
 }
 
 function downloadResults() {
-  let csvContent = "";
+  let csvContent = "# actual tre, actual fre, expected tre, expected fre, mean fle, number of fids\n";
 
   results.forEach(function(rowArray) {
     let row = rowArray.join(",");
@@ -177,13 +175,11 @@ function register(){
 		if ( data.success ){
 		  console.log(data.fre);
 		  console.log(data.actual_tre);
-		  fres.push(data.fre);
-		  tres.push(data.actual_tre);
-		  results.push([data.fixed_fle_esv, data.fre, data.actual_tre]);
-		  console.log("Results", results);
+		  results.push([data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids]);
 		  clearCanvas(intraOpTargetCanvas);
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
+		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
 		  writeresults(data.fre, data.actual_tre);
 		};
 	});
@@ -197,14 +193,14 @@ function register(){
 
 }
 
-function writeresults(fre, tre){
+function writeresults(actual_tre, fre, expected_tre, expected_fre, mean_fle, no_fids){
   console.log("Writing results to ", dbreference)
   fetch("/writeresults", {
       method: "POST",
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify([dbreference, fre, tre])
+      body: JSON.stringify([dbreference, actual_tre, fre, expected_tre, expected_fre, mean_fle, no_fids])
 
     })
     .catch(err => {
