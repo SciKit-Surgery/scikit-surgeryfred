@@ -9,7 +9,12 @@ from sksurgeryfredbe.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfredbe.algorithms.fred import make_target_point, _is_valid_fiducial
 from sksurgeryfredbe.algorithms.errors import expected_absolute_value
 from sksurgeryfredbe.algorithms.fle import FLE
+from sksurgeryfredbe import __version__ as fredversion
 from util import base64_to_pil, contour_to_image, np_to_base64
+from google.cloud import firestore
+from google.auth.exceptions import DefaultCredentialsError
+import math
+
 # Declare a flask app
 app = Flask(__name__)
 
@@ -114,23 +119,81 @@ def register():
         registerer = PointBasedRegistration(target, 
                         fixed_fle_eav, moving_fle_eav)
 
-        [success, fre, fixed_fle_esv, expected_tre_squared,
+        [success, fre, mean_fle_sq, expected_tre_sq,
                 expected_fre_sq, transformed_target, actual_tre,
                 no_fids] = registerer.register(fixed_fids, moving_fids)
-        
+       
+        expected_tre = 0.0;
+        expected_fre = 0.0;
+        mean_fle = 0.0;
+
+        if success:
+            mean_fle = math.sqrt(mean_fle_sq)
+            expected_tre = math.sqrt(expected_tre_sq)
+            expected_fre = math.sqrt(expected_fre_sq)
+
         returnjson = jsonify({
                 'success': success,
                 'fre': fre,
-                'fixed_fle_esv': fixed_fle_esv,
-                'expected_tre_squared': expected_tre_squared,
-                'expected_fre_sq': expected_fre_sq,
+                'mean_fle': mean_fle,
+                'expected_tre': expected_tre,
+                'expected_fre': expected_fre,
                 'transformed_target': transformed_target.tolist(),
                 'actual_tre': actual_tre,
                 'no_fids': no_fids
                 })
 
         return returnjson
- 
+
+@app.route('/initdatabase', methods=['GET', 'POST'])
+def initdatabase():
+        """
+        here we will create a new document in collection results and 
+        return the name of the document. Write some stuff about the date 
+        and the versions of fred, core, and fredweb. Create a sub 
+        collection of results within the document
+        """
+        try:
+            db = firestore.Client()
+            #create a new document in the results collection
+            docRef = db.collection("results").add({
+                 'fred verion': fredversion,
+                 'fred web verion': '0.0.0'
+            })
+            return jsonify({'success': True,
+                        'reference': docRef[1].id});
+        except DefaultCredentialsError:
+            print("Data base credential error")
+            return jsonify({'success': False})
+
+@app.route('/writeresults', methods=['GET', 'POST'])
+def writeresults():
+    if request.method == 'POST':
+        s1 = json.dumps(request.json)
+        reference=json.loads(s1)[0]
+        actual_tre = json.loads(s1)[1]
+        fre=json.loads(s1)[2]
+        expected_tre=json.loads(s1)[3]
+        expected_fre=json.loads(s1)[4]
+        mean_fle=json.loads(s1)[5]
+        no_fids=json.loads(s1)[6]
+
+        try:
+            db = firestore.Client()
+            db.collection("results").document(reference).collection("results").add({
+                'actual_tre' : actual_tre,
+                'fre' : fre,
+                'expected_tre' :expected_tre,
+                'expected_fre' :expected_fre,
+                'mean_fle' : mean_fle,
+                'number_of_fids' : no_fids
+            })
+            return jsonify({'write OK': True})
+        except DefaultCredentialsError:
+            print("Data base credential error")
+            return jsonify({'write OK': False})
+
+
 if __name__ == '__main__':
      app.run(port=5002, threaded=True)
 

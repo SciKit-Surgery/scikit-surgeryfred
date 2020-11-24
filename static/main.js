@@ -7,6 +7,14 @@
 //store the contour for the intra-opimage
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
 var canvasScale = 4; //scale the canvases so we can zoom in
+var dbreference = 0; //reference to the database document
+
+//arrays of the results, decided to store these locally, to 
+//avoid problems when we're not connected to a data base, and 
+//to avoid many read calls.
+const fres = [];
+const tres = [];
+const results = [];
 
 //lists of fiducial markers and target
 const preOpFids = [];   //moving
@@ -73,6 +81,7 @@ async function startup() {
     console.log(result);
     resetTarget();
     init_fles();
+    initdatabase();
 }
 
 function preOpImageClick(evt) {
@@ -88,9 +97,24 @@ function intraOpImageClick(evt) {
 function changeImage() {
   // action for the change image button
   console.log("Change Image not Implemented");
-
   window.alert("Change image not implemented!");
   return;
+}
+
+function downloadResults() {
+  let csvContent = "";
+
+  results.forEach(function(rowArray) {
+    let row = rowArray.join(",");
+    csvContent += row + "\r\n";
+  });
+
+  download(csvContent, "results.csv", "text/csv");
+
+}
+
+function plotResults() {
+  console.log("Plot not Implemented");
 }
 
 function reset(){
@@ -153,9 +177,14 @@ function register(){
 		if ( data.success ){
 		  console.log(data.fre);
 		  console.log(data.actual_tre);
+		  fres.push(data.fre);
+		  tres.push(data.actual_tre);
+		  results.push([data.fixed_fle_esv, data.fre, data.actual_tre]);
+		  console.log("Results", results);
 		  clearCanvas(intraOpTargetCanvas);
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
+		  writeresults(data.fre, data.actual_tre);
 		};
 	});
     })
@@ -167,6 +196,48 @@ function register(){
     });
 
 }
+
+function writeresults(fre, tre){
+  console.log("Writing results to ", dbreference)
+  fetch("/writeresults", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+      body: JSON.stringify([dbreference, fre, tre])
+
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured during write", err.message);
+      window.alert("An error occured during registration");
+    });
+}
+
+function initdatabase(){
+  fetch("/initdatabase", {
+      method: "POST",
+      headers: {
+	"Content-Type": "application/json"
+      },
+    })
+    .then(resp => {
+      if (resp.ok)
+        resp.json().then(data => {
+		console.log("Get write ref:", data, data.reference);
+		dbreference = data.reference;
+		console.log(dbreference);
+	});
+    })
+    .catch(err => {
+      console.log("error");
+
+      console.log("An error occured during write", err.message);
+      window.alert("An error occured during registration");
+    });
+}
+
 
 //========================================================================
 // Helper functions

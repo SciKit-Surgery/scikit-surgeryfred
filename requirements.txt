@@ -2,3 +2,4 @@ Flask==1.1.2
 scikit-surgeryfredbackend
 pillow
 numpy
+google-cloud-firestore
