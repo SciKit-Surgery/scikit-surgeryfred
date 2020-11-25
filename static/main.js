@@ -32,8 +32,9 @@ var intraOpContourCanvas = document.getElementById("intra-operative-contour");
 var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials");
 var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
-// Add event listeners
+var plotTreVsFre = document.getElementById("tre-vs-fre");
 
+// Add event listeners
 preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
 
@@ -112,7 +113,55 @@ function downloadResults() {
 }
 
 function plotResults() {
-  console.log("Plot not Implemented");
+    var data = {
+    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: [
+        {
+            label: "My First dataset",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: [65, 59, 80, 81, 56, 55, 40]
+        },
+        {
+            label: "My Second dataset",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: [28, 48, 40, 19, 86, 27, 90]
+        }
+    ]
+    };
+
+    var plotDiv = document.getElementById('plots');
+    var treVsFreCanvas = document.createElement('canvas');
+    plotDiv.appendChild(treVsFreCanvas);
+    treVsFreCanvas.width = 256;
+    treVsFreCanvas.height = 256;
+    var ctx = treVsFreCanvas.getContext('2d');
+    var myChart = new Chart(ctx, { type: 'bar', data , 
+    options: { scales: {
+                 yAxes: [{
+                 ticks: {
+                    beginAtZero: true
+                 }
+                 }]
+             }
+    }
+    });
+
+    console.log(plotTreVsFre.height); 
+    console.log(plotTreVsFre.height); 
+    drawMeasuredFiducial([20,20], plotTreVsFre);
+    drawMeasuredFiducial([50,50], plotTreVsFre);
+    hide(preOpImage);
+    hide(preOpCanvas);
 }
 
 function reset(){
@@ -379,6 +428,7 @@ function drawActualTarget(position, canvas){
 }
 
 function drawMeasuredFiducial(position, canvas){
+ console.log("drawing", position, canvas);
  if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = "#ff0000";
@@ -390,6 +440,7 @@ function drawMeasuredFiducial(position, canvas){
 
 function hide(el) {
   // hide an element
+  console.log("hiding", el);
   el.classList.add("hidden");
 }
 
