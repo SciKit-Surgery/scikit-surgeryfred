@@ -32,12 +32,9 @@ var intraOpContourCanvas = document.getElementById("intra-operative-contour");
 var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials");
 var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
-var plotTreVsFre = document.getElementById("tre-vs-fre");
-
 // Add event listeners
 preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
-
 
 async function loadDefaultContour() {
   console.log("Default contour");
@@ -112,56 +109,61 @@ function downloadResults() {
 
 }
 
+function toScatterData(x_data, y_data){
+	//parses array data so it can be used in a chart.js scatter plot
+	
+	var data = [];
+
+	x_data.forEach(function (item, index){
+		data.push({ x: item, y: y_data[index]});
+	});
+	return data;
+}
+
 function plotResults() {
+    scatterData = toScatterData(
+	    results.map(function(value, index){return value[0];}),
+	    results.map(function(value, index){return value[1];}));
+
     var data = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
     datasets: [
         {
-            label: "My First dataset",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
-            data: [65, 59, 80, 81, 56, 55, 40]
+            label: "TRE vs FRE",
+            data: scatterData
         },
-        {
-            label: "My Second dataset",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            data: [28, 48, 40, 19, 86, 27, 90]
-        }
     ]
     };
 
     var plotDiv = document.getElementById('plots');
     var treVsFreCanvas = document.createElement('canvas');
     plotDiv.appendChild(treVsFreCanvas);
-    treVsFreCanvas.width = 256;
-    treVsFreCanvas.height = 256;
     var ctx = treVsFreCanvas.getContext('2d');
-    var myChart = new Chart(ctx, { type: 'bar', data , 
+    var myChart = new Chart(ctx, { type: 'scatter', data , 
     options: { scales: {
                  yAxes: [{
                  ticks: {
                     beginAtZero: true
                  }
-                 }]
+                 }],
+	         xAxes: [{
+			  type: 'linear',
+                	  position: 'bottom'
+		 }]
              }
     }
     });
+    
+    switchToChartView();
+}
 
-    console.log(plotTreVsFre.height); 
-    console.log(plotTreVsFre.height); 
-    drawMeasuredFiducial([20,20], plotTreVsFre);
-    drawMeasuredFiducial([50,50], plotTreVsFre);
+function switchToChartView(){
     hide(preOpImage);
     hide(preOpCanvas);
+    hide(intraOpContourCanvas);
+    hide(intraOpFiducialCanvas);
+    hide(intraOpTargetCanvas);
+    var plotDiv = document.getElementById('plots');
+    show(plotDiv);
 }
 
 function reset(){
@@ -229,7 +231,6 @@ function register(){
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
-		  writeresults(data.fre, data.actual_tre);
 		};
 	});
     })
@@ -428,7 +429,6 @@ function drawActualTarget(position, canvas){
 }
 
 function drawMeasuredFiducial(position, canvas){
- console.log("drawing", position, canvas);
  if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = "#ff0000";
@@ -440,7 +440,6 @@ function drawMeasuredFiducial(position, canvas){
 
 function hide(el) {
   // hide an element
-  console.log("hiding", el);
   el.classList.add("hidden");
 }
 
