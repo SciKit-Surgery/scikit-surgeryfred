@@ -32,19 +32,13 @@
  
     <canvas id="intra-operative-target" width="2048px" height="2048px"
       style="z-index:5; position:absolute; left:650px; top:0px; width:512px; height:512px"></canvas>
-    <canvas id="tre-vs-fre" width="512px" height="512px"
-					  style="z-index:1; position:absolute; left:50px; top:0px; width:512px; height:512px"></canvas>
-    <canvas id="tre_vs_exp_tre" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:450px; top:0px; width:256px; height:256px"></canvas>
-    <canvas id="tre_vs_exp_fre" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:750px; top:0px; width:256px; height:256px"></canvas>
-    <canvas id="tre_vs_exp_fle" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:50px; top:300px; width:256px; height:256px"></canvas>
-    <canvas id="tre_vs_no_fids" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:450px; top:3000px; width:256px; height:256px"></canvas>
 
-
-
+    <p id="actual-TRE" style="align-items:left; position:absolute; left:1150px; top:0px; width:200px">Actual TRE: -</p>
+    <p id="actual-FRE" style="align-items:right; position:absolute; left:1150px; top:60px; width:200px">Actual FRE: -</p>
+    <p id="expected-TRE" style="align-items:right; position:absolute; left:1150px; top:120px; width:200px">Expected TRE: -</p>
+    <p id="expected-FRE" style="align-items:right; position:absolute; left:1150px; top:180px; width:200px">Expected FRE: -</p>
+    <p id="expected-FLE" style="align-items:right; position:absolute; left:1150px; top:240px; width:200px">Expected FLE: -</p>
+    <p id="no-fids" style="align-items:right; position:absolute; left:1150px; top:300px; width:200px">No. of Fiducial Markers: -</p>
  
     <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
       <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
@@ -52,7 +46,6 @@
   </div>
 
   <div style="margin-bottom: 2rem;">
-    <input type="button" value="Change Image" class="button" onclick="changeImage();" />
     <input type="button" value="New Target" class="button" onclick="reset();" />
     <input type="button" value="Download Results" class="button" onclick="downloadResults();" />
     <input id="plot_button" type="button" value="Plot Results" class="button" onclick="plotResults();" />

@@ -33,6 +33,13 @@ var intraOpContourCanvas = document.getElementById("intra-operative-contour");
 var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials");
 var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
+const actualTREText = document.getElementById("actual-TRE");
+const actualFREText = document.getElementById("actual-FRE");
+const expectedTREText = document.getElementById("expected-TRE");
+const expectedFREText = document.getElementById("expected-FRE");
+const expectedFLEText = document.getElementById("expected-FLE");
+const noFidsText = document.getElementById("no-fids");
+
 // Add event listeners
 preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
@@ -303,6 +310,12 @@ function register(){
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
+		  actualTREText.innerHTML="Actual TRE = " + Math.round(data.actual_tre*100)/100;
+		  actualFREText.innerHTML="Actual FRE = " + Math.round(data.fre*100)/100;
+		  expectedTREText.innerHTML="Expected TRE = " + Math.round(data.expected_tre*100)/100;
+		  expectedFREText.innerHTML="Expected FRE = " + Math.round(data.expected_fre*100)/100;
+		  expectedFLEText.innerHTML="Expected FLE = " + Math.round(data.mean_fle*100)/100;
+		  noFidsText.innerHTML="No. of Fids = " + data.no_fids;
 		};
 	});
     })
