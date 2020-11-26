@@ -81,12 +81,10 @@ async function startup() {
 }
 
 function preOpImageClick(evt) {
-	console.log("PreOp Image Clicked", evt);
 	placeFiducial(evt.layerX, evt.layerY);
 }
 
 function intraOpImageClick(evt) {
-	console.log("IntraOp Image Clicked", evt);
 	placeFiducial(evt.layerX, evt.layerY);
 }
 
@@ -121,28 +119,55 @@ function toScatterData(x_data, y_data){
 }
 
 
-function plotResults() {
+async function plotResults() {
+   var correlations = {
+	  'corr_coeffs' : [0,0,0,0,0],
+	  'intercepts' : [0,0,0,0,0],
+	  'slopes' : [0,0,0,0,0]
+  	};
+  
+   if ( results.length > 4 ){
+     await fetch("/correlation", {
+        method: "POST",
+        headers: {
+        	"Content-Type": "application/json"
+        },
+        body: JSON.stringify(results)
+     })
+    .then(resp => {
+        if (resp.ok)
+          resp.json().then(data => {
+		correlations = data;
+	  });
+     })
+    .catch(err => {
+      console.log("An error occured during get correlations", err.message);
+    });
+    } else {
+      console.log("Insufficient results to get correlations, try doing more registrations.");
+    }
 
-    getCorrelations();
+    console.log("got correlations", correlations)
+
     scatterData = toScatterData(
 	    results.map(function(value, index){return value[0];}),
 	    results.map(function(value, index){return value[1];}));
 
-    var data = {
-    datasets: [
+      var data = {
+      datasets: [
         {
             label: "TRE vs FRE",
             data: scatterData
         },
-    ]
-    };
+      ]
+      };
 
-    var plotDiv = document.getElementById('plots');
-    var treVsFreCanvas = document.createElement('canvas');
-    plotDiv.appendChild(treVsFreCanvas);
-    var ctx = treVsFreCanvas.getContext('2d');
-    var myChart = new Chart(ctx, { type: 'scatter', data , 
-    options: { scales: {
+      var plotDiv = document.getElementById('plots');
+      var treVsFreCanvas = document.createElement('canvas');
+      plotDiv.appendChild(treVsFreCanvas);
+      var ctx = treVsFreCanvas.getContext('2d');
+      var myChart = new Chart(ctx, { type: 'scatter', data , 
+      options: { scales: {
                  yAxes: [{
                  ticks: {
                     beginAtZero: true
@@ -153,10 +178,11 @@ function plotResults() {
                 	  position: 'bottom'
 		 }]
              }
-    }
-    });
+        }
+      });
     
     switchToChartView();
+
 }
 
 function switchToChartView(){
@@ -202,8 +228,6 @@ function placeFiducial(x, y) {
 	  preOpFids.push(preOpFid);
 	  intraOpFids.push(intraOpFid);
 	  register();
-          console.log(preOpFids);
-          console.log(intraOpFids);
 	  };
       });
     })
@@ -227,8 +251,6 @@ function register(){
       if (resp.ok)
         resp.json().then(data => {
 		if ( data.success ){
-		  console.log(data.fre);
-		  console.log(data.actual_tre);
 		  results.push([data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids]);
 		  clearCanvas(intraOpTargetCanvas);
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
@@ -243,32 +265,6 @@ function register(){
       console.log("An error occured during registration", err.message);
       window.alert("An error occured during registration");
     });
-
-}
-
-function getCorrelations(){
-//does linear fitting and gets correlation data for the results
-
-  if ( results.length > 4 ){
-    fetch("/correlation", {
-        method: "POST",
-        headers: {
-        	"Content-Type": "application/json"
-        },
-        body: JSON.stringify(results)
-    })
-   .then(resp => {
-        if (resp.ok)
-          resp.json().then(data => {
-  		console.log("got correlations", data);
-	  });
-    })
-    .catch(err => {
-      console.log("An error occured during get correlations", err.message);
-    });
-  } else {
-      console.log("Insufficient results to get correlations, try doing more registrations.");
-  }
 
 }
 

@@ -210,15 +210,22 @@ def correlation():
         corr_coeffs = []
         slopes = []
         intercepts = []
-
+        success = True
         for column in range (1, results.shape[1]):
             slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
+            if math.isnan(slope) or math.isnan(intercept): #remove nans
+                slope = 0.0
+                intercept = 0.0
+                success = False
             slopes.append(slope)
             intercepts.append(intercept)
             corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
+            if math.isnan(corr_coeff): #fail silently so we don't upset the front end
+                corr_coeff = 0.0
+                success = False
             corr_coeffs.append(corr_coeff)
-
-        return jsonify({'success': True,
+          
+        return jsonify({'success': success,
                         'corr_coeffs': corr_coeffs,
                         'slopes': slopes,
                         'intercepts': intercepts})
