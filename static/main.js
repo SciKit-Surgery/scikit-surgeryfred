@@ -89,13 +89,6 @@ function intraOpImageClick(evt) {
 	placeFiducial(evt.layerX, evt.layerY);
 }
 
-function changeImage() {
-  // action for the change image button
-  console.log("Change Image not Implemented");
-  window.alert("Change image not implemented!");
-  return;
-}
-
 function downloadResults() {
   let csvContent = "# actual tre, actual fre, expected tre, expected fre, mean fle, number of fids\n";
 
