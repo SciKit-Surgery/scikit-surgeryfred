@@ -109,7 +109,8 @@ function downloadResults() {
 
 function toScatterData(x_data, y_data){
 	//parses array data so it can be used in a chart.js scatter plot
-	
+	console.log("x data", x_data);	
+	console.log("y data", y_data);	
 	var data = [];
 	
 	x_data.forEach(function (item, index){
@@ -122,10 +123,11 @@ function toScatterData(x_data, y_data){
 async function plotResults() {
    var correlations = {
 	  'corr_coeffs' : [0,0,0,0,0],
-	  'intercepts' : [0,0,0,0,0],
-	  'slopes' : [0,0,0,0,0]
+	  'xs' : [[0,0],[0,0],[0,0],[0,0],[0,0]],
+	  'ys' : [[0,0],[0,0],[0,0],[0,0],[0,0]]
   	};
   
+   switchToChartView();
    if ( results.length > 4 ){
      await fetch("/correlation", {
         method: "POST",
@@ -137,7 +139,12 @@ async function plotResults() {
     .then(resp => {
         if (resp.ok)
           resp.json().then(data => {
+		console.log("coreel Data = ", data);
 		correlations = data;
+    		var plotDiv = document.getElementById('plots');
+    		var treVsFreCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsFreCanvas);
+    		makeScatterPlot(1, 'FLE', correlations, treVsFreCanvas);
 	  });
      })
     .catch(err => {
@@ -147,25 +154,36 @@ async function plotResults() {
       console.log("Insufficient results to get correlations, try doing more registrations.");
     }
 
-    console.log("got correlations", correlations)
+}
 
-    scatterData = toScatterData(
-	    results.map(function(value, index){return value[0];}),
-	    results.map(function(value, index){return value[1];}));
-
+function makeScatterPlot(index, xlabel, corrdata, canvas){
+	
+	console.log(results);
+      scatterData = toScatterData(
+	    results.map(function(value, colindex){return value[index];}),
+	    results.map(function(value, colindex){return value[0];}));
+	console.log(scatterData);
+     
+      console.log(corrdata);
+      lineofbestfit = toScatterData(corrdata.xs[index-1], corrdata.ys[index-1])
+      const title = new String("TRE vs " + xlabel);
+      const lobftitle = new String("Corr. Coeff: " +  corrdata.corr_coeffs[index - 1]);
       var data = {
       datasets: [
         {
-            label: "TRE vs FRE",
-            data: scatterData
+            label: title,
+            data: scatterData,
+	    showLine: false
         },
+	{
+	    label: lobftitle,
+	    data: lineofbestfit,
+	    showLine: true
+	}
       ]
       };
 
-      var plotDiv = document.getElementById('plots');
-      var treVsFreCanvas = document.createElement('canvas');
-      plotDiv.appendChild(treVsFreCanvas);
-      var ctx = treVsFreCanvas.getContext('2d');
+      var ctx = canvas.getContext('2d');
       var myChart = new Chart(ctx, { type: 'scatter', data , 
       options: { scales: {
                  yAxes: [{
@@ -180,9 +198,6 @@ async function plotResults() {
              }
         }
       });
-    
-    switchToChartView();
-
 }
 
 function switchToChartView(){

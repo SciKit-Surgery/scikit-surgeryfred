@@ -201,6 +201,7 @@ def correlation():
     returns slope, intercept and correlation coefficient
     if there are less than 4 data points it returns false.
     """
+    print ("Called correlations")
     if request.method == 'POST':
         results = np.array(request.json)
         
@@ -208,8 +209,8 @@ def correlation():
             return jsonify({'success': False})
         
         corr_coeffs = []
-        slopes = []
-        intercepts = []
+        x_points = []
+        y_points = []
         success = True
         for column in range (1, results.shape[1]):
             slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
@@ -217,18 +218,28 @@ def correlation():
                 slope = 0.0
                 intercept = 0.0
                 success = False
-            slopes.append(slope)
-            intercepts.append(intercept)
+            start_x = np.min(results[:,column])
+            end_x = np.max(results[:,column])
+            start_y = intercept + slope * start_x
+            end_y = intercept + slope * end_x
+            if column == 1:
+                print (results[:,column])
+                print (start_x)
+                print (end_x)
+            x_points.append([start_x, end_x])
+            y_points.append([start_y, end_y])
             corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
             if math.isnan(corr_coeff): #fail silently so we don't upset the front end
                 corr_coeff = 0.0
                 success = False
             corr_coeffs.append(corr_coeff)
-          
-        return jsonify({'success': success,
+        
+        returnjson = {'success': success,
                         'corr_coeffs': corr_coeffs,
-                        'slopes': slopes,
-                        'intercepts': intercepts})
+                        'xs': x_points,
+                        'ys': y_points}
+        print ("returning;", returnjson)
+        return jsonify(returnjson)
 
     return jsonify({'success': False})
 
