@@ -115,7 +115,6 @@ def register():
         fixed_fle_eav = json.loads(s1)[2]
         moving_fids = np.array(json.loads(s1)[3])
         fixed_fids = np.array(json.loads(s1)[4])
-        print (target)
         registerer = PointBasedRegistration(target, 
                         fixed_fle_eav, moving_fle_eav)
 
@@ -222,10 +221,6 @@ def correlation():
             end_x = np.max(results[:,column])
             start_y = intercept + slope * start_x
             end_y = intercept + slope * end_x
-            if column == 1:
-                print (results[:,column])
-                print (start_x)
-                print (end_x)
             x_points.append([start_x, end_x])
             y_points.append([start_y, end_y])
             corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
@@ -238,7 +233,6 @@ def correlation():
                         'corr_coeffs': corr_coeffs,
                         'xs': x_points,
                         'ys': y_points}
-        print ("returning;", returnjson)
         return jsonify(returnjson)
 
     return jsonify({'success': False})

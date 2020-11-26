@@ -3,6 +3,7 @@
 //========================================================================
 
 //global variables
+var state = "fred" // fred, plot or game
 
 //store the contour for the intra-opimage
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
@@ -119,6 +120,7 @@ function toScatterData(x_data, y_data){
 
 
 async function plotResults() {
+   if ( state == "fred" ) {
    var correlations = {
 	  'corr_coeffs' : [0,0,0,0,0],
 	  'xs' : [[0,0],[0,0],[0,0],[0,0],[0,0]],
@@ -163,6 +165,12 @@ async function plotResults() {
     } else {
       console.log("Insufficient results to get correlations, try doing more registrations.");
     }
+   }
+	else {
+		if ( state == "plot" ) {
+			switchToFred()
+		}
+	}
 
 }
 
@@ -210,6 +218,24 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
       });
 }
 
+function switchToFred(){
+    console.log("Switching to fred");
+    var plotDiv = document.getElementById('plots');
+    while(plotDiv.firstChild){
+      plotDiv.removeChild(plotDiv.firstChild);
+    }
+    hide(plotDiv);
+    show(preOpImage);
+    show(preOpCanvas);
+    show(intraOpContourCanvas);
+    show(intraOpFiducialCanvas);
+    show(intraOpTargetCanvas);
+    button = document.getElementById('plot_button');
+    button.value="Plot Results";
+    state = "fred";
+}
+
+
 function switchToChartView(){
     hide(preOpImage);
     hide(preOpCanvas);
@@ -218,6 +244,9 @@ function switchToChartView(){
     hide(intraOpTargetCanvas);
     var plotDiv = document.getElementById('plots');
     show(plotDiv);
+    button = document.getElementById('plot_button');
+    button.value="Back";
+    state = "plot";
 }
 
 function reset(){
