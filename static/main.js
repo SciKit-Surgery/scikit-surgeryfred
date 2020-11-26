@@ -109,8 +109,6 @@ function downloadResults() {
 
 function toScatterData(x_data, y_data){
 	//parses array data so it can be used in a chart.js scatter plot
-	console.log("x data", x_data);	
-	console.log("y data", y_data);	
 	var data = [];
 	
 	x_data.forEach(function (item, index){
@@ -144,7 +142,19 @@ async function plotResults() {
     		var plotDiv = document.getElementById('plots');
     		var treVsFreCanvas = document.createElement('canvas');
     		plotDiv.appendChild(treVsFreCanvas);
-    		makeScatterPlot(1, 'FLE', correlations, treVsFreCanvas);
+    		makeScatterPlot(1, 'FRE', correlations, treVsFreCanvas);
+    		var treVsETreCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsETreCanvas);
+    		makeScatterPlot(2, 'Expected TRE', correlations, treVsETreCanvas);
+    		var treVsEFreCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsEFreCanvas);
+    		makeScatterPlot(3, 'Expected FRE', correlations, treVsEFreCanvas);
+    		var treVsEFleCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsEFleCanvas);
+    		makeScatterPlot(4, 'FLE', correlations, treVsEFleCanvas);
+    		var treVsNFidsCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsNFidsCanvas);
+    		makeScatterPlot(5, 'Number of Fiducials', correlations, treVsNFidsCanvas);
 	  });
      })
     .catch(err => {
