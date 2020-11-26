@@ -193,6 +193,38 @@ def writeresults():
             print("Data base credential error")
             return jsonify({'write OK': False})
 
+@app.route('/correlation', methods=['GET', 'POST'])
+def correlation():
+    """ 
+    Takes in 2d array, and does linear fit and correlation for
+    each column against the first 
+    returns slope, intercept and correlation coefficient
+    if there are less than 4 data points it returns false.
+    """
+    if request.method == 'POST':
+        results = np.array(request.json)
+        
+        if results.shape[0] < 4:
+            return jsonify({'success': False})
+        
+        corr_coeffs = []
+        slopes = []
+        intercepts = []
+
+        for column in range (1, results.shape[1]):
+            slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
+            slopes.append(slope)
+            intercepts.append(intercept)
+            corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
+            corr_coeffs.append(corr_coeff)
+
+        return jsonify({'success': True,
+                        'corr_coeffs': corr_coeffs,
+                        'slopes': slopes,
+                        'intercepts': intercepts})
+
+    return jsonify({'success': False})
+
 
 if __name__ == '__main__':
      app.run(port=5002, threaded=True)

@@ -113,14 +113,17 @@ function toScatterData(x_data, y_data){
 	//parses array data so it can be used in a chart.js scatter plot
 	
 	var data = [];
-
+	
 	x_data.forEach(function (item, index){
 		data.push({ x: item, y: y_data[index]});
 	});
 	return data;
 }
 
+
 function plotResults() {
+
+    getCorrelations();
     scatterData = toScatterData(
 	    results.map(function(value, index){return value[0];}),
 	    results.map(function(value, index){return value[1];}));
@@ -243,6 +246,32 @@ function register(){
 
 }
 
+function getCorrelations(){
+//does linear fitting and gets correlation data for the results
+
+  if ( results.length > 4 ){
+    fetch("/correlation", {
+        method: "POST",
+        headers: {
+        	"Content-Type": "application/json"
+        },
+        body: JSON.stringify(results)
+    })
+   .then(resp => {
+        if (resp.ok)
+          resp.json().then(data => {
+  		console.log("got correlations", data);
+	  });
+    })
+    .catch(err => {
+      console.log("An error occured during get correlations", err.message);
+    });
+  } else {
+      console.log("Insufficient results to get correlations, try doing more registrations.");
+  }
+
+}
+
 function writeresults(actual_tre, fre, expected_tre, expected_fre, mean_fle, no_fids){
   console.log("Writing results to ", dbreference)
   fetch("/writeresults", {
@@ -254,10 +283,7 @@ function writeresults(actual_tre, fre, expected_tre, expected_fre, mean_fle, no_
 
     })
     .catch(err => {
-      console.log("error");
-
       console.log("An error occured during write", err.message);
-      window.alert("An error occured during registration");
     });
 }
 
@@ -398,7 +424,6 @@ function clearCanvas(canvas) {
 
 function drawTarget(local_target, canvas) {
   if (canvas.getContext) {
-	  console.log(local_target);
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = "#880000";
     ctx.beginPath();
@@ -455,3 +480,4 @@ function download(content, fileName, contentType) {
     a.download = fileName;
     a.click();
 }
+
