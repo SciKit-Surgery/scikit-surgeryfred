@@ -3,6 +3,7 @@
 //========================================================================
 
 //global variables
+var state = "fred" // fred, plot or game
 
 //store the contour for the intra-opimage
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
@@ -33,10 +34,8 @@ var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials")
 var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
 // Add event listeners
-
 preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
-
 
 async function loadDefaultContour() {
   console.log("Default contour");
@@ -83,12 +82,10 @@ async function startup() {
 }
 
 function preOpImageClick(evt) {
-	console.log("PreOp Image Clicked", evt);
 	placeFiducial(evt.layerX, evt.layerY);
 }
 
 function intraOpImageClick(evt) {
-	console.log("IntraOp Image Clicked", evt);
 	placeFiducial(evt.layerX, evt.layerY);
 }
 
@@ -111,8 +108,145 @@ function downloadResults() {
 
 }
 
-function plotResults() {
-  console.log("Plot not Implemented");
+function toScatterData(x_data, y_data){
+	//parses array data so it can be used in a chart.js scatter plot
+	var data = [];
+	
+	x_data.forEach(function (item, index){
+		data.push({ x: item, y: y_data[index]});
+	});
+	return data;
+}
+
+
+async function plotResults() {
+   if ( state == "fred" ) {
+   var correlations = {
+	  'corr_coeffs' : [0,0,0,0,0],
+	  'xs' : [[0,0],[0,0],[0,0],[0,0],[0,0]],
+	  'ys' : [[0,0],[0,0],[0,0],[0,0],[0,0]]
+  	};
+  
+   switchToChartView();
+   if ( results.length > 4 ){
+     await fetch("/correlation", {
+        method: "POST",
+        headers: {
+        	"Content-Type": "application/json"
+        },
+        body: JSON.stringify(results)
+     })
+    .then(resp => {
+        if (resp.ok)
+          resp.json().then(data => {
+		console.log("coreel Data = ", data);
+		correlations = data;
+    		var plotDiv = document.getElementById('plots');
+    		var treVsFreCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsFreCanvas);
+    		makeScatterPlot(1, 'FRE', correlations, treVsFreCanvas);
+    		var treVsETreCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsETreCanvas);
+    		makeScatterPlot(2, 'Expected TRE', correlations, treVsETreCanvas);
+    		var treVsEFreCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsEFreCanvas);
+    		makeScatterPlot(3, 'Expected FRE', correlations, treVsEFreCanvas);
+    		var treVsEFleCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsEFleCanvas);
+    		makeScatterPlot(4, 'FLE', correlations, treVsEFleCanvas);
+    		var treVsNFidsCanvas = document.createElement('canvas');
+    		plotDiv.appendChild(treVsNFidsCanvas);
+    		makeScatterPlot(5, 'Number of Fiducials', correlations, treVsNFidsCanvas);
+	  });
+     })
+    .catch(err => {
+      console.log("An error occured during get correlations", err.message);
+    });
+    } else {
+      console.log("Insufficient results to get correlations, try doing more registrations.");
+    }
+   }
+	else {
+		if ( state == "plot" ) {
+			switchToFred()
+		}
+	}
+
+}
+
+function makeScatterPlot(index, xlabel, corrdata, canvas){
+	
+	console.log(results);
+      scatterData = toScatterData(
+	    results.map(function(value, colindex){return value[index];}),
+	    results.map(function(value, colindex){return value[0];}));
+	console.log(scatterData);
+     
+      console.log(corrdata);
+      lineofbestfit = toScatterData(corrdata.xs[index-1], corrdata.ys[index-1])
+      const title = new String("TRE vs " + xlabel);
+      const lobftitle = new String("Corr. Coeff: " +  corrdata.corr_coeffs[index - 1]);
+      var data = {
+      datasets: [
+        {
+            label: title,
+            data: scatterData,
+	    showLine: false
+        },
+	{
+	    label: lobftitle,
+	    data: lineofbestfit,
+	    showLine: true
+	}
+      ]
+      };
+
+      var ctx = canvas.getContext('2d');
+      var myChart = new Chart(ctx, { type: 'scatter', data , 
+      options: { scales: {
+                 yAxes: [{
+                 ticks: {
+                    beginAtZero: true
+                 }
+                 }],
+	         xAxes: [{
+			  type: 'linear',
+                	  position: 'bottom'
+		 }]
+             }
+        }
+      });
+}
+
+function switchToFred(){
+    console.log("Switching to fred");
+    var plotDiv = document.getElementById('plots');
+    while(plotDiv.firstChild){
+      plotDiv.removeChild(plotDiv.firstChild);
+    }
+    hide(plotDiv);
+    show(preOpImage);
+    show(preOpCanvas);
+    show(intraOpContourCanvas);
+    show(intraOpFiducialCanvas);
+    show(intraOpTargetCanvas);
+    button = document.getElementById('plot_button');
+    button.value="Plot Results";
+    state = "fred";
+}
+
+
+function switchToChartView(){
+    hide(preOpImage);
+    hide(preOpCanvas);
+    hide(intraOpContourCanvas);
+    hide(intraOpFiducialCanvas);
+    hide(intraOpTargetCanvas);
+    var plotDiv = document.getElementById('plots');
+    show(plotDiv);
+    button = document.getElementById('plot_button');
+    button.value="Back";
+    state = "plot";
 }
 
 function reset(){
@@ -148,8 +282,6 @@ function placeFiducial(x, y) {
 	  preOpFids.push(preOpFid);
 	  intraOpFids.push(intraOpFid);
 	  register();
-          console.log(preOpFids);
-          console.log(intraOpFids);
 	  };
       });
     })
@@ -173,14 +305,11 @@ function register(){
       if (resp.ok)
         resp.json().then(data => {
 		if ( data.success ){
-		  console.log(data.fre);
-		  console.log(data.actual_tre);
 		  results.push([data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids]);
 		  clearCanvas(intraOpTargetCanvas);
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
-		  writeresults(data.fre, data.actual_tre);
 		};
 	});
     })
@@ -204,10 +333,7 @@ function writeresults(actual_tre, fre, expected_tre, expected_fre, mean_fle, no_
 
     })
     .catch(err => {
-      console.log("error");
-
       console.log("An error occured during write", err.message);
-      window.alert("An error occured during registration");
     });
 }
 
@@ -348,7 +474,6 @@ function clearCanvas(canvas) {
 
 function drawTarget(local_target, canvas) {
   if (canvas.getContext) {
-	  console.log(local_target);
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = "#880000";
     ctx.beginPath();
@@ -405,3 +530,4 @@ function download(content, fileName, contentType) {
     a.download = fileName;
     a.click();
 }
+
