@@ -33,7 +33,7 @@ var intraOpContourCanvas = document.getElementById("intra-operative-contour");
 var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials");
 var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
-const actualTREText = document.getElementById("actual-TRE");
+const actualTREText = document.getElementById("actualtrediv");
 const actualFREText = document.getElementById("actual-FRE");
 const expectedTREText = document.getElementById("expected-TRE");
 const expectedFREText = document.getElementById("expected-FRE");
@@ -43,11 +43,7 @@ const noFidsText = document.getElementById("no-fids");
 // Add event listeners
 preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
-actualTREText.addEventListener("onmouseover", trehover)
 
-function trehover(){
-	console.log("Hovering on TRE");
-}
 
 async function loadDefaultContour() {
   console.log("Default contour");

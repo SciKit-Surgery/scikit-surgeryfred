@@ -33,8 +33,9 @@
     <canvas id="intra-operative-target" width="2048px" height="2048px"
       style="z-index:5; position:absolute; left:650px; top:0px; width:512px; height:512px"></canvas>
  
-    <div id="actualtrediv" class="resultbox" onmouseover="trehover()">
-    <p id="actual-TRE" style="align-items:left; position:absolute; left:1150px; top:0px; width:200px">Actual TRE: -</p>
+    <div id="actualtrediv" class="resultbox hoverWrapper" title = "Actual: TRE" value = "Target Registration Error, not usually known" , style="align-items:left; position:absolute; left:1150px; top:0px">
+	    Actual TRE: -
+      <div id="hoverShow1">Target Registration Error, the difference between the actual target position in the intra-operative image and the position estimated by registration.</div>
     </div>
     <p id="actual-FRE" style="align-items:right; position:absolute; left:1150px; top:60px; width:200px">Actual FRE: -</p>
     <p id="expected-TRE" style="align-items:right; position:absolute; left:1150px; top:120px; width:200px">Expected TRE: -</p>
