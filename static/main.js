@@ -43,6 +43,11 @@ const noFidsText = document.getElementById("no-fids");
 // Add event listeners
 preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
+actualTREText.addEventListener("onmouseover", trehover)
+
+function trehover(){
+	console.log("Hovering on TRE");
+}
 
 async function loadDefaultContour() {
   console.log("Default contour");
