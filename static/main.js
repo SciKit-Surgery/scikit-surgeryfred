@@ -33,9 +33,17 @@ var intraOpContourCanvas = document.getElementById("intra-operative-contour");
 var intraOpFiducialCanvas = document.getElementById("intra-operative-fiducials");
 var intraOpTargetCanvas = document.getElementById("intra-operative-target");
 
+const actualTREText = document.getElementById("actual-TRE");
+const actualFREText = document.getElementById("actual-FRE");
+const expectedTREText = document.getElementById("expected-TRE");
+const expectedFREText = document.getElementById("expected-FRE");
+const expectedFLEText = document.getElementById("expected-FLE");
+const noFidsText = document.getElementById("no-fids");
+
 // Add event listeners
 preOpCanvas.addEventListener("click", preOpImageClick)
 intraOpTargetCanvas.addEventListener("click", intraOpImageClick)
+
 
 async function loadDefaultContour() {
   console.log("Default contour");
@@ -87,13 +95,6 @@ function preOpImageClick(evt) {
 
 function intraOpImageClick(evt) {
 	placeFiducial(evt.layerX, evt.layerY);
-}
-
-function changeImage() {
-  // action for the change image button
-  console.log("Change Image not Implemented");
-  window.alert("Change image not implemented!");
-  return;
 }
 
 function downloadResults() {
@@ -310,6 +311,12 @@ function register(){
           	  drawTarget(data.transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
+		  actualTREText.innerHTML=Math.round(data.actual_tre*100)/100;
+		  actualFREText.innerHTML=Math.round(data.fre*100)/100;
+		  expectedTREText.innerHTML=Math.round(data.expected_tre*100)/100;
+		  expectedFREText.innerHTML=Math.round(data.expected_fre*100)/100;
+		  expectedFLEText.innerHTML=Math.round(data.mean_fle*100)/100;
+		  noFidsText.innerHTML=data.no_fids;
 		};
 	});
     })

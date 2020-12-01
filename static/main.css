@@ -58,6 +58,37 @@ body {
   opacity: 0.2;
 }
 
+.resultbox
+{
+  width: 150px;
+  height: 50px;
+  border: 1px solid black;
+  line-height: 100%;
+  margin: 10px;
+  float: left;
+  background-color: rgb(0, 150, 242);
+  border-radius: 5px;
+  padding: 0px;
+  text-align: center;
+}
+
+.resultbox:hover .stathover {
+ display: block;
+}
+
+.resultbox .stathover {
+ display: none;
+ position: absolute;
+ background-color: #888888;
+ width: 250px;
+ height: 150px;
+ left: -300px;
+ top: 0px;
+ border-radius: 20px;
+ z-index: 6;
+}
+
+
 #pre-operative-image {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   margin-right: 20px; float: left;
@@ -72,14 +103,6 @@ body {
   filter: brightness(30%);
 }
 
-#pred-result {
-  color: white;
-  font-size: 1.5rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
 
 #loader {
   position: absolute;

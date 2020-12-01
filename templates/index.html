@@ -32,19 +32,43 @@
  
     <canvas id="intra-operative-target" width="2048px" height="2048px"
       style="z-index:5; position:absolute; left:650px; top:0px; width:512px; height:512px"></canvas>
-    <canvas id="tre-vs-fre" width="512px" height="512px"
-					  style="z-index:1; position:absolute; left:50px; top:0px; width:512px; height:512px"></canvas>
-    <canvas id="tre_vs_exp_tre" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:450px; top:0px; width:256px; height:256px"></canvas>
-    <canvas id="tre_vs_exp_fre" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:750px; top:0px; width:256px; height:256px"></canvas>
-    <canvas id="tre_vs_exp_fle" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:50px; top:300px; width:256px; height:256px"></canvas>
-    <canvas id="tre_vs_no_fids" width="512px" height="512px"
-      style="z-index:1; position:absolute; left:450px; top:3000px; width:256px; height:256px"></canvas>
+ 
+    <div id="actualtrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:0px">
+	    Actual TRE
+	    <p id="actual-TRE"> - </p>
+      <div class="stathover">Target Registration Error, the difference between the actual target position in the intra-operative image and the position estimated by registration.</div>
+    </div>
+
+    <div id="actualfrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:60px">
+	    Actual FRE
+	    <p id="actual-FRE"> - </p>
+      <div class="stathover">Fiducial Registration Error, the least squares residual error of the fiducial markers</div>
+    </div>
+
+    <div id="expectedtrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:120px">
+	    Expected TRE
+	    <p id="expected-TRE"> -</p>
+      <div class="stathover">Expected value of the Target Registration Error, a statistic calculated from expected value of the fiducial localisation error and the geometry of the fiducial markers and target.</div>
+    </div>
+
+    <div id="expectedfrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:180px">
+	    Expected FRE
+            <p id="expected-FRE">-</p>
+      <div class="stathover">Expected value of Fiducial Registration Error, a statistic calculated from expected value of the fiducial localisation error. Increases in inverse proportion to the number of fiducial markers</div>
+    </div>
+
+    <div id="expectedflediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:240px">
+	    Expected FLE
+      <p id="expected-FLE">-</p>
+      <div class="stathover">Expected value of the Fiducial Localisation Error. The expected error when locating an individual fiducial marker.</div>
+    </div>
 
 
-
+    <div id="expectedflediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:300px">
+	    No. of Fids.
+    <p id="no-fids">-</p>
+      <div class="stathover">The number of fiducial markers placed.</div>
+    </div>
  
     <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
       <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
@@ -52,7 +76,6 @@
   </div>
 
   <div style="margin-bottom: 2rem;">
-    <input type="button" value="Change Image" class="button" onclick="changeImage();" />
     <input type="button" value="New Target" class="button" onclick="reset();" />
     <input type="button" value="Download Results" class="button" onclick="downloadResults();" />
     <input id="plot_button" type="button" value="Plot Results" class="button" onclick="plotResults();" />
