@@ -312,11 +312,11 @@ function register(){
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
 		  actualTREText.innerHTML=Math.round(data.actual_tre*100)/100;
-		  actualFREText.innerHTML="Actual FRE = " + Math.round(data.fre*100)/100;
-		  expectedTREText.innerHTML="Expected TRE = " + Math.round(data.expected_tre*100)/100;
-		  expectedFREText.innerHTML="Expected FRE = " + Math.round(data.expected_fre*100)/100;
-		  expectedFLEText.innerHTML="Expected FLE = " + Math.round(data.mean_fle*100)/100;
-		  noFidsText.innerHTML="No. of Fids = " + data.no_fids;
+		  actualFREText.innerHTML=Math.round(data.fre*100)/100;
+		  expectedTREText.innerHTML=Math.round(data.expected_tre*100)/100;
+		  expectedFREText.innerHTML=Math.round(data.expected_fre*100)/100;
+		  expectedFLEText.innerHTML=Math.round(data.mean_fle*100)/100;
+		  noFidsText.innerHTML=data.no_fids;
 		};
 	});
     })
