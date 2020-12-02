@@ -1,0 +1,18 @@
+# Pycharm
+/.idea
+
+# Generated files
+.tox
+.coverage
+*.pyc
+.pytest_cache/
+sksurgeryfred.log
+testing_log_file.log
+env
+
+# PyInstaller
+build/
+dist/
+
+# Jupyter output
+doc/notebooks/.ipynb_checkpoints/

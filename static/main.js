@@ -372,33 +372,6 @@ function initdatabase(){
 // Helper functions
 //========================================================================
 
-function contourImage(image_l) {
-  console.log("contour");
-
-  fetch("/contour", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(image_l)
-    })
-    .then(resp => {
-      console.log("resp");
-      if (resp.ok)
-      	resp.json().then(data => {
-	  console.log("resp OK");
-          intraOpContour = data.contour;
-          drawOutline(intraOpContour);
-      });
-    })
-    .catch(err => {
-      console.log("error");
-
-      console.log("An error occured", err.message);
-      window.alert("Oops! Something went wrong.");
-    });
-}
-
 function resetTarget() {
   console.log("reset target called");
   fetch("/gettarget", {

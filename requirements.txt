@@ -1,5 +1,5 @@
 Flask==1.1.2
-scikit-surgeryfredbackend
 pillow
 numpy
 google-cloud-firestore
+scikit-surgerycore>0.6.5
