@@ -144,7 +144,12 @@ async function plotResults() {
 		correlations = data;
     		var plotDiv = document.getElementById('plots');
     		var treVsFreCanvas = document.createElement('canvas');
+
     		plotDiv.appendChild(treVsFreCanvas);
+		treVsFreCanvas.style.left="100px";
+		treVsFreCanvas.style.position="absolute";
+		treVsFreCanvas.width="300px";
+		treVsFreCanvas.height="400px";
     		makeScatterPlot(1, 'FRE', correlations, treVsFreCanvas);
     		var treVsETreCanvas = document.createElement('canvas');
     		plotDiv.appendChild(treVsETreCanvas);
@@ -231,6 +236,9 @@ function switchToFred(){
     show(intraOpContourCanvas);
     show(intraOpFiducialCanvas);
     show(intraOpTargetCanvas);
+    document.querySelectorAll('.resultbox').forEach(function(el) {
+   	show(el);
+	});
     button = document.getElementById('plot_button');
     button.value="Plot Results";
     state = "fred";
@@ -243,6 +251,9 @@ function switchToChartView(){
     hide(intraOpContourCanvas);
     hide(intraOpFiducialCanvas);
     hide(intraOpTargetCanvas);
+    document.querySelectorAll('.resultbox').forEach(function(el) {
+   	hide(el);
+	});
     var plotDiv = document.getElementById('plots');
     show(plotDiv);
     button = document.getElementById('plot_button');
