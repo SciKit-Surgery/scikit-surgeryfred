@@ -15,4 +15,3 @@ scipy
 pyinstaller
 pytest
 tox
-nbsphinx
