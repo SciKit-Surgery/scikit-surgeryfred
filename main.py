@@ -4,12 +4,12 @@ import json
 # Flask
 from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect, send_file
 import numpy as np
-from sksurgeryfredbe.algorithms.fit_contour import find_outer_contour
-from sksurgeryfredbe.algorithms.point_based_reg import PointBasedRegistration
-from sksurgeryfredbe.algorithms.fred import make_target_point, _is_valid_fiducial
-from sksurgeryfredbe.algorithms.errors import expected_absolute_value
-from sksurgeryfredbe.algorithms.fle import FLE
-from sksurgeryfredbe import __version__ as fredversion
+from sksurgeryfred.algorithms.fit_contour import find_outer_contour
+from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
+from sksurgeryfred.algorithms.fred import make_target_point, _is_valid_fiducial
+from sksurgeryfred.algorithms.errors import expected_absolute_value
+from sksurgeryfred.algorithms.fle import FLE
+from sksurgeryfred import __version__ as fredversion
 from util import base64_to_pil, contour_to_image, np_to_base64
 from google.cloud import firestore
 from google.auth.exceptions import DefaultCredentialsError
