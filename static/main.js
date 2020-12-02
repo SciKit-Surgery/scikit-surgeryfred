@@ -129,7 +129,7 @@ async function plotResults() {
   	};
   
    switchToChartView();
-   if ( results.length > 4 ){
+   if ( results.length > 3 ){
      await fetch("/correlation", {
         method: "POST",
         headers: {
@@ -146,10 +146,7 @@ async function plotResults() {
     		var treVsFreCanvas = document.createElement('canvas');
 
     		plotDiv.appendChild(treVsFreCanvas);
-		treVsFreCanvas.style.left="100px";
-		treVsFreCanvas.style.position="absolute";
-		treVsFreCanvas.width="300px";
-		treVsFreCanvas.height="400px";
+		setupchartelement(treVsFreCanvas, 0);
     		makeScatterPlot(1, 'FRE', correlations, treVsFreCanvas);
     		var treVsETreCanvas = document.createElement('canvas');
     		plotDiv.appendChild(treVsETreCanvas);
@@ -170,6 +167,7 @@ async function plotResults() {
     });
     } else {
       console.log("Insufficient results to get correlations, try doing more registrations.");
+      window.alert("4 or more regsitration results needed to plot. You have " + results.length + ".");
     }
    }
 	else {
@@ -241,7 +239,9 @@ function switchToFred(){
 	});
     button = document.getElementById('plot_button');
     button.value="Plot Results";
+    show(document.getElementById('newtargetbutton'));
     state = "fred";
+    document.getElementById('fred-title').innerHTML = "SciKit-SurgeryFRED";
 }
 
 
@@ -257,10 +257,19 @@ function switchToChartView(){
     var plotDiv = document.getElementById('plots');
     show(plotDiv);
     button = document.getElementById('plot_button');
-    button.value="Back";
+    button.value="Back to Fred";
+    hide(document.getElementById('newtargetbutton'));
     state = "plot";
+    document.getElementById('fred-title').innerHTML = "SciKit-SurgeryFRED Results (n = " + results.length + ")";
 }
 
+function setupchartelement(element, chart_number){
+	//sets the properties of a chart element
+		element.style.left="100px";
+		element.style.position="absolute";
+		element.width="300px";
+		element.height="400px";
+}
 function reset(){
   console.log('reset');
   resetTarget();
