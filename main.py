@@ -9,7 +9,6 @@ from sksurgeryfred.algorithms.fred import make_target_point, _is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
 from sksurgeryfred import __version__ as fredversion
-from util import base64_to_pil, contour_to_image, np_to_base64
 from google.cloud import firestore
 from google.auth.exceptions import DefaultCredentialsError
 import math
