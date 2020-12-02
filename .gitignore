@@ -8,6 +8,7 @@
 .pytest_cache/
 sksurgeryfred.log
 testing_log_file.log
+env
 
 # PyInstaller
 build/

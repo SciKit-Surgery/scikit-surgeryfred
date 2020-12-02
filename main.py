@@ -4,7 +4,6 @@ import json
 # Flask
 from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect, send_file
 import numpy as np
-from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fred import make_target_point, _is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
@@ -24,23 +23,6 @@ app = Flask(__name__)
 def index():
     # Main page
     return render_template('index.html')
-
-@app.route('/contour', methods=['GET', 'POST'])
-def contour():
-    print("called contour")
-    if request.method == 'POST':
-        s1 = json.dumps(request.json)
-        data =json.loads(s1)
-        pil_image = base64_to_pil(data) # Returns pillow image
-        np_image = np.array(pil_image)[:,:,:3]
-        print(f'Left: {np_image.shape}')
-
-        contour, init = find_outer_contour(np_image)
-        contour = contour.astype(int) # cast to int
-        contour = contour[1::5] #subsample every 5th element
-        returnjson = jsonify({'contour': contour.tolist()})
-        return returnjson
-
 
 @app.route('/defaultcontour', methods=['GET', 'POST'])
 def defaultcontour():
