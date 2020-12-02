@@ -52,10 +52,10 @@ setup(
 
     install_requires=[
             'numpy',
-            'scikit-image>0.15',
-            'scipy',
-            'nbsphinx',
             'scikit-surgerycore>0.6.5',
+            'pillow',
+            'google-cloud-firestore',
+            'Flask==1.1.2',
     ],
 
     entry_points={},

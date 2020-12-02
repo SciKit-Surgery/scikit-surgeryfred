@@ -6,6 +6,8 @@
 .coverage
 *.pyc
 .pytest_cache/
+sksurgeryfred.log
+testing_log_file.log
 
 # PyInstaller
 build/

@@ -5,7 +5,7 @@ calibration and tracking
 import math
 import numpy as np
 
-from sksurgeryfredbe.algorithms.fle import FLE
+from sksurgeryfred.algorithms.fle import FLE
 
 class AddFiducialMarker:
     """

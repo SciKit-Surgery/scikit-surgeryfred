@@ -4,7 +4,7 @@
 Functions for point based registration using Orthogonal Procrustes.
 """
 
-from sksurgeryfredbe.algorithms.scores import calculate_score
+from sksurgeryfred.algorithms.scores import calculate_score
 
 class Ablator():
     """

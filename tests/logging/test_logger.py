@@ -3,7 +3,7 @@
 """scikit-surgeryfed tests"""
 
 from os import path
-from sksurgeryfredbe.logging.fred_logger import Logger
+from sksurgeryfred.logging.fred_logger import Logger
 
 def test_empty_config():
     """
