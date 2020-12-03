@@ -142,24 +142,23 @@ async function plotResults() {
           resp.json().then(data => {
 		console.log("coreel Data = ", data);
 		correlations = data;
-    		var plotDiv = document.getElementById('plots');
-    		var treVsFreCanvas = document.createElement('canvas');
-
-    		plotDiv.appendChild(treVsFreCanvas);
-		setupchartelement(treVsFreCanvas, 0);
+    		var treVsFreCanvas = document.getElementById('trevsfre-canvas');
     		makeScatterPlot(1, 'FRE', correlations, treVsFreCanvas);
-    		var treVsETreCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsETreCanvas);
+		console.log(document.getElementById('trevsfre-plot'));
+
+    		var treVsETreCanvas = document.getElementById('trevsexptre-canvas');
     		makeScatterPlot(2, 'Expected TRE', correlations, treVsETreCanvas);
-    		var treVsEFreCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsEFreCanvas);
+		console.log(document.getElementById('trevsexptre-plot'));
+
+    		var treVsEFreCanvas = document.getElementById('trevsexpfre-canvas');
     		makeScatterPlot(3, 'Expected FRE', correlations, treVsEFreCanvas);
-    		var treVsEFleCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsEFleCanvas);
+
+    		var treVsEFleCanvas = document.getElementById('trevsfle-canvas');
     		makeScatterPlot(4, 'FLE', correlations, treVsEFleCanvas);
-    		var treVsNFidsCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsNFidsCanvas);
+
+    		var treVsNFidsCanvas = document.getElementById('trevsnofids-canvas');
     		makeScatterPlot(5, 'Number of Fiducials', correlations, treVsNFidsCanvas);
+		console.log(document.getElementById('trevsnofids-plot'));
 	  });
      })
     .catch(err => {
@@ -180,13 +179,10 @@ async function plotResults() {
 
 function makeScatterPlot(index, xlabel, corrdata, canvas){
 	
-	console.log(results);
       scatterData = toScatterData(
 	    results.map(function(value, colindex){return value[index];}),
 	    results.map(function(value, colindex){return value[0];}));
-	console.log(scatterData);
      
-      console.log(corrdata);
       lineofbestfit = toScatterData(corrdata.xs[index-1], corrdata.ys[index-1])
       const title = new String("TRE vs " + xlabel);
       const lobftitle = new String("Corr. Coeff: " +  corrdata.corr_coeffs[index - 1]);
@@ -216,7 +212,7 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
 	         xAxes: [{
 			  type: 'linear',
                 	  position: 'bottom'
-		 }]
+		 }],
              }
         }
       });
@@ -224,11 +220,6 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
 
 function switchToFred(){
     console.log("Switching to fred");
-    var plotDiv = document.getElementById('plots');
-    while(plotDiv.firstChild){
-      plotDiv.removeChild(plotDiv.firstChild);
-    }
-    hide(plotDiv);
     show(preOpImage);
     show(preOpCanvas);
     show(intraOpContourCanvas);
@@ -237,6 +228,8 @@ function switchToFred(){
     document.querySelectorAll('.resultbox').forEach(function(el) {
    	show(el);
 	});
+
+    hide(document.getElementById('plot-table'));
     button = document.getElementById('plot_button');
     button.value="Plot Results";
     show(document.getElementById('newtargetbutton'));
@@ -254,8 +247,7 @@ function switchToChartView(){
     document.querySelectorAll('.resultbox').forEach(function(el) {
    	hide(el);
 	});
-    var plotDiv = document.getElementById('plots');
-    show(plotDiv);
+    show(document.getElementById('plot-table'));
     button = document.getElementById('plot_button');
     button.value="Back to Fred";
     hide(document.getElementById('newtargetbutton'));
@@ -263,13 +255,6 @@ function switchToChartView(){
     document.getElementById('fred-title').innerHTML = "SciKit-SurgeryFRED Results (n = " + results.length + ")";
 }
 
-function setupchartelement(element, chart_number){
-	//sets the properties of a chart element
-		element.style.left="100px";
-		element.style.position="absolute";
-		element.width="300px";
-		element.height="400px";
-}
 function reset(){
   console.log('reset');
   resetTarget();
@@ -318,7 +303,7 @@ function register(){
       fetch("/register", {
       method: "POST",
       headers: {
-	"Content-Type": "application/json"
+       "Content-Type": "application/json"
       },
       body: JSON.stringify([target, preOpFLEEAV, intraOpFLEEAV, preOpFids, intraOpFids])
     })

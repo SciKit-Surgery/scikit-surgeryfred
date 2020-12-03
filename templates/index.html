@@ -81,7 +81,30 @@
     <input id="plot_button" type="button" value="Plot Results" class="button" onclick="plotResults();" />
   </div>
 
-  <div id = "plots"> </div>
 </div>
 
+<table id="plot-table" class="hidden">
+	<tr>
+		<td style="width:330px">
+			<div id = "trevsfre-plot" class = "result-plot">
+				<canvas id="trevsfre-canvas">trevsfrecanvas</canvas>
+			</div></td>
+		<td style="width:330px">
+			<div id = "trevsexptre-plot" class = "result-plot"> 
+				<canvas id="trevsexptre-canvas">trevsexptrecanvas</canvas>
+			</div></td>
+		<td style="width:330px">
+			<div id = "trevsexpfre-plot" class = "result-plot">
+				<canvas id="trevsexpfre-canvas">trevsexptrecanvas</canvas>
+                        </div></td>
+		<td style="width:330px">
+			<div id = "trevsfle-plot" class = "result-plot"> 
+				<canvas id="trevsfle-canvas">trevsflecanvas</canvas>
+			</div></td>
+		<td style="width:330px">
+			<div id = "trevsnofids-plot" class = "result-plot"> 
+				<canvas id="trevsnofids-canvas">trevsnofidscanvas</canvas>
+			</div></td>
+	</tr>
+</table>
 {% endblock %}

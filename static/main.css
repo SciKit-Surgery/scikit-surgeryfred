@@ -58,6 +58,14 @@ body {
   opacity: 0.2;
 }
 
+.result-plot {
+  width = 300px;
+  height = 200px;
+  align-items: left;
+  border: 2px solid black;
+  position: absolute;
+}
+
 .resultbox
 {
   width: 150px;
