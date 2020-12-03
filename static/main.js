@@ -152,7 +152,7 @@ async function plotResults() {
     		makeScatterPlot(3, 'Expected FRE', correlations, treVsEFreCanvas);
 
     		var treVsEFleCanvas = document.getElementById('trevsfle-canvas');
-    		makeScatterPlot(4, 'FLE', correlations, treVsEFleCanvas);
+    		makeScatterPlot(4, 'Expected FLE', correlations, treVsEFleCanvas);
 
     		var treVsNFidsCanvas = document.getElementById('trevsnofids-canvas');
     		makeScatterPlot(5, 'Number of Fiducials', correlations, treVsNFidsCanvas);
@@ -181,18 +181,15 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
 	    results.map(function(value, colindex){return value[0];}));
      
       lineofbestfit = toScatterData(corrdata.xs[index-1], corrdata.ys[index-1])
-      const title = new String("TRE vs " + xlabel);
-      const lobftitle = new String("Corr. Coeff: " +  Math.round(corrdata.corr_coeffs[index - 1]*1000)/1000);
+      const mytitle = new String("TRE vs " + xlabel + " (Corr. Coeff = " +  Math.round(corrdata.corr_coeffs[index - 1]*1000)/1000 + ")");
       var data = {
       datasets: [
         {
-            label: title,
             data: scatterData,
 	    showLine: false,
             pointBackgroundColor: 'rgba(0,0,0,1.0)'
         },
 	{
-	    label: lobftitle,
 	    data: lineofbestfit,
 	    showLine: true,
 	    pointRadius: 0.0,
@@ -203,9 +200,17 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
       };
 
       var ctx = canvas.getContext('2d');
+      var xticksconf = {}
+      if (index == 2) {
+	      xticksconf = {max:20.0};
+      }
       var myChart = new Chart(ctx, { type: 'scatter', data , 
       options: { responsive:true,
-	      
+	      legend: {
+		      display: false
+	      },
+	     title:{text: mytitle ,
+		     display: true},
 	      scales:{ 
                  yAxes: [{
 			 scaleLabel:{
@@ -213,8 +218,10 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
 	            		display: true
 			 },
                     ticks: {
-                    beginAtZero: true
-                 }
+                    beginAtZero: true,
+		    min: 0.0,
+		    max: 20.0
+                    }
                  }],
 	         xAxes: [{
 			 scaleLabel:{
@@ -222,7 +229,8 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
 	                  display: true
 			 },
 			  type: 'linear',
-                	  position: 'bottom'
+                	  position: 'bottom',
+			 ticks: xticksconf
 		 }],
              }
         }
