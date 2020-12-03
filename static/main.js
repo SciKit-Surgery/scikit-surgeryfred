@@ -129,7 +129,7 @@ async function plotResults() {
   	};
   
    switchToChartView();
-   if ( results.length > 4 ){
+   if ( results.length > 3 ){
      await fetch("/correlation", {
         method: "POST",
         headers: {
@@ -142,21 +142,19 @@ async function plotResults() {
           resp.json().then(data => {
 		console.log("coreel Data = ", data);
 		correlations = data;
-    		var plotDiv = document.getElementById('plots');
-    		var treVsFreCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsFreCanvas);
+    		var treVsFreCanvas = document.getElementById('trevsfre-canvas');
     		makeScatterPlot(1, 'FRE', correlations, treVsFreCanvas);
-    		var treVsETreCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsETreCanvas);
+
+    		var treVsETreCanvas = document.getElementById('trevsexptre-canvas');
     		makeScatterPlot(2, 'Expected TRE', correlations, treVsETreCanvas);
-    		var treVsEFreCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsEFreCanvas);
+
+    		var treVsEFreCanvas = document.getElementById('trevsexpfre-canvas');
     		makeScatterPlot(3, 'Expected FRE', correlations, treVsEFreCanvas);
-    		var treVsEFleCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsEFleCanvas);
-    		makeScatterPlot(4, 'FLE', correlations, treVsEFleCanvas);
-    		var treVsNFidsCanvas = document.createElement('canvas');
-    		plotDiv.appendChild(treVsNFidsCanvas);
+
+    		var treVsEFleCanvas = document.getElementById('trevsfle-canvas');
+    		makeScatterPlot(4, 'Expected FLE', correlations, treVsEFleCanvas);
+
+    		var treVsNFidsCanvas = document.getElementById('trevsnofids-canvas');
     		makeScatterPlot(5, 'Number of Fiducials', correlations, treVsNFidsCanvas);
 	  });
      })
@@ -165,6 +163,7 @@ async function plotResults() {
     });
     } else {
       console.log("Insufficient results to get correlations, try doing more registrations.");
+      window.alert("4 or more regsitration results needed to plot. You have " + results.length + ".");
     }
    }
 	else {
@@ -177,43 +176,62 @@ async function plotResults() {
 
 function makeScatterPlot(index, xlabel, corrdata, canvas){
 	
-	console.log(results);
       scatterData = toScatterData(
 	    results.map(function(value, colindex){return value[index];}),
 	    results.map(function(value, colindex){return value[0];}));
-	console.log(scatterData);
      
-      console.log(corrdata);
       lineofbestfit = toScatterData(corrdata.xs[index-1], corrdata.ys[index-1])
-      const title = new String("TRE vs " + xlabel);
-      const lobftitle = new String("Corr. Coeff: " +  corrdata.corr_coeffs[index - 1]);
+      const mytitle = new String("TRE vs " + xlabel + " (Corr. Coeff = " +  Math.round(corrdata.corr_coeffs[index - 1]*1000)/1000 + ")");
       var data = {
       datasets: [
         {
-            label: title,
             data: scatterData,
-	    showLine: false
+	    showLine: false,
+            pointBackgroundColor: 'rgba(0,0,0,1.0)'
         },
 	{
-	    label: lobftitle,
 	    data: lineofbestfit,
-	    showLine: true
+	    showLine: true,
+	    pointRadius: 0.0,
+	    fill: false
+
 	}
       ]
       };
 
       var ctx = canvas.getContext('2d');
+      var xticksconf = {}
+      if (index == 2) {
+	      xticksconf = {max:20.0};
+      }
       var myChart = new Chart(ctx, { type: 'scatter', data , 
-      options: { scales: {
+      options: { responsive:true,
+	      legend: {
+		      display: false
+	      },
+	     title:{text: mytitle ,
+		     display: true},
+	      scales:{ 
                  yAxes: [{
-                 ticks: {
-                    beginAtZero: true
-                 }
+			 scaleLabel:{
+		    		labelString: "Actual TRE",
+	            		display: true
+			 },
+                    ticks: {
+                    beginAtZero: true,
+		    min: 0.0,
+		    max: 20.0
+                    }
                  }],
 	         xAxes: [{
+			 scaleLabel:{
+		          labelString: xlabel,
+	                  display: true
+			 },
 			  type: 'linear',
-                	  position: 'bottom'
-		 }]
+                	  position: 'bottom',
+			 ticks: xticksconf
+		 }],
              }
         }
       });
@@ -221,18 +239,19 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
 
 function switchToFred(){
     console.log("Switching to fred");
-    var plotDiv = document.getElementById('plots');
-    while(plotDiv.firstChild){
-      plotDiv.removeChild(plotDiv.firstChild);
-    }
-    hide(plotDiv);
     show(preOpImage);
     show(preOpCanvas);
     show(intraOpContourCanvas);
     show(intraOpFiducialCanvas);
     show(intraOpTargetCanvas);
+    document.querySelectorAll('.resultbox').forEach(function(el) {
+   	show(el);
+	});
+
+    hide(document.getElementById('plot-table'));
     button = document.getElementById('plot_button');
     button.value="Plot Results";
+    show(document.getElementById('newtargetbutton'));
     state = "fred";
 }
 
@@ -243,11 +262,15 @@ function switchToChartView(){
     hide(intraOpContourCanvas);
     hide(intraOpFiducialCanvas);
     hide(intraOpTargetCanvas);
-    var plotDiv = document.getElementById('plots');
-    show(plotDiv);
+    document.querySelectorAll('.resultbox').forEach(function(el) {
+   	hide(el);
+	});
+    show(document.getElementById('plot-table'));
     button = document.getElementById('plot_button');
-    button.value="Back";
+    button.value="Back to Fred";
+    hide(document.getElementById('newtargetbutton'));
     state = "plot";
+    document.getElementById('result-text').innerHTML = "After " + results.length + " registrations.";
 }
 
 function reset(){
@@ -298,7 +321,7 @@ function register(){
       fetch("/register", {
       method: "POST",
       headers: {
-	"Content-Type": "application/json"
+       "Content-Type": "application/json"
       },
       body: JSON.stringify([target, preOpFLEEAV, intraOpFLEEAV, preOpFids, intraOpFids])
     })
