@@ -5,9 +5,8 @@ Contents
 .. toctree::
   :maxdepth: 1
 
-  requirements
+  dependency_graph
   Module Contents <modules>
-  notebooks/first_notebook
 
 * :ref:`modindex`
 * :ref:`genindex`

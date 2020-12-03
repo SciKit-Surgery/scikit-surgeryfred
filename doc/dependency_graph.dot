@@ -1,0 +1,15 @@
+digraph prof {
+	ratio = fill;
+	node [style=filled];
+	"SciKit-SurgeryFRED" -> "NumPy";
+	"SciKit-SurgeryFRED" -> "SciKit-SurgeryCore" [color="0.515 0.762 0.762"];
+	"SciKit-SurgeryFRED" -> "Flask";
+	"SciKit-SurgeryFRED" -> "Google Cloud Firestore API";
+	"SciKit-SurgeryFRED" -> "Chart.js";
+	
+	"SciKit-SurgeryCore" -> "NumPy";
+
+"SciKit-SurgeryFRED" [color="0.515 0.762 0.762"];
+"SciKit-SurgeryCore"[color="0.515 0.762 0.762"];
+} 
+
