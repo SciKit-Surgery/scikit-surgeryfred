@@ -16,7 +16,6 @@
 #Python module files
 CONTRIBUTING.rst
 MANIFEST.in
-project-icon.png
 requirements-dev.txt
 requirements-test.txt
 setup.cfg
@@ -30,6 +29,7 @@ tox.ini
 .coveralls.yml
 .gitattributes
 .github
+doc/
 
 # Python pycache:
 __pycache__/
