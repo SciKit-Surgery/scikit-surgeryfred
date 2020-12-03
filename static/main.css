@@ -59,10 +59,9 @@ body {
 }
 
 .result-plot {
-  width = 300px;
-  height = 200px;
-  align-items: left;
-  border: 2px solid black;
+  width = 450px;
+  height = 300px;
+  align-items: center;
   position: absolute;
 }
 

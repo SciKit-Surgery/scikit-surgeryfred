@@ -144,11 +144,9 @@ async function plotResults() {
 		correlations = data;
     		var treVsFreCanvas = document.getElementById('trevsfre-canvas');
     		makeScatterPlot(1, 'FRE', correlations, treVsFreCanvas);
-		console.log(document.getElementById('trevsfre-plot'));
 
     		var treVsETreCanvas = document.getElementById('trevsexptre-canvas');
     		makeScatterPlot(2, 'Expected TRE', correlations, treVsETreCanvas);
-		console.log(document.getElementById('trevsexptre-plot'));
 
     		var treVsEFreCanvas = document.getElementById('trevsexpfre-canvas');
     		makeScatterPlot(3, 'Expected FRE', correlations, treVsEFreCanvas);
@@ -158,7 +156,6 @@ async function plotResults() {
 
     		var treVsNFidsCanvas = document.getElementById('trevsnofids-canvas');
     		makeScatterPlot(5, 'Number of Fiducials', correlations, treVsNFidsCanvas);
-		console.log(document.getElementById('trevsnofids-plot'));
 	  });
      })
     .catch(err => {
@@ -185,31 +182,45 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
      
       lineofbestfit = toScatterData(corrdata.xs[index-1], corrdata.ys[index-1])
       const title = new String("TRE vs " + xlabel);
-      const lobftitle = new String("Corr. Coeff: " +  corrdata.corr_coeffs[index - 1]);
+      const lobftitle = new String("Corr. Coeff: " +  Math.round(corrdata.corr_coeffs[index - 1]*1000)/1000);
       var data = {
       datasets: [
         {
             label: title,
             data: scatterData,
-	    showLine: false
+	    showLine: false,
+            pointBackgroundColor: 'rgba(0,0,0,1.0)'
         },
 	{
 	    label: lobftitle,
 	    data: lineofbestfit,
-	    showLine: true
+	    showLine: true,
+	    pointRadius: 0.0,
+	    fill: false
+
 	}
       ]
       };
 
       var ctx = canvas.getContext('2d');
       var myChart = new Chart(ctx, { type: 'scatter', data , 
-      options: { scales: {
+      options: { responsive:true,
+	      
+	      scales:{ 
                  yAxes: [{
-                 ticks: {
+			 scaleLabel:{
+		    		labelString: "Actual TRE",
+	            		display: true
+			 },
+                    ticks: {
                     beginAtZero: true
                  }
                  }],
 	         xAxes: [{
+			 scaleLabel:{
+		          labelString: xlabel,
+	                  display: true
+			 },
 			  type: 'linear',
                 	  position: 'bottom'
 		 }],
@@ -234,7 +245,6 @@ function switchToFred(){
     button.value="Plot Results";
     show(document.getElementById('newtargetbutton'));
     state = "fred";
-    document.getElementById('fred-title').innerHTML = "SciKit-SurgeryFRED";
 }
 
 
@@ -252,7 +262,7 @@ function switchToChartView(){
     button.value="Back to Fred";
     hide(document.getElementById('newtargetbutton'));
     state = "plot";
-    document.getElementById('fred-title').innerHTML = "SciKit-SurgeryFRED Results (n = " + results.length + ")";
+    document.getElementById('result-text').innerHTML = "After " + results.length + " registrations.";
 }
 
 function reset(){
