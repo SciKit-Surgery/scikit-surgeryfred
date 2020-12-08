@@ -1,18 +1,15 @@
-import os
-import sys
 import json
+import math
 # Flask
-from flask import Flask, redirect, url_for, request, render_template, \
-                Response, jsonify, redirect, send_file
+from flask import Flask, request, render_template, jsonify
 import numpy as np
+from google.cloud import firestore
+from google.auth.exceptions import DefaultCredentialsError
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fred import make_target_point, _is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
 from sksurgeryfred import __version__ as fredversion
-from google.cloud import firestore
-from google.auth.exceptions import DefaultCredentialsError
-import math
 
 # Declare a flask app
 app = Flask(__name__)
