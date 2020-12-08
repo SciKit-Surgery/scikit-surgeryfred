@@ -66,8 +66,12 @@ def getfle():
     """
     if request.method == 'POST':
         fle_sd = np.random.uniform(low=0.5, high=5.0)
+        #change fle_ratio if you want anisotropic fle
+        fle_ratio = np.array([1.0, 1.0, 1.0], dtype=np.float64)
+        anis_scale = math.sqrt(3.0 / (np.linalg.norm(fle_ratio) ** 2))
+        fixed_fle = fle_ratio * fle_sd * anis_scale
+
         moving_fle = np.array([0., 0., 0.], dtype=np.float64)
-        fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
         fixed_fle_eavs = expected_absolute_value(fixed_fle)
         moving_fle_eavs = expected_absolute_value(moving_fle)
 
