@@ -2,7 +2,8 @@ import os
 import sys
 import json
 # Flask
-from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect, send_file
+from flask import Flask, redirect, url_for, request, render_template, \
+                Response, jsonify, redirect, send_file
 import numpy as np
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fred import make_target_point, _is_valid_fiducial
@@ -73,8 +74,8 @@ def placefiducial():
             fixed_fle = FLE(independent_fle = fixed_fle)
             moving_fle = FLE(independent_fle = moving_fle)
 
-            fixed_fid = fixed_fle.perturb_fiducial(position);
-            moving_fid = moving_fle.perturb_fiducial(position);
+            fixed_fid = fixed_fle.perturb_fiducial(position)
+            moving_fid = moving_fle.perturb_fiducial(position)
 
             returnjson = jsonify({
                 'valid_fid': True,
@@ -96,16 +97,16 @@ def register():
         fixed_fle_eav = json.loads(s1)[2]
         moving_fids = np.array(json.loads(s1)[3])
         fixed_fids = np.array(json.loads(s1)[4])
-        registerer = PointBasedRegistration(target, 
+        registerer = PointBasedRegistration(target,
                         fixed_fle_eav, moving_fle_eav)
 
         [success, fre, mean_fle_sq, expected_tre_sq,
                 expected_fre_sq, transformed_target, actual_tre,
                 no_fids] = registerer.register(fixed_fids, moving_fids)
-       
-        expected_tre = 0.0;
-        expected_fre = 0.0;
-        mean_fle = 0.0;
+
+        expected_tre = 0.0
+        expected_fre = 0.0
+        mean_fle = 0.0
 
         if success:
             mean_fle = math.sqrt(mean_fle_sq)
@@ -128,9 +129,9 @@ def register():
 @app.route('/initdatabase', methods=['GET', 'POST'])
 def initdatabase():
         """
-        here we will create a new document in collection results and 
-        return the name of the document. Write some stuff about the date 
-        and the versions of fred, core, and fredweb. Create a sub 
+        here we will create a new document in collection results and
+        return the name of the document. Write some stuff about the date
+        and the versions of fred, core, and fredweb. Create a sub
         collection of results within the document
         """
         try:
@@ -141,7 +142,7 @@ def initdatabase():
                  'fred web verion': '0.0.0'
             })
             return jsonify({'success': True,
-                        'reference': docRef[1].id});
+                        'reference': docRef[1].id})
         except DefaultCredentialsError:
             print("Data base credential error")
             return jsonify({'success': False})
@@ -160,7 +161,8 @@ def writeresults():
 
         try:
             db = firestore.Client()
-            db.collection("results").document(reference).collection("results").add({
+            db.collection(
+                "results").document(reference).collection("results").add({
                 'actual_tre' : actual_tre,
                 'fre' : fre,
                 'expected_tre' :expected_tre,
@@ -175,19 +177,19 @@ def writeresults():
 
 @app.route('/correlation', methods=['GET', 'POST'])
 def correlation():
-    """ 
+    """
     Takes in 2d array, and does linear fit and correlation for
-    each column against the first 
+    each column against the first
     returns slope, intercept and correlation coefficient
     if there are less than 4 data points it returns false.
     """
     print ("Called correlations")
     if request.method == 'POST':
         results = np.array(request.json)
-        
+
         if results.shape[0] < 4:
             return jsonify({'success': False})
-        
+
         corr_coeffs = []
         x_points = []
         y_points = []
@@ -209,7 +211,7 @@ def correlation():
                 corr_coeff = 0.0
                 success = False
             corr_coeffs.append(corr_coeff)
-        
+
         returnjson = {'success': success,
                         'corr_coeffs': corr_coeffs,
                         'xs': x_points,
