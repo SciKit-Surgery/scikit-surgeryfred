@@ -39,6 +39,8 @@ def defaultcontour():
         returnjson = jsonify({'contour': contour.tolist()})
         return returnjson
 
+    return jsonify({'is POST': False})
+
 
 @app.route('/gettarget', methods=['GET', 'POST'])
 def gettarget():
@@ -46,13 +48,14 @@ def gettarget():
     Returns a target point for the simulated intervention
     """
     if request.method == 'POST':
-        s1 = json.dumps(request.json)
-        outline =json.loads(s1)
+        jsonstring = json.dumps(request.json)
+        outline =json.loads(jsonstring)
         target = make_target_point(outline, edge_buffer=0.9)
 
         returnjson = jsonify({'target': target.tolist()})
         return returnjson
 
+    return jsonify({'is POST': False})
 
 @app.route('/getfle', methods=['GET', 'POST'])
 def getfle():
@@ -76,6 +79,8 @@ def getfle():
                 })
         return returnjson
 
+    return jsonify({'is POST': False})
+
 
 @app.route('/placefiducial', methods=['GET', 'POST'])
 def placefiducial():
@@ -85,11 +90,12 @@ def placefiducial():
     marker location.
     """
     if request.method == 'POST':
-        s1 = json.dumps(request.json)
-        position = [json.loads(s1)[0], json.loads(s1)[1], 0.0]
+        jsonstring = json.dumps(request.json)
+        position = [json.loads(jsonstring)[0],
+                        json.loads(jsonstring)[1], 0.0]
         if _is_valid_fiducial(position):
-            moving_fle = json.loads(s1)[2]
-            fixed_fle = json.loads(s1)[3]
+            moving_fle = json.loads(jsonstring)[2]
+            fixed_fle = json.loads(jsonstring)[3]
 
             fixed_fle = FLE(independent_fle = fixed_fle)
             moving_fle = FLE(independent_fle = moving_fle)
@@ -103,8 +109,10 @@ def placefiducial():
                 'moving_fid': moving_fid.tolist(),
                 })
             return returnjson
-        else:
-            return jsonify({'valid_fid': False})
+
+        return jsonify({'valid_fid': False})
+
+    return jsonify({'is POST': False})
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -113,14 +121,13 @@ def register():
     registration data as json.
     """
     if request.method == 'POST':
-        s1 = json.dumps(request.json)
-        position = [json.loads(s1)[0], json.loads(s1)[1], 0.0]
-        target = np.array(json.loads(s1)[0])
+        jsonstring = json.dumps(request.json)
+        target = np.array(json.loads(jsonstring)[0])
         target = target.reshape(1,3)
-        moving_fle_eav = json.loads(s1)[1]
-        fixed_fle_eav = json.loads(s1)[2]
-        moving_fids = np.array(json.loads(s1)[3])
-        fixed_fids = np.array(json.loads(s1)[4])
+        moving_fle_eav = json.loads(jsonstring)[1]
+        fixed_fle_eav = json.loads(jsonstring)[2]
+        moving_fids = np.array(json.loads(jsonstring)[3])
+        fixed_fids = np.array(json.loads(jsonstring)[4])
         registerer = PointBasedRegistration(target,
                         fixed_fle_eav, moving_fle_eav)
 
@@ -150,6 +157,9 @@ def register():
 
         return returnjson
 
+    return jsonify({'is POST': False})
+
+
 @app.route('/initdatabase', methods=['GET', 'POST'])
 def initdatabase():
     """
@@ -159,14 +169,14 @@ def initdatabase():
     collection of results within the document
     """
     try:
-        db = firestore.Client()
+        database = firestore.Client()
         #create a new document in the results collection
-        docRef = db.collection("results").add({
+        docref = database.collection("results").add({
             'fred verion': fredversion,
             'fred web verion': '0.0.0'
         })
         return jsonify({'success': True,
-                        'reference': docRef[1].id})
+                        'reference': docref[1].id})
     except DefaultCredentialsError:
         print("Data base credential error")
         return jsonify({'success': False})
@@ -177,18 +187,18 @@ def writeresults():
     write the results to a firestore database
     """
     if request.method == 'POST':
-        s1 = json.dumps(request.json)
-        reference=json.loads(s1)[0]
-        actual_tre = json.loads(s1)[1]
-        fre=json.loads(s1)[2]
-        expected_tre=json.loads(s1)[3]
-        expected_fre=json.loads(s1)[4]
-        mean_fle=json.loads(s1)[5]
-        no_fids=json.loads(s1)[6]
+        jsonstring = json.dumps(request.json)
+        reference=json.loads(jsonstring)[0]
+        actual_tre = json.loads(jsonstring)[1]
+        fre=json.loads(jsonstring)[2]
+        expected_tre=json.loads(jsonstring)[3]
+        expected_fre=json.loads(jsonstring)[4]
+        mean_fle=json.loads(jsonstring)[5]
+        no_fids=json.loads(jsonstring)[6]
 
         try:
-            db = firestore.Client()
-            db.collection(
+            database = firestore.Client()
+            database.collection(
                 "results").document(reference).collection("results").add({
                 'actual_tre' : actual_tre,
                 'fre' : fre,
@@ -201,6 +211,9 @@ def writeresults():
         except DefaultCredentialsError:
             print("Data base credential error")
             return jsonify({'write OK': False})
+
+    return jsonify({'is POST': False})
+
 
 @app.route('/correlation', methods=['GET', 'POST'])
 def correlation():
@@ -245,7 +258,7 @@ def correlation():
                         'ys': y_points}
         return jsonify(returnjson)
 
-    return jsonify({'success': False})
+    return jsonify({'is POST': False})
 
 
 if __name__ == '__main__':
