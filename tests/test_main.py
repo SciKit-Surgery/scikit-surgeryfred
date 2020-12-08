@@ -21,4 +21,4 @@ def testserveindex(client):
     """Serve up the index page"""
 
     _index = client.get('/')
-    print (_index.data)
+    #print (_index.data)
