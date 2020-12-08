@@ -67,7 +67,11 @@ def getfle():
     if request.method == 'POST':
         fle_sd = np.random.uniform(low=0.5, high=5.0)
         moving_fle = np.array([0., 0., 0.], dtype=np.float64)
-        fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
+        #we want anisotropic error, where the x error is three times the
+        #other values, and the expected absolute value stays the same.
+        anis_scale = math.sqrt(3.0/11.0)
+        fixed_fle = np.array([3.0, 1.0, 1.0],
+                        dtype=np.float64) * fle_sd * anis_scale
         fixed_fle_eavs = expected_absolute_value(fixed_fle)
         moving_fle_eavs = expected_absolute_value(moving_fle)
 
