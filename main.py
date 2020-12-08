@@ -1,3 +1,7 @@
+"""
+Module to handle communication between client (static/main.js) and
+sksurgeryfred server
+"""
 import json
 import math
 # Flask
@@ -18,11 +22,17 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def index():
-    # Main page
+    """
+    returns the main page, template/index.html
+    """
     return render_template('index.html')
 
 @app.route('/defaultcontour', methods=['GET', 'POST'])
 def defaultcontour():
+    """
+    Returns a pre-calculated contour image to represent the
+    intraoperative image.
+    """
     print("called default contour")
     if request.method == 'POST':
         contour = np.load('static/brain512.npy')
@@ -32,6 +42,9 @@ def defaultcontour():
 
 @app.route('/gettarget', methods=['GET', 'POST'])
 def gettarget():
+    """
+    Returns a target point for the simulated intervention
+    """
     if request.method == 'POST':
         s1 = json.dumps(request.json)
         outline =json.loads(s1)
@@ -43,6 +56,11 @@ def gettarget():
 
 @app.route('/getfle', methods=['GET', 'POST'])
 def getfle():
+    """
+    Returns values for fiducial localisation errors
+    Values are randomly selected from a uniform
+    distribution from 0.5 to 5.0 pixels
+    """
     if request.method == 'POST':
         fle_sd = np.random.uniform(low=0.5, high=5.0)
         moving_fle = np.array([0., 0., 0.], dtype=np.float64)
@@ -61,6 +79,11 @@ def getfle():
 
 @app.route('/placefiducial', methods=['GET', 'POST'])
 def placefiducial():
+    """
+    Returns the location of a fiducial marker on the pre-
+    and intra-operative images. FLE is added to each
+    marker location.
+    """
     if request.method == 'POST':
         s1 = json.dumps(request.json)
         position = [json.loads(s1)[0], json.loads(s1)[1], 0.0]
@@ -85,6 +108,10 @@ def placefiducial():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    Performs point based registration and returns
+    registration data as json.
+    """
     if request.method == 'POST':
         s1 = json.dumps(request.json)
         position = [json.loads(s1)[0], json.loads(s1)[1], 0.0]
@@ -125,27 +152,30 @@ def register():
 
 @app.route('/initdatabase', methods=['GET', 'POST'])
 def initdatabase():
-        """
-        here we will create a new document in collection results and
-        return the name of the document. Write some stuff about the date
-        and the versions of fred, core, and fredweb. Create a sub
-        collection of results within the document
-        """
-        try:
-            db = firestore.Client()
-            #create a new document in the results collection
-            docRef = db.collection("results").add({
-                 'fred verion': fredversion,
-                 'fred web verion': '0.0.0'
-            })
-            return jsonify({'success': True,
+    """
+    here we will create a new document in collection results and
+    return the name of the document. Write some stuff about the date
+    and the versions of fred, core, and fredweb. Create a sub
+    collection of results within the document
+    """
+    try:
+        db = firestore.Client()
+        #create a new document in the results collection
+        docRef = db.collection("results").add({
+            'fred verion': fredversion,
+            'fred web verion': '0.0.0'
+        })
+        return jsonify({'success': True,
                         'reference': docRef[1].id})
-        except DefaultCredentialsError:
-            print("Data base credential error")
-            return jsonify({'success': False})
+    except DefaultCredentialsError:
+        print("Data base credential error")
+        return jsonify({'success': False})
 
 @app.route('/writeresults', methods=['GET', 'POST'])
 def writeresults():
+    """
+    write the results to a firestore database
+    """
     if request.method == 'POST':
         s1 = json.dumps(request.json)
         reference=json.loads(s1)[0]
@@ -204,7 +234,7 @@ def correlation():
             x_points.append([start_x, end_x])
             y_points.append([start_y, end_y])
             corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
-            if math.isnan(corr_coeff): #fail silently so we don't upset the front end
+            if math.isnan(corr_coeff):
                 corr_coeff = 0.0
                 success = False
             corr_coeffs.append(corr_coeff)
@@ -219,5 +249,4 @@ def correlation():
 
 
 if __name__ == '__main__':
-     app.run(port=5002, threaded=True)
-
+    app.run(port=5002, threaded=True)
