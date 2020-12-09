@@ -447,9 +447,13 @@ function init_fles() {
         intraOpFLEEAV = data.fixed_fle_eav;
 
         preOpSysError = [0.0, 0.0, 0.0];
-        intraOpSysError = [0.0, 0.0, 0.0];
+        intraOpSysError = [1.0 * (Math.random()-0.5),
+		           1.0 * (Math.random()-0.5),
+			   1.0 * (Math.random()-0.5)];
 
 	console.log(data);
+	console.log("PreOp Sys Err", preOpSysError);
+	console.log("IntraOp Sys Err", intraOpSysError);
       });
     })
     .catch(err => {
