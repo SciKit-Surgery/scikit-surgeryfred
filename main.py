@@ -27,35 +27,29 @@ def index():
     """
     return render_template('index.html')
 
-@app.route('/defaultcontour', methods=['GET', 'POST'])
+@app.route('/defaultcontour', methods=['POST'])
 def defaultcontour():
     """
     Returns a pre-calculated contour image to represent the
     intraoperative image.
     """
-    print("called default contour")
-    if request.method == 'POST':
-        contour = np.load('static/brain512.npy')
-        returnjson = jsonify({'contour': contour.tolist()})
-        return returnjson
-
-    return jsonify({'is POST': False})
+    contour = np.load('static/brain512.npy')
+    returnjson = jsonify({'contour': contour.tolist()})
+    return returnjson
 
 
-@app.route('/gettarget', methods=['GET', 'POST'])
+@app.route('/gettarget', methods=['POST'])
 def gettarget():
     """
     Returns a target point for the simulated intervention
     """
-    if request.method == 'POST':
-        jsonstring = json.dumps(request.json)
-        outline =json.loads(jsonstring)
-        target = make_target_point(outline, edge_buffer=0.9)
+    jsonstring = json.dumps(request.json)
+    outline =json.loads(jsonstring)
+    target = make_target_point(outline, edge_buffer=0.9)
 
-        returnjson = jsonify({'target': target.tolist()})
-        return returnjson
+    returnjson = jsonify({'target': target.tolist()})
+    return returnjson
 
-    return jsonify({'is POST': False})
 
 @app.route('/getfle', methods=['GET', 'POST'])
 def getfle():
@@ -219,7 +213,7 @@ def writeresults():
     return jsonify({'is POST': False})
 
 
-@app.route('/correlation', methods=['GET', 'POST'])
+@app.route('/correlation', methods=['POST'])
 def correlation():
     """
     Takes in 2d array, and does linear fit and correlation for
@@ -227,42 +221,38 @@ def correlation():
     returns slope, intercept and correlation coefficient
     if there are less than 4 data points it returns false.
     """
-    print ("Called correlations")
-    if request.method == 'POST':
-        results = np.array(request.json)
+    results = np.array(request.json)
 
-        if results.shape[0] < 4:
-            return jsonify({'success': False})
+    if results.shape[0] < 4:
+        return jsonify({'success': False})
 
-        corr_coeffs = []
-        x_points = []
-        y_points = []
-        success = True
-        for column in range (1, results.shape[1]):
-            slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
-            if math.isnan(slope) or math.isnan(intercept): #remove nans
-                slope = 0.0
-                intercept = 0.0
-                success = False
-            start_x = np.min(results[:,column])
-            end_x = np.max(results[:,column])
-            start_y = intercept + slope * start_x
-            end_y = intercept + slope * end_x
-            x_points.append([start_x, end_x])
-            y_points.append([start_y, end_y])
-            corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
-            if math.isnan(corr_coeff):
-                corr_coeff = 0.0
-                success = False
-            corr_coeffs.append(corr_coeff)
+    corr_coeffs = []
+    x_points = []
+    y_points = []
+    success = True
+    for column in range (1, results.shape[1]):
+        slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
+        if math.isnan(slope) or math.isnan(intercept): #remove nans
+            slope = 0.0
+            intercept = 0.0
+            success = False
+        start_x = np.min(results[:,column])
+        end_x = np.max(results[:,column])
+        start_y = intercept + slope * start_x
+        end_y = intercept + slope * end_x
+        x_points.append([start_x, end_x])
+        y_points.append([start_y, end_y])
+        corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
+        if math.isnan(corr_coeff):
+            corr_coeff = 0.0
+            success = False
+        corr_coeffs.append(corr_coeff)
 
-        returnjson = {'success': success,
-                        'corr_coeffs': corr_coeffs,
-                        'xs': x_points,
-                        'ys': y_points}
-        return jsonify(returnjson)
-
-    return jsonify({'is POST': False})
+    returnjson = {'success': success,
+                  'corr_coeffs': corr_coeffs,
+                  'xs': x_points,
+                  'ys': y_points}
+    return jsonify(returnjson)
 
 
 if __name__ == '__main__':
