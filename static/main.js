@@ -290,7 +290,11 @@ function placeFiducial(x, y) {
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify([x, y, preOpFLEStdDev, intraOpFLEStdDev])
+	      body: JSON.stringify({
+		      "x_pos": x,
+		      "y_pos": y,
+		      "pre_op_ind_fle": preOpFLEStdDev, 
+		      "intra_op_ind_fle": intraOpFLEStdDev})
     })
     .then(resp => {
       if (resp.ok)

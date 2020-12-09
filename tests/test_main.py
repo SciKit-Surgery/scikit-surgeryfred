@@ -2,6 +2,7 @@
 
 """Fiducial Registration Educational Demonstration tests"""
 from html.parser import HTMLParser
+import json
 import pytest
 import main as sksfmain # pylint: disable=unused-import
 
@@ -83,6 +84,20 @@ def testserve_placefiducial(client):
     parser = FredHTMLParser('405 Method Not Allowed')
     parser.feed(str(fid.data))
     assert parser.title_ok
+
+    x_pos = 0.0
+    y_pos = 0.0
+    pre_op_ind_fle = [1.0, 0.0, 0.0]
+    intra_op_ind_fle = [0.0, 0.0, 9.0]
+    postdata = dict(
+             x_pos=x_pos,
+             y_pos=y_pos,
+             pre_op_ind_fle=pre_op_ind_fle,
+             intra_op_ind_fle=intra_op_ind_fle)
+    fid = client.post('/placefiducial', data = json.dumps(postdata),
+                    content_type='application/json')
+    assert json.loads(fid.data.decode()).get("valid_fid")
+
 
 def testserve_register(client):
     """Serve register"""
