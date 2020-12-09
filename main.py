@@ -112,50 +112,47 @@ def placefiducial():
 
     return jsonify({'is POST': False})
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['POST'])
 def register():
     """
     Performs point based registration and returns
     registration data as json.
     """
-    if request.method == 'POST':
-        jsonstring = json.dumps(request.json)
-        target = np.array(json.loads(jsonstring)[0])
-        target = target.reshape(1,3)
-        moving_fle_eav = json.loads(jsonstring)[1]
-        fixed_fle_eav = json.loads(jsonstring)[2]
-        moving_fids = np.array(json.loads(jsonstring)[3])
-        fixed_fids = np.array(json.loads(jsonstring)[4])
-        registerer = PointBasedRegistration(target,
-                        fixed_fle_eav, moving_fle_eav)
+    jsonstring = json.dumps(request.json)
+    target = np.array(json.loads(jsonstring)[0])
+    target = target.reshape(1,3)
+    moving_fle_eav = json.loads(jsonstring)[1]
+    fixed_fle_eav = json.loads(jsonstring)[2]
+    moving_fids = np.array(json.loads(jsonstring)[3])
+    fixed_fids = np.array(json.loads(jsonstring)[4])
+    registerer = PointBasedRegistration(target,
+                    fixed_fle_eav, moving_fle_eav)
 
-        [success, fre, mean_fle_sq, expected_tre_sq,
-                expected_fre_sq, transformed_target, actual_tre,
-                no_fids] = registerer.register(fixed_fids, moving_fids)
+    [success, fre, mean_fle_sq, expected_tre_sq,
+            expected_fre_sq, transformed_target, actual_tre,
+            no_fids] = registerer.register(fixed_fids, moving_fids)
 
-        expected_tre = 0.0
-        expected_fre = 0.0
-        mean_fle = 0.0
+    expected_tre = 0.0
+    expected_fre = 0.0
+    mean_fle = 0.0
 
-        if success:
-            mean_fle = math.sqrt(mean_fle_sq)
-            expected_tre = math.sqrt(expected_tre_sq)
-            expected_fre = math.sqrt(expected_fre_sq)
+    if success:
+        mean_fle = math.sqrt(mean_fle_sq)
+        expected_tre = math.sqrt(expected_tre_sq)
+        expected_fre = math.sqrt(expected_fre_sq)
 
-        returnjson = jsonify({
-                'success': success,
-                'fre': fre,
-                'mean_fle': mean_fle,
-                'expected_tre': expected_tre,
-                'expected_fre': expected_fre,
-                'transformed_target': transformed_target.tolist(),
-                'actual_tre': actual_tre,
-                'no_fids': no_fids
-                })
+    returnjson = jsonify({
+            'success': success,
+            'fre': fre,
+            'mean_fle': mean_fle,
+            'expected_tre': expected_tre,
+            'expected_fre': expected_fre,
+            'transformed_target': transformed_target.tolist(),
+            'actual_tre': actual_tre,
+            'no_fids': no_fids
+            })
 
-        return returnjson
-
-    return jsonify({'is POST': False})
+    return returnjson
 
 
 @app.route('/initdatabase', methods=['POST'])
