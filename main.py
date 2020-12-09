@@ -51,66 +51,61 @@ def gettarget():
     return returnjson
 
 
-@app.route('/getfle', methods=['GET', 'POST'])
+@app.route('/getfle', methods=['POST'])
 def getfle():
     """
     Returns values for fiducial localisation errors
     Values are randomly selected from a uniform
     distribution from 0.5 to 5.0 pixels
     """
-    if request.method == 'POST':
-        fle_sd = np.random.uniform(low=0.5, high=5.0)
-        #change fle_ratio if you want anisotropic fle
-        fle_ratio = np.array([1.0, 1.0, 1.0], dtype=np.float64)
-        anis_scale = math.sqrt(3.0 / (np.linalg.norm(fle_ratio) ** 2))
-        fixed_fle = fle_ratio * fle_sd * anis_scale
+    fle_sd = np.random.uniform(low=0.5, high=5.0)
+    #change fle_ratio if you want anisotropic fle
+    fle_ratio = np.array([1.0, 1.0, 1.0], dtype=np.float64)
+    anis_scale = math.sqrt(3.0 / (np.linalg.norm(fle_ratio) ** 2))
+    fixed_fle = fle_ratio * fle_sd * anis_scale
 
-        moving_fle = np.array([0., 0., 0.], dtype=np.float64)
-        fixed_fle_eavs = expected_absolute_value(fixed_fle)
-        moving_fle_eavs = expected_absolute_value(moving_fle)
+    moving_fle = np.array([0., 0., 0.], dtype=np.float64)
+    fixed_fle_eavs = expected_absolute_value(fixed_fle)
+    moving_fle_eavs = expected_absolute_value(moving_fle)
 
-        returnjson = jsonify({
-                'fixed_fle_sd': fixed_fle.tolist(),
-                'moving_fle_sd': moving_fle.tolist(),
-                'fixed_fle_eav': fixed_fle_eavs.tolist(),
-                'moving_fle_eav': moving_fle_eavs.tolist()
-                })
-        return returnjson
-
-    return jsonify({'is POST': False})
+    returnjson = jsonify({
+            'fixed_fle_sd': fixed_fle.tolist(),
+            'moving_fle_sd': moving_fle.tolist(),
+            'fixed_fle_eav': fixed_fle_eavs.tolist(),
+            'moving_fle_eav': moving_fle_eavs.tolist()
+            })
+    return returnjson
 
 
-@app.route('/placefiducial', methods=['GET', 'POST'])
+@app.route('/placefiducial', methods=['POST'])
 def placefiducial():
     """
     Returns the location of a fiducial marker on the pre-
     and intra-operative images. FLE is added to each
     marker location.
     """
-    if request.method == 'POST':
-        jsonstring = json.dumps(request.json)
-        position = [json.loads(jsonstring)[0],
-                        json.loads(jsonstring)[1], 0.0]
-        if _is_valid_fiducial(position):
-            moving_fle = json.loads(jsonstring)[2]
-            fixed_fle = json.loads(jsonstring)[3]
+    jsonstring = json.dumps(request.json)
+    position = [json.loads(jsonstring)[0],
+                    json.loads(jsonstring)[1], 0.0]
+    if _is_valid_fiducial(position):
+        moving_fle = json.loads(jsonstring)[2]
+        fixed_fle = json.loads(jsonstring)[3]
 
-            fixed_fle = FLE(independent_fle = fixed_fle)
-            moving_fle = FLE(independent_fle = moving_fle)
+        fixed_fle = FLE(independent_fle = fixed_fle)
+        moving_fle = FLE(independent_fle = moving_fle)
 
-            fixed_fid = fixed_fle.perturb_fiducial(position)
-            moving_fid = moving_fle.perturb_fiducial(position)
+        fixed_fid = fixed_fle.perturb_fiducial(position)
+        moving_fid = moving_fle.perturb_fiducial(position)
 
-            returnjson = jsonify({
-                'valid_fid': True,
-                'fixed_fid': fixed_fid.tolist(),
-                'moving_fid': moving_fid.tolist(),
-                })
-            return returnjson
+        returnjson = jsonify({
+            'valid_fid': True,
+            'fixed_fid': fixed_fid.tolist(),
+            'moving_fid': moving_fid.tolist(),
+            })
+        return returnjson
 
-        return jsonify({'valid_fid': False})
+    return jsonify({'valid_fid': False})
 
-    return jsonify({'is POST': False})
 
 @app.route('/register', methods=['POST'])
 def register():
