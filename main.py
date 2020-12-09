@@ -84,15 +84,19 @@ def placefiducial():
     and intra-operative images. FLE is added to each
     marker location.
     """
-    jsonstring = json.dumps(request.json)
-    position = [json.loads(jsonstring)[0],
-                    json.loads(jsonstring)[1], 0.0]
+    x_pos = request.json.get("x_pos")
+    y_pos = request.json.get("y_pos")
+    position = [x_pos, y_pos, 0.0]
     if _is_valid_fiducial(position):
-        moving_fle = json.loads(jsonstring)[2]
-        fixed_fle = json.loads(jsonstring)[3]
+        moving_ind_fle = request.json.get("pre_op_ind_fle", [0., 0., 0.])
+        fixed_ind_fle = request.json.get("intra_op_ind_fle", [0., 0., 0.])
+        moving_sys_fle = request.json.get("pre_op_sys_fle", [0., 0., 0.])
+        fixed_sys_fle = request.json.get("intra_op_sys_fle", [0., 0., 0.])
 
-        fixed_fle = FLE(independent_fle = fixed_fle)
-        moving_fle = FLE(independent_fle = moving_fle)
+        fixed_fle = FLE(independent_fle = fixed_ind_fle,
+                        systematic_fle = fixed_sys_fle)
+        moving_fle = FLE(independent_fle = moving_ind_fle,
+                         systematic_fle = moving_sys_fle)
 
         fixed_fid = fixed_fle.perturb_fiducial(position)
         moving_fid = moving_fle.perturb_fiducial(position)
