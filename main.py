@@ -158,7 +158,7 @@ def register():
     return jsonify({'is POST': False})
 
 
-@app.route('/initdatabase', methods=['GET', 'POST'])
+@app.route('/initdatabase', methods=['POST'])
 def initdatabase():
     """
     here we will create a new document in collection results and
@@ -179,38 +179,35 @@ def initdatabase():
         print("Data base credential error")
         return jsonify({'success': False})
 
-@app.route('/writeresults', methods=['GET', 'POST'])
+@app.route('/writeresults', methods=['POST'])
 def writeresults():
     """
     write the results to a firestore database
     """
-    if request.method == 'POST':
-        jsonstring = json.dumps(request.json)
-        reference=json.loads(jsonstring)[0]
-        actual_tre = json.loads(jsonstring)[1]
-        fre=json.loads(jsonstring)[2]
-        expected_tre=json.loads(jsonstring)[3]
-        expected_fre=json.loads(jsonstring)[4]
-        mean_fle=json.loads(jsonstring)[5]
-        no_fids=json.loads(jsonstring)[6]
+    jsonstring = json.dumps(request.json)
+    reference=json.loads(jsonstring)[0]
+    actual_tre = json.loads(jsonstring)[1]
+    fre=json.loads(jsonstring)[2]
+    expected_tre=json.loads(jsonstring)[3]
+    expected_fre=json.loads(jsonstring)[4]
+    mean_fle=json.loads(jsonstring)[5]
+    no_fids=json.loads(jsonstring)[6]
 
-        try:
-            database = firestore.Client()
-            database.collection(
-                "results").document(reference).collection("results").add({
-                'actual_tre' : actual_tre,
-                'fre' : fre,
-                'expected_tre' :expected_tre,
-                'expected_fre' :expected_fre,
-                'mean_fle' : mean_fle,
-                'number_of_fids' : no_fids
-            })
-            return jsonify({'write OK': True})
-        except DefaultCredentialsError:
-            print("Data base credential error")
-            return jsonify({'write OK': False})
-
-    return jsonify({'is POST': False})
+    try:
+        database = firestore.Client()
+        database.collection(
+            "results").document(reference).collection("results").add({
+            'actual_tre' : actual_tre,
+            'fre' : fre,
+            'expected_tre' :expected_tre,
+            'expected_fre' :expected_fre,
+            'mean_fle' : mean_fle,
+            'number_of_fids' : no_fids
+        })
+        return jsonify({'write OK': True})
+    except DefaultCredentialsError:
+        print("Data base credential error")
+        return jsonify({'write OK': False})
 
 
 @app.route('/correlation', methods=['POST'])
