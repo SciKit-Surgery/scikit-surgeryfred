@@ -26,6 +26,10 @@ var intraOpFLEStdDev = [];
 var preOpFLEEAV = 0;
 var intraOpFLEEAV = 0;
 
+//we can have a systematic error too
+var preOpSysError = [];
+var intraOpSysError = [];
+
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
 var preOpCanvas = document.getElementById("pre-operative-canvas");
@@ -294,7 +298,9 @@ function placeFiducial(x, y) {
 		      "x_pos": x,
 		      "y_pos": y,
 		      "pre_op_ind_fle": preOpFLEStdDev, 
-		      "intra_op_ind_fle": intraOpFLEStdDev})
+		      "intra_op_ind_fle": intraOpFLEStdDev,
+		      "pre_op_sys_fle": preOpSysError, 
+		      "intra_op_sys_fle": intraOpSysError})
     })
     .then(resp => {
       if (resp.ok)
@@ -439,6 +445,10 @@ function init_fles() {
         intraOpFLEStdDev = data.fixed_fle_sd;
         preOpFLEEAV = data.moving_fle_eav;
         intraOpFLEEAV = data.fixed_fle_eav;
+
+        preOpSysError = [0.0, 0.0, 0.0];
+        intraOpSysError = [0.0, 0.0, 0.0];
+
 	console.log(data);
       });
     })
