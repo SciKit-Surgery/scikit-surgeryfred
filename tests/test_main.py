@@ -85,10 +85,11 @@ def testserve_placefiducial(client):
     parser.feed(str(fid.data))
     assert parser.title_ok
 
+    #normal usage
     x_pos = 0.0
     y_pos = 0.0
-    pre_op_ind_fle = [1.0, 0.0, 0.0]
-    intra_op_ind_fle = [0.0, 0.0, 9.0]
+    pre_op_ind_fle = [0.0, 0.0, 0.0]
+    intra_op_ind_fle = [2.0, 2.0, 2.0]
     postdata = dict(
              x_pos=x_pos,
              y_pos=y_pos,
@@ -97,6 +98,24 @@ def testserve_placefiducial(client):
     fid = client.post('/placefiducial', data = json.dumps(postdata),
                     content_type='application/json')
     assert json.loads(fid.data.decode()).get("valid_fid")
+
+    #we should be able to apply a systematic error
+    x_pos = 100.0
+    y_pos = 250.0
+    pre_op_sys_fle = [0.0, 0.0, 0.0]
+    intra_op_sys_fle = [2.0, 2.0, -2.0]
+    postdata = dict(
+             x_pos=x_pos,
+             y_pos=y_pos,
+             pre_op_sys_fle=pre_op_sys_fle,
+             intra_op_sys_fle=intra_op_sys_fle)
+    fid = client.post('/placefiducial', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    intra_op_fid = json.loads(fid.data.decode()).get("fixed_fid")
+    pre_op_fid = json.loads(fid.data.decode()).get("moving_fid")
+    assert intra_op_fid == [102.0, 252.0, -2.0]
+    assert pre_op_fid == [100.0, 250.0, 0.0]
 
 
 def testserve_register(client):
