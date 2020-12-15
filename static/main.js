@@ -21,14 +21,7 @@ const intraOpFids = []; //fixed
 var target = [];
 
 //the fiducial localisation errors
-var preOpFLEStdDev = [];
-var intraOpFLEStdDev = [];
-var preOpFLEEAV = 0;
-var intraOpFLEEAV = 0;
-
-//we can have a systematic error too
-var preOpSysError = [];
-var intraOpSysError = [];
+var FLE;
 
 //page elements for convenience
 var preOpImage = document.getElementById("pre-operative-image");
@@ -283,6 +276,7 @@ function reset(){
   clearCanvas(intraOpTargetCanvas);
   clearCanvas(intraOpFiducialCanvas);
   init_fles();
+  console.log("FLE = ", FLE);
 
   preOpFids.length = 0;
   intraOpFids.length = 0;
@@ -297,10 +291,10 @@ function placeFiducial(x, y) {
 	      body: JSON.stringify({
 		      "x_pos": x,
 		      "y_pos": y,
-		      "pre_op_ind_fle": preOpFLEStdDev, 
-		      "intra_op_ind_fle": intraOpFLEStdDev,
-		      "pre_op_sys_fle": preOpSysError, 
-		      "intra_op_sys_fle": intraOpSysError})
+		      "pre_op_ind_fle": FLE.preOpFLEStdDev, 
+		      "intra_op_ind_fle": FLE.intraOpFLEStdDev,
+		      "pre_op_sys_fle": FLE.preOpSysError, 
+		      "intra_op_sys_fle": FLE.intraOpSysError})
     })
     .then(resp => {
       if (resp.ok)
@@ -333,7 +327,7 @@ function register(){
       headers: {
        "Content-Type": "application/json"
       },
-      body: JSON.stringify([target, preOpFLEEAV, intraOpFLEEAV, preOpFids, intraOpFids])
+      body: JSON.stringify([target, FLE.preOpFLEEAV, FLE.intraOpFLEEAV, preOpFids, intraOpFids])
     })
     .then(resp => {
       if (resp.ok)
@@ -432,33 +426,34 @@ function resetTarget() {
 
 }
 
+/**
+ * Sets the global fiducial localisation error (FLE)
+ */
 function init_fles() {
   fetch("/getfle", {
       method: "POST",
     })
     .then(resp => {
-      console.log("Setting fle");
       if (resp.ok)
         resp.json().then(data => {
+	
+	let preOpFLEStdDev = data.moving_fle_sd;
+        let intraOpFLEStdDev = data.fixed_fle_sd;
+        let preOpFLEEAV = data.moving_fle_eav;
+        let intraOpFLEEAV = data.fixed_fle_eav;
 
-	preOpFLEStdDev = data.moving_fle_sd;
-        intraOpFLEStdDev = data.fixed_fle_sd;
-        preOpFLEEAV = data.moving_fle_eav;
-        intraOpFLEEAV = data.fixed_fle_eav;
+        let preOpSysError = [0.0, 0.0, 0.0];
+        let intraOpSysError = [0.0, 0.0, 0.0];
+	
+	FLE = { preOpFLEStdDev, intraOpFLEStdDev, 
+		preOpFLEEAV, intraOpFLEEAV,
+		preOpSysError, intraOpSysError };
 
-        preOpSysError = [0.0, 0.0, 0.0];
-        intraOpSysError = [0.0, 0.0, 0.0];
-
-	console.log(data);
       });
     })
     .catch(err => {
-      console.log("error");
-
-      console.log("An error occured fetching new target", err.message);
-      window.alert("An error occured fetching new target");
+      console.log("An error occured setting fles", err.message);
     });
-
 }
 
 //========================================================================
