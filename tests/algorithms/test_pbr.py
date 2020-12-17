@@ -32,6 +32,26 @@ def _make_circle_fiducials(no_fids, centre, radius,
     return fixed_fids, moving_fids
 
 
+def _run_registrations (pbr, no_fids, centre, radius, fixed_stddevs,
+                moving_stddevs, repeats):
+    tres=np.empty(repeats, dtype=np.float64)
+    fres=np.empty(repeats, dtype=np.float64)
+    np.random.seed(0)
+    for i in range(repeats):
+        fixed_fids, moving_fids = _make_circle_fiducials(no_fids, centre,
+                                                         radius,
+                                                         fixed_stddevs,
+                                                         moving_stddevs)
+        [_success, fres[i], _mean_fle, expected_tre_squared, expected_fre,
+         _transformed_target_2d, tres[i], _no_fids] = pbr.register(
+             fixed_fids, moving_fids)
+
+    average_tre = np.average(tres * tres)
+    average_fre = np.average(fres * fres)
+
+    return average_tre, average_fre, expected_tre_squared, expected_fre
+
+
 def test_pbr_3_fids():
     """
     Tests for tre_from_fle_2d
@@ -49,27 +69,15 @@ def test_pbr_3_fids():
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 20.0
 
-    tresq_sum = 0
-    fresq_sum = 0
     expected_tre_squared = 0
     expected_fre = 0
     repeats = 100
-    np.random.seed(0)
-    for _ in range(repeats):
-        fixed_fids, moving_fids = _make_circle_fiducials(3, centre, radius,
-                                                         fixed_fle_std_dev,
-                                                         moving_fle_std_dev)
+    no_fids = 3
 
-
-        [_success, fre, _mean_fle, expected_tre_squared, expected_fre,
-         _transformed_target_2d, actual_tre, _no_fids] = pbr.register(
-             fixed_fids, moving_fids)
-
-        tresq_sum += actual_tre*actual_tre
-        fresq_sum += fre*fre
-
-    ave_tresq = tresq_sum/repeats
-    ave_fresq = fresq_sum/repeats
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+                    _run_registrations(pbr, no_fids, centre, radius,
+                                       fixed_fle_std_dev,
+                                       moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
@@ -92,27 +100,13 @@ def test_pbr_10_fids():
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 2.0
 
-    tresq_sum = 0
-    fresq_sum = 0
-    expected_tre_squared = 0
-    expected_fre = 0
     repeats = 200
-    np.random.seed(0)
-    for _ in range(repeats):
-        fixed_fids, moving_fids = _make_circle_fiducials(10, centre, radius,
-                                                         fixed_fle_std_dev,
-                                                         moving_fle_std_dev)
+    no_fids = 10
 
-
-        [_success, fre, _mean_fle, expected_tre_squared, expected_fre,
-         _transformed_target_2d, actual_tre, _no_fids] = pbr.register(
-             fixed_fids, moving_fids)
-
-        tresq_sum += actual_tre*actual_tre
-        fresq_sum += fre*fre
-
-    ave_tresq = tresq_sum/repeats
-    ave_fresq = fresq_sum/repeats
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+                    _run_registrations(pbr, no_fids, centre, radius,
+                                       fixed_fle_std_dev,
+                                       moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
@@ -135,27 +129,13 @@ def test_pbr_10_fids_offset_target():
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 2.0
 
-    tresq_sum = 0
-    fresq_sum = 0
-    expected_tre_squared = 0
-    expected_fre = 0
     repeats = 200
-    np.random.seed(0)
-    for _ in range(repeats):
-        fixed_fids, moving_fids = _make_circle_fiducials(10, centre, radius,
-                                                         fixed_fle_std_dev,
-                                                         moving_fle_std_dev)
+    no_fids = 10
 
-
-        [_success, fre, _mean_fle, expected_tre_squared, expected_fre,
-         _transformed_target_2d, actual_tre, _no_fids] = pbr.register(
-             fixed_fids, moving_fids)
-
-        tresq_sum += actual_tre*actual_tre
-        fresq_sum += fre*fre
-
-    ave_tresq = tresq_sum/repeats
-    ave_fresq = fresq_sum/repeats
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+                    _run_registrations(pbr, no_fids, centre, radius,
+                                       fixed_fle_std_dev,
+                                       moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
@@ -178,27 +158,13 @@ def test_pbr_20_fids_offset_target():
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 20.0
 
-    tresq_sum = 0
-    fresq_sum = 0
-    expected_tre_squared = 0
-    expected_fre = 0
     repeats = 200
-    np.random.seed(0)
-    for _ in range(repeats):
-        fixed_fids, moving_fids = _make_circle_fiducials(20, centre, radius,
-                                                         fixed_fle_std_dev,
-                                                         moving_fle_std_dev)
+    no_fids = 20
 
-
-        [_success, fre, _mean_fle, expected_tre_squared, expected_fre,
-         _transformed_target_2d, actual_tre, _no_fids] = pbr.register(
-             fixed_fids, moving_fids)
-
-        tresq_sum += actual_tre * actual_tre
-        fresq_sum += fre * fre
-
-    ave_tresq = tresq_sum/repeats
-    ave_fresq = fresq_sum/repeats
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+                    _run_registrations(pbr, no_fids, centre, radius,
+                                       fixed_fle_std_dev,
+                                       moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
