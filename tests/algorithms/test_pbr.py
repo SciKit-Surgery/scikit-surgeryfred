@@ -3,6 +3,7 @@
 """Fiducial Registration Educational Demonstration tests"""
 import math
 import numpy as np
+from scipy.stats import linregress
 
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 import sksurgeryfred.algorithms.point_based_reg as pbreg
@@ -46,10 +47,12 @@ def _run_registrations (pbr, no_fids, centre, radius, fixed_stddevs,
          _transformed_target_2d, tres[i], _no_fids] = pbr.register(
              fixed_fids, moving_fids)
 
-    average_tre = np.average(tres * tres)
-    average_fre = np.average(fres * fres)
+    ave_tre = np.average(tres * tres)
+    ave_fre = np.average(fres * fres)
 
-    return average_tre, average_fre, expected_tre_squared, expected_fre
+    _slope, _intercept, _r_value, p_value, _std_err = linregress(tres, fres)
+
+    return ave_tre, ave_fre, expected_tre_squared, expected_fre, p_value
 
 
 def test_pbr_3_fids():
@@ -74,13 +77,14 @@ def test_pbr_3_fids():
     repeats = 100
     no_fids = 3
 
-    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre, p_value = \
                     _run_registrations(pbr, no_fids, centre, radius,
                                        fixed_fle_std_dev,
                                        moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
+    assert p_value > 0.05
 
 def test_pbr_10_fids():
     """
@@ -103,13 +107,14 @@ def test_pbr_10_fids():
     repeats = 200
     no_fids = 10
 
-    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre, p_value = \
                     _run_registrations(pbr, no_fids, centre, radius,
                                        fixed_fle_std_dev,
                                        moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
+    assert p_value > 0.05
 
 def test_pbr_10_fids_offset_target():
     """
@@ -132,13 +137,14 @@ def test_pbr_10_fids_offset_target():
     repeats = 200
     no_fids = 10
 
-    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre, p_value = \
                     _run_registrations(pbr, no_fids, centre, radius,
                                        fixed_fle_std_dev,
                                        moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
+    assert p_value > 0.05
 
 def test_pbr_20_fids_offset_target():
     """
@@ -161,10 +167,11 @@ def test_pbr_20_fids_offset_target():
     repeats = 200
     no_fids = 20
 
-    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre = \
+    ave_tresq, ave_fresq,  expected_tre_squared, expected_fre, p_value = \
                     _run_registrations(pbr, no_fids, centre, radius,
                                        fixed_fle_std_dev,
                                        moving_fle_std_dev, repeats)
 
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
+    assert p_value > 0.05
