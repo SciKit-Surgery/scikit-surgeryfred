@@ -1,11 +1,12 @@
 Fiducial Registration Educational Demonstration
 ===============================================
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/raw/master/static/project-icon.png
-   :height: 128px
-   :width: 128px
+.. image:: https://github.com/UCL/scikit-surgeryfred/raw/27-logo/static/fredlogo.svg
+   :width: 256px
    :target: https://github.com/UCL/scikit-surgeryfred
    :alt: Logo
+
+|
 
 .. image:: https://github.com/UCL/scikit-surgeryfred/workflows/.github/workflows/ci.yml/badge.svg
    :target: https://github.com/UCL/scikit-surgeryfred/actions
