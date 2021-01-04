@@ -75,7 +75,7 @@ body {
   margin: 10px;
   float: left;
   background-color: rgb(51, 184, 204); /*light blue logo #33B8CC*/
-  border-radius: 5px;
+  border-radius: 8px;
   padding: 0.5rem 0.5rem;
   text-align: center;
 }
