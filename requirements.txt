@@ -2,3 +2,4 @@ Flask==1.1.2
 numpy
 google-cloud-firestore
 scikit-surgerycore>0.6.5
+sphinx<3.4.1
