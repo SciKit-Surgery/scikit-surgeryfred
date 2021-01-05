@@ -77,6 +77,17 @@ def testserve_gettarget(client):
     parser.feed(str(target.data))
     assert parser.title_ok
 
+    #should return a 2D target point
+    contour = np.load('static/brain512.npy')
+    postdata = dict(outline=contour.tolist())
+    response = client.post('/gettarget',
+                    data = json.dumps(postdata),
+                    content_type='application/json')
+    target = json.loads(response.data.decode()).get('target')
+
+    assert len(target[0]) == 3
+    assert target[0][2] == 0.0
+
 def testserve_getfle(client):
     """Serve fle"""
     #get should not be allowed

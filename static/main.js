@@ -408,7 +408,7 @@ function resetTarget() {
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify(intraOpContour)
+      body: JSON.stringify({"outline" : intraOpContour})
     })
     .then(resp => {
       console.log("New Target");

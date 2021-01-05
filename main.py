@@ -44,7 +44,7 @@ def gettarget():
     Returns a target point for the simulated intervention
     """
     jsonstring = json.dumps(request.json)
-    outline =json.loads(jsonstring)
+    outline =json.loads(jsonstring).get('outline')
     target = make_target_point(outline, edge_buffer=0.9)
 
     returnjson = jsonify({'target': target.tolist()})
