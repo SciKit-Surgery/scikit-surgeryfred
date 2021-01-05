@@ -198,7 +198,7 @@ def testserve_register(client):
     assert reg_result_json.get("mean_fle") == 2.1213203435596424
     assert reg_result_json.get("no_fids") == 3
     trans_target = reg_result_json.get("transformed_target")
-    assert np.array_equal(trans_target, [[200.0], [0.0], [0.0]])
+    assert np.allclose(trans_target, [[200.0], [0.0], [0.0]])
 
 def testserve_initdatabase(client):
     """Serve init db"""
