@@ -4,6 +4,7 @@
 from html.parser import HTMLParser
 import json
 import pytest
+import numpy as np
 import main as sksfmain # pylint: disable=unused-import
 
 
@@ -60,6 +61,13 @@ def testserve_defaultcontour(client):
     parser = FredHTMLParser('405 Method Not Allowed')
     parser.feed(str(contour.data))
     assert parser.title_ok
+
+    #returns a default contour defined at static/brain512.npy
+    response = client.post('/defaultcontour')
+    expectedcontour = np.load('static/brain512.npy')
+    servedcontour = json.loads(response.data.decode()).get('contour')
+
+    assert np.array_equal(servedcontour, expectedcontour)
 
 def testserve_gettarget(client):
     """Serve target"""
