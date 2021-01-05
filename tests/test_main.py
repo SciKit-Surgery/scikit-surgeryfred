@@ -2,8 +2,10 @@
 
 """Fiducial Registration Educational Demonstration tests"""
 from html.parser import HTMLParser
+from math import isclose
 import json
 import pytest
+import numpy as np
 import main as sksfmain # pylint: disable=unused-import
 
 
@@ -61,6 +63,13 @@ def testserve_defaultcontour(client):
     parser.feed(str(contour.data))
     assert parser.title_ok
 
+    #returns a default contour defined at static/brain512.npy
+    response = client.post('/defaultcontour')
+    expectedcontour = np.load('static/brain512.npy')
+    servedcontour = json.loads(response.data.decode()).get('contour')
+
+    assert np.array_equal(servedcontour, expectedcontour)
+
 def testserve_gettarget(client):
     """Serve target"""
     #get should not be allowed
@@ -69,6 +78,17 @@ def testserve_gettarget(client):
     parser.feed(str(target.data))
     assert parser.title_ok
 
+    #should return a 2D target point
+    contour = np.load('static/brain512.npy')
+    postdata = dict(outline=contour.tolist())
+    response = client.post('/gettarget',
+                    data = json.dumps(postdata),
+                    content_type='application/json')
+    target = json.loads(response.data.decode()).get('target')
+
+    assert len(target[0]) == 3
+    assert target[0][2] == 0.0
+
 def testserve_getfle(client):
     """Serve fle"""
     #get should not be allowed
@@ -76,6 +96,22 @@ def testserve_getfle(client):
     parser = FredHTMLParser('405 Method Not Allowed')
     parser.feed(str(fle.data))
     assert parser.title_ok
+
+    #test the default values
+    returndata = client.post('/getfle')
+    fles = json.loads(returndata.data.decode())
+    fixed_fle_sd = np.array(fles.get('fixed_fle_sd'))
+    moving_fle_sd = np.array(fles.get('moving_fle_sd'))
+    fixed_fle_eav = np.array(fles.get('fixed_fle_eav'))
+    moving_fle_eav = np.array(fles.get('moving_fle_eav'))
+
+    exp_fixed_eav = np.linalg.norm(fixed_fle_sd)**2
+    assert np.all(fixed_fle_sd == fixed_fle_sd[0])
+    assert np.all(fixed_fle_sd >= 0.5)
+    assert np.all(fixed_fle_sd <= 5.0)
+    assert np.all(moving_fle_sd == 0.0)
+    assert fixed_fle_eav == exp_fixed_eav
+    assert moving_fle_eav == 0.0
 
 def testserve_placefiducial(client):
     """Serve place fiducial"""
@@ -125,6 +161,44 @@ def testserve_register(client):
     parser = FredHTMLParser('405 Method Not Allowed')
     parser.feed(str(reg.data))
     assert parser.title_ok
+
+    #insufficient fids
+    postdata = dict(
+             target=[0.0, 0.0, 0.0],
+             preop_fle = 0.0,
+             intraop_fle = 0.0,
+             preop_fids = [],
+             intraop_fids = []
+             )
+
+    reg_result = client.post('/register', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    reg_result_json = json.loads(reg_result.data.decode())
+
+    assert not reg_result_json.get("success")
+
+    #a translation (+ 200 x, with no error)
+    postdata["preop_fids"] = [[-100., -100., 0.],
+                    [100., 50., 0.], [-50., 100., 0.]]
+    postdata["intraop_fids"] = [[100., -100., 0.],
+                    [300., 50., 0.], [150, 100., 0.]]
+    postdata["intraop_fle"] = 4.5
+
+    reg_result = client.post('/register', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    reg_result_json = json.loads(reg_result.data.decode())
+
+    assert reg_result_json.get("success")
+    assert reg_result_json.get("actual_tre") == 200.0
+    assert isclose(reg_result_json.get("expected_fre"), 1.2247, abs_tol = 1e-4)
+    assert isclose(reg_result_json.get("expected_tre"), 1.2248, abs_tol = 1e-4)
+    assert isclose(reg_result_json.get("fre"), 0.0, abs_tol=1e-8)
+    assert reg_result_json.get("mean_fle") == 2.1213203435596424
+    assert reg_result_json.get("no_fids") == 3
+    trans_target = reg_result_json.get("transformed_target")
+    assert np.array_equal(trans_target, [[200.0], [0.0], [0.0]])
 
 def testserve_initdatabase(client):
     """Serve init db"""

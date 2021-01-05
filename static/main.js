@@ -329,7 +329,13 @@ function register(){
       headers: {
        "Content-Type": "application/json"
       },
-      body: JSON.stringify([target, FLE.preOpFLEEAV, FLE.intraOpFLEEAV, preOpFids, intraOpFids])
+      body: JSON.stringify({
+	      "target" : target,
+	      "preop_fle": FLE.preOpFLEEAV,
+	      "intraop_fle": FLE.intraOpFLEEAV, 
+	      "preop_fids": preOpFids,
+	      "intraop_fids": intraOpFids
+      })
     })
     .then(resp => {
       if (resp.ok)
@@ -408,7 +414,7 @@ function resetTarget() {
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify(intraOpContour)
+      body: JSON.stringify({"outline" : intraOpContour})
     })
     .then(resp => {
       console.log("New Target");

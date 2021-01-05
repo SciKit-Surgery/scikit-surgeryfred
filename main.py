@@ -44,7 +44,7 @@ def gettarget():
     Returns a target point for the simulated intervention
     """
     jsonstring = json.dumps(request.json)
-    outline =json.loads(jsonstring)
+    outline =json.loads(jsonstring).get('outline')
     target = make_target_point(outline, edge_buffer=0.9)
 
     returnjson = jsonify({'target': target.tolist()})
@@ -118,12 +118,13 @@ def register():
     registration data as json.
     """
     jsonstring = json.dumps(request.json)
-    target = np.array(json.loads(jsonstring)[0])
+    reg_json = json.loads(jsonstring)
+    target = np.array(reg_json.get("target"))
     target = target.reshape(1,3)
-    moving_fle_eav = json.loads(jsonstring)[1]
-    fixed_fle_eav = json.loads(jsonstring)[2]
-    moving_fids = np.array(json.loads(jsonstring)[3])
-    fixed_fids = np.array(json.loads(jsonstring)[4])
+    moving_fle_eav = reg_json.get("preop_fle")
+    fixed_fle_eav = reg_json.get("intraop_fle")
+    moving_fids = np.array(reg_json.get("preop_fids"))
+    fixed_fids = np.array(reg_json.get("intraop_fids"))
     registerer = PointBasedRegistration(target,
                     fixed_fle_eav, moving_fle_eav)
 
