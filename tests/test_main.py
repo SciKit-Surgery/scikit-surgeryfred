@@ -96,6 +96,22 @@ def testserve_getfle(client):
     parser.feed(str(fle.data))
     assert parser.title_ok
 
+    #test the default values
+    returndata = client.post('/getfle')
+    fles = json.loads(returndata.data.decode())
+    fixed_fle_sd = np.array(fles.get('fixed_fle_sd'))
+    moving_fle_sd = np.array(fles.get('moving_fle_sd'))
+    fixed_fle_eav = np.array(fles.get('fixed_fle_eav'))
+    moving_fle_eav = np.array(fles.get('moving_fle_eav'))
+
+    exp_fixed_eav = np.linalg.norm(fixed_fle_sd)**2
+    assert np.all(fixed_fle_sd == fixed_fle_sd[0])
+    assert np.all(fixed_fle_sd >= 0.5)
+    assert np.all(fixed_fle_sd <= 5.0)
+    assert np.all(moving_fle_sd == 0.0)
+    assert fixed_fle_eav == exp_fixed_eav
+    assert moving_fle_eav == 0.0
+
 def testserve_placefiducial(client):
     """Serve place fiducial"""
     #get should not be allowed
