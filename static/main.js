@@ -241,6 +241,7 @@ function switchToFred(){
     show(intraOpContourCanvas);
     show(intraOpFiducialCanvas);
     show(intraOpTargetCanvas);
+    show(document.getElementById("logo"));
     document.querySelectorAll('.resultbox').forEach(function(el) {
    	show(el);
 	});
@@ -259,6 +260,7 @@ function switchToChartView(){
     hide(intraOpContourCanvas);
     hide(intraOpFiducialCanvas);
     hide(intraOpTargetCanvas);
+    hide(document.getElementById("logo"));
     document.querySelectorAll('.resultbox').forEach(function(el) {
    	hide(el);
 	});
