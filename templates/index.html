@@ -8,12 +8,15 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='main.css') }}" />
   </head>
 
-<div class="main" style"width:100%; overflow:hidden">
-  <div class="title">
-    <h3 id="fred-title">SciKit-SurgeryFRED</h3>
+  <div class="title" height=100>
+	  <img id="logo" src = "static/logo.svg"
+      width="500px"  type="image/svg"
+      style="z-index:1; position:absolute; left:50px; top:10px;"/>
   </div>
 
-  <div id="image-box" 
+
+<div class="main" style"width:100%; overflow:hidden position:absolute; left:0px; top:100px">
+    <div id="image-box" 
      style="position:absolute; left:0px; top:120px;">
     <img id="pre-operative-image" src = "static/brain512.png" 
       width="458px" height="512px" type="image/x-png"
@@ -36,32 +39,32 @@
       <div class="stathover">Target Registration Error, the difference between the actual target position in the intra-operative image and the position estimated by registration.</div>
     </div>
 
-    <div id="actualfrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:60px">
+    <div id="actualfrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:70px">
 	    Actual FRE
 	    <p id="actual-FRE"> - </p>
       <div class="stathover">Fiducial Registration Error, the least squares residual error of the fiducial markers</div>
     </div>
 
-    <div id="expectedtrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:120px">
+    <div id="expectedtrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:140px">
 	    Expected TRE
 	    <p id="expected-TRE"> -</p>
       <div class="stathover">Expected value of the Target Registration Error, a statistic calculated from expected value of the fiducial localisation error and the geometry of the fiducial markers and target.</div>
     </div>
 
-    <div id="expectedfrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:180px">
+    <div id="expectedfrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:210px">
 	    Expected FRE
             <p id="expected-FRE">-</p>
       <div class="stathover">Expected value of Fiducial Registration Error, a statistic calculated from expected value of the fiducial localisation error. Increases in inverse proportion to the number of fiducial markers</div>
     </div>
 
-    <div id="expectedflediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:240px">
+    <div id="expectedflediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:280px">
 	    Expected FLE
       <p id="expected-FLE">-</p>
       <div class="stathover">Expected value of the Fiducial Localisation Error. The expected error when locating an individual fiducial marker.</div>
     </div>
 
 
-    <div id="expectedflediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:300px">
+    <div id="no-fidsdiv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:350px">
 	    No. of Fids.
     <p id="no-fids">-</p>
       <div class="stathover">The number of fiducial markers placed.</div>
@@ -72,20 +75,21 @@
     </svg>
   </div>
 
-  <div style="margin-bottom: 2rem;">
-    <input id="newtargetbutton" type="button" value="New Target" class="button" onclick="reset();" />
+  <div style="margin-bottom: 2rem; position:absolute; left:650px;">
+    <input type="button" id="newtargetbutton" value="New Target" class="button" onclick="reset();" />
     <input type="button" value="Download Results" class="button" onclick="downloadResults();" />
-    <input id="plot_button" type="button" value="Plot Results" class="button" onclick="plotResults();" />
+    <input type="button" id="plot_button" value="Plot Results" class="button" onclick="plotResults();" />
   </div>
 
 </div>
 
+  <div style="margin-bottom: 2rem; position:absolute; left:0px; top:80px">
 <table id="plot-table" class="hidden">
 	<tr>
 		<td style="width:550px">
 			<div class = "result-plot" >
-    				<img id="pre-operative-image" src = "static/project-icon.png" width = "200px"> 
-				<p id="result-text" style="font-size:1.8rem; font-weight: 300">0 Registrations</p>
+    				<img src = "static/fredlogo.svg" width = "450px"> 
+				<p id="result-text" style="font-size:1.8rem; font-weight: 300;text-align:center">0 Registrations</p>
 			</div></td>
 		<td style="width:550px">
 			<div id = "trevsfre-plot" class = "result-plot">
@@ -111,4 +115,5 @@
 			</div></td>
 	</tr>
 </table>
+  </div>
 {% endblock %}
