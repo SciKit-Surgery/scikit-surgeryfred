@@ -4,6 +4,7 @@
 import math
 import numpy as np
 from scipy.stats import linregress
+import pytest
 
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 import sksurgeryfred.algorithms.point_based_reg as pbreg
@@ -55,6 +56,22 @@ def _run_registrations (pbr, no_fids, centre, radius, fixed_stddevs,
     return ave_tre, ave_fre, expected_tre_squared, expected_fre, p_value
 
 
+def test_init_with_moving_fle():
+    """
+    Init pbr with moving fle should yield non implemented error
+    """
+    fixed_fle_std_dev = np.array([1.0, 1.0, 1.0], dtype=np.float64)
+    moving_fle_std_dev = np.array([1.0, 1.0, 1.0], dtype=np.float64)
+
+    fixed_fle_easv = expected_absolute_value(fixed_fle_std_dev)
+    moving_fle_easv = expected_absolute_value(moving_fle_std_dev)
+
+    target = np.array([[0.0, 0.0, 0.0]], dtype=np.float64)
+
+    with pytest.raises(NotImplementedError):
+        pbreg.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
+
+
 def test_pbr_3_fids():
     """
     Tests for tre_from_fle_2d
@@ -85,6 +102,7 @@ def test_pbr_3_fids():
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
     assert p_value > 0.05
+
 
 def test_pbr_10_fids():
     """
@@ -167,6 +185,11 @@ def test_pbr_20_fids_offset_target():
     repeats = 200
     no_fids = 20
 
+    #test get transformed target before registration
+    status, transformed_target = pbr.get_transformed_target()
+    assert not status
+    assert transformed_target is None
+
     ave_tresq, ave_fresq,  expected_tre_squared, expected_fre, p_value = \
                     _run_registrations(pbr, no_fids, centre, radius,
                                        fixed_fle_std_dev,
@@ -175,3 +198,8 @@ def test_pbr_20_fids_offset_target():
     assert np.isclose(ave_tresq, expected_tre_squared, atol=0.0, rtol=0.10)
     assert np.isclose(ave_fresq, expected_fre, atol=0.0, rtol=0.05)
     assert p_value > 0.05
+
+    #test get transformed target after registration
+    status, transformed_target = pbr.get_transformed_target()
+    assert status
+    assert np.allclose(np.transpose(transformed_target), target, atol=1.0)

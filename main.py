@@ -10,7 +10,7 @@ import numpy as np
 from google.cloud import firestore
 from google.auth.exceptions import DefaultCredentialsError
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
-from sksurgeryfred.algorithms.fred import make_target_point, _is_valid_fiducial
+from sksurgeryfred.algorithms.fred import make_target_point, is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
 from sksurgeryfred import __version__ as fredversion
@@ -87,7 +87,7 @@ def placefiducial():
     x_pos = request.json.get("x_pos")
     y_pos = request.json.get("y_pos")
     position = [x_pos, y_pos, 0.0]
-    if _is_valid_fiducial(position):
+    if is_valid_fiducial(position):
         moving_ind_fle = request.json.get("pre_op_ind_fle", [0., 0., 0.])
         fixed_ind_fle = request.json.get("intra_op_ind_fle", [0., 0., 0.])
         moving_sys_fle = request.json.get("pre_op_sys_fle", [0., 0., 0.])
@@ -168,12 +168,10 @@ def initdatabase():
         #create a new document in the results collection
         docref = database.collection("results").add({
             'fred verion': fredversion,
-            'fred web verion': '0.0.0'
         })
         return jsonify({'success': True,
                         'reference': docref[1].id})
     except DefaultCredentialsError:
-        print("Data base credential error")
         return jsonify({'success': False})
 
 @app.route('/writeresults', methods=['POST'])
@@ -182,13 +180,14 @@ def writeresults():
     write the results to a firestore database
     """
     jsonstring = json.dumps(request.json)
-    reference=json.loads(jsonstring)[0]
-    actual_tre = json.loads(jsonstring)[1]
-    fre=json.loads(jsonstring)[2]
-    expected_tre=json.loads(jsonstring)[3]
-    expected_fre=json.loads(jsonstring)[4]
-    mean_fle=json.loads(jsonstring)[5]
-    no_fids=json.loads(jsonstring)[6]
+    result_json = json.loads(jsonstring)
+    reference = result_json.get('reference')
+    actual_tre = result_json.get('actual_tre')
+    fre = result_json.get('fre')
+    expected_tre = result_json.get('expected_tre')
+    expected_fre = result_json.get('expected_fre')
+    mean_fle = result_json.get('mean_fle')
+    no_fids = result_json.get('number_of_fids')
 
     try:
         database = firestore.Client()
@@ -203,7 +202,6 @@ def writeresults():
         })
         return jsonify({'write OK': True})
     except DefaultCredentialsError:
-        print("Data base credential error")
         return jsonify({'write OK': False})
 
 
@@ -219,27 +217,36 @@ def correlation():
 
     if results.shape[0] < 4:
         return jsonify({'success': False})
+    try:
+        if results.shape[1] < 2:
+            return jsonify({'success': False})
+    except IndexError:
+        return jsonify({'success': False})
 
     corr_coeffs = []
     x_points = []
     y_points = []
     success = True
     for column in range (1, results.shape[1]):
-        slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
-        if math.isnan(slope) or math.isnan(intercept): #remove nans
+        try:
+            slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
+        except (ValueError, np.linalg.LinAlgError):
+            return jsonify({'success': False})
+
+        corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
+        if math.isnan(slope) or math.isnan(intercept) or math.isnan(corr_coeff):
+            #remove nans to make client code (javascript) easier
             slope = 0.0
             intercept = 0.0
+            corr_coeff = 0.0
             success = False
+
         start_x = np.min(results[:,column])
         end_x = np.max(results[:,column])
         start_y = intercept + slope * start_x
         end_y = intercept + slope * end_x
         x_points.append([start_x, end_x])
         y_points.append([start_y, end_y])
-        corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
-        if math.isnan(corr_coeff):
-            corr_coeff = 0.0
-            success = False
         corr_coeffs.append(corr_coeff)
 
     returnjson = {'success': success,

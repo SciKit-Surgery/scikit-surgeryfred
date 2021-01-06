@@ -3,6 +3,7 @@
 """Fiducial Registration Educational Demonstration tests"""
 from html.parser import HTMLParser
 from math import isclose
+import warnings
 import json
 import pytest
 import numpy as np
@@ -190,7 +191,7 @@ def testserve_register(client):
 
     reg_result_json = json.loads(reg_result.data.decode())
 
-    assert reg_result_json.get("success")
+    assert reg_result_json.get("success", False)
     assert reg_result_json.get("actual_tre") == 200.0
     assert isclose(reg_result_json.get("expected_fre"), 1.2247, abs_tol = 1e-4)
     assert isclose(reg_result_json.get("expected_tre"), 1.2248, abs_tol = 1e-4)
@@ -208,6 +209,12 @@ def testserve_initdatabase(client):
     parser.feed(str(database.data))
     assert parser.title_ok
 
+    #returns false as we haven't setup the database
+    database = client.post('/initdatabase')
+    db_json = json.loads(database.data.decode())
+
+    assert not db_json.get('success', True)
+
 def testserve_writeresults(client):
     """Serve write results"""
     #get should not be allowed
@@ -216,6 +223,24 @@ def testserve_writeresults(client):
     parser.feed(str(database.data))
     assert parser.title_ok
 
+    postdata = dict(
+             reference = 0,
+             actual_tre = 0.0,
+             fre = 0.0,
+             expected_tre = 0.0,
+             expected_fre = 0.0,
+             mean_fle = 0.0,
+             number_of_fids = 0
+             )
+    result = client.post('/writeresults', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    #should return fail because we don't have a database connection
+    assert not result_json.get('write OK', True)
+
+
 def testserve_correlation(client):
     """Serve default contour"""
     #get should not be allowed
@@ -223,3 +248,49 @@ def testserve_correlation(client):
     parser = FredHTMLParser('405 Method Not Allowed')
     parser.feed(str(corr.data))
     assert parser.title_ok
+
+    #returns fail when array dimensions not sufficient
+    postdata = [0.0, 0.0, 0.0, 0.0]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+    #returns fail when insufficient columns
+    postdata = [[0.0],[0.0],[0.0],[0.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+    #returns fail when insufficient rows
+    postdata = [[0.0, 0.0],[0.0, 0.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+    #returns fail when data is degenerate
+    warnings.simplefilter("ignore")
+    postdata = [[0.0, 0.0],[0.0, 0.0],[0.0, 0.0],[0.0, 0.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    warnings.simplefilter("default")
+    assert not result_json.get('success', True)
+
+    #returns fail when data is degenerate
+    warnings.simplefilter("ignore")
+    postdata = [[0.0, 1.0],[0.0, 1.0],[0.0, 1.0],[0.0, 1.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    warnings.simplefilter("default")
+    assert not result_json.get('success', True)
+
+     #returns true when data is ok
+    postdata = [[0.0, 0.0],[1.0, 1.0],[1.2, 1.3],[0.9, 2.1]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert result_json.get('success', False)

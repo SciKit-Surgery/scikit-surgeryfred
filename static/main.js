@@ -371,7 +371,15 @@ function writeresults(actual_tre, fre, expected_tre, expected_fre, mean_fle, no_
       headers: {
 	"Content-Type": "application/json"
       },
-      body: JSON.stringify([dbreference, actual_tre, fre, expected_tre, expected_fre, mean_fle, no_fids])
+      body: JSON.stringify({
+	      "reference" : dbreference, 
+	      "actual_tre" : actual_tre, 
+	      "fre" : fre, 
+	      "expected_tre" : expected_tre,
+	      "expected_fre" : expected_fre, 
+	      "mean_fle" : mean_fle, 
+	      "number_of_fids" : no_fids
+      })
 
     })
     .catch(err => {
