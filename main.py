@@ -217,27 +217,36 @@ def correlation():
 
     if results.shape[0] < 4:
         return jsonify({'success': False})
+    try:
+        if results.shape[1] < 2:
+            return jsonify({'success': False})
+    except IndexError:
+        return jsonify({'success': False})
 
     corr_coeffs = []
     x_points = []
     y_points = []
     success = True
     for column in range (1, results.shape[1]):
-        slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
-        if math.isnan(slope) or math.isnan(intercept): #remove nans
+        try:
+            slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
+        except ValueError:
+            return jsonify({'success': False})
+
+        corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
+        if math.isnan(slope) or math.isnan(intercept) or math.isnan(corr_coeff):
+            #remove nans to make client code (javascript) easier
             slope = 0.0
             intercept = 0.0
+            corr_coeff = 0.0
             success = False
+
         start_x = np.min(results[:,column])
         end_x = np.max(results[:,column])
         start_y = intercept + slope * start_x
         end_y = intercept + slope * end_x
         x_points.append([start_x, end_x])
         y_points.append([start_y, end_y])
-        corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
-        if math.isnan(corr_coeff):
-            corr_coeff = 0.0
-            success = False
         corr_coeffs.append(corr_coeff)
 
     returnjson = {'success': success,

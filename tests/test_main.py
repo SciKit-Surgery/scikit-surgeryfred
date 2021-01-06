@@ -231,7 +231,6 @@ def testserve_writeresults(client):
              mean_fle = 0.0,
              number_of_fids = 0
              )
-
     result = client.post('/writeresults', data = json.dumps(postdata),
                     content_type='application/json')
 
@@ -248,3 +247,47 @@ def testserve_correlation(client):
     parser = FredHTMLParser('405 Method Not Allowed')
     parser.feed(str(corr.data))
     assert parser.title_ok
+
+    #returns fail when array dimensions not sufficient
+    postdata = [0.0, 0.0, 0.0, 0.0]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+    #returns fail when insufficient columns
+    postdata = [[0.0],[0.0],[0.0],[0.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+    #returns fail when insufficient rows
+    postdata = [[0.0, 0.0],[0.0, 0.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+    #returns fail when data is degenerate
+    postdata = [[0.0, 0.0],[0.0, 0.0],[0.0, 0.0],[0.0, 0.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+    #returns fail when data is degenerate
+    postdata = [[0.0, 1.0],[0.0, 1.0],[0.0, 1.0],[0.0, 1.0]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert not result_json.get('success', True)
+
+     #returns true when data is ok
+    postdata = [[0.0, 0.0],[1.0, 1.0],[1.2, 1.3],[0.9, 2.1]]
+    result = client.post('/correlation', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert result_json.get('success', False)
+
+
