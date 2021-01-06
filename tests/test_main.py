@@ -3,6 +3,7 @@
 """Fiducial Registration Educational Demonstration tests"""
 from html.parser import HTMLParser
 from math import isclose
+import warnings
 import json
 import pytest
 import numpy as np
@@ -270,17 +271,21 @@ def testserve_correlation(client):
     assert not result_json.get('success', True)
 
     #returns fail when data is degenerate
+    warnings.simplefilter("ignore")
     postdata = [[0.0, 0.0],[0.0, 0.0],[0.0, 0.0],[0.0, 0.0]]
     result = client.post('/correlation', data = json.dumps(postdata),
                     content_type='application/json')
     result_json = json.loads(result.data.decode())
+    warnings.simplefilter("default")
     assert not result_json.get('success', True)
 
     #returns fail when data is degenerate
+    warnings.simplefilter("ignore")
     postdata = [[0.0, 1.0],[0.0, 1.0],[0.0, 1.0],[0.0, 1.0]]
     result = client.post('/correlation', data = json.dumps(postdata),
                     content_type='application/json')
     result_json = json.loads(result.data.decode())
+    warnings.simplefilter("default")
     assert not result_json.get('success', True)
 
      #returns true when data is ok
@@ -289,5 +294,3 @@ def testserve_correlation(client):
                     content_type='application/json')
     result_json = json.loads(result.data.decode())
     assert result_json.get('success', False)
-
-
