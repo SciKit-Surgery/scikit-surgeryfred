@@ -10,7 +10,7 @@ import numpy as np
 from google.cloud import firestore
 from google.auth.exceptions import DefaultCredentialsError
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
-from sksurgeryfred.algorithms.fred import make_target_point, _is_valid_fiducial
+from sksurgeryfred.algorithms.fred import make_target_point, is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
 from sksurgeryfred import __version__ as fredversion
@@ -87,7 +87,7 @@ def placefiducial():
     x_pos = request.json.get("x_pos")
     y_pos = request.json.get("y_pos")
     position = [x_pos, y_pos, 0.0]
-    if _is_valid_fiducial(position):
+    if is_valid_fiducial(position):
         moving_ind_fle = request.json.get("pre_op_ind_fle", [0., 0., 0.])
         fixed_ind_fle = request.json.get("intra_op_ind_fle", [0., 0., 0.])
         moving_sys_fle = request.json.get("pre_op_sys_fle", [0., 0., 0.])
