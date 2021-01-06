@@ -230,7 +230,7 @@ def correlation():
     for column in range (1, results.shape[1]):
         try:
             slope, intercept = np.polyfit(results[:,column], results[:,0], 1)
-        except ValueError:
+        except (ValueError, np.linalg.LinAlgError):
             return jsonify({'success': False})
 
         corr_coeff = np.corrcoef(results[:,0], results[:,column])[0, 1]
