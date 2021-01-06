@@ -168,12 +168,10 @@ def initdatabase():
         #create a new document in the results collection
         docref = database.collection("results").add({
             'fred verion': fredversion,
-            'fred web verion': '0.0.0'
         })
         return jsonify({'success': True,
                         'reference': docref[1].id})
     except DefaultCredentialsError:
-        print("Data base credential error")
         return jsonify({'success': False})
 
 @app.route('/writeresults', methods=['POST'])
@@ -182,13 +180,14 @@ def writeresults():
     write the results to a firestore database
     """
     jsonstring = json.dumps(request.json)
-    reference=json.loads(jsonstring)[0]
-    actual_tre = json.loads(jsonstring)[1]
-    fre=json.loads(jsonstring)[2]
-    expected_tre=json.loads(jsonstring)[3]
-    expected_fre=json.loads(jsonstring)[4]
-    mean_fle=json.loads(jsonstring)[5]
-    no_fids=json.loads(jsonstring)[6]
+    result_json = json.loads(jsonstring)
+    reference = result_json.get('reference')
+    actual_tre = result_json.get('actual_tre')
+    fre = result_json.get('fre')
+    expected_tre = result_json.get('expected_tre')
+    expected_fre = result_json.get('expected_fre')
+    mean_fle = result_json.get('mean_fle')
+    no_fids = result_json.get('number_of_fids')
 
     try:
         database = firestore.Client()
@@ -203,7 +202,6 @@ def writeresults():
         })
         return jsonify({'write OK': True})
     except DefaultCredentialsError:
-        print("Data base credential error")
         return jsonify({'write OK': False})
 
 
