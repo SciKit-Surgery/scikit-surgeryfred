@@ -119,6 +119,40 @@ body {
  z-index: 6;
 }
 
+.scorebox
+{
+  font-family: 'Baloo Bhaina 2';
+  width: 110px;
+  height: 50px;
+  border: 1px solid black;
+  line-height: 100%;
+  margin: 10px;
+  float: left;
+  background-color: rgb(51, 184, 204); /*light blue logo #33B8CC*/
+  border-radius: 8px;
+  padding: 0.5rem 0.5rem;
+  text-align: center;
+}
+
+.scorebox:hover .stathover {
+ display: block;
+}
+
+.scorebox .stathover {
+ font-family: 'Baloo Bhaina 2';
+ display: none;
+ position: absolute;
+ background-color: rgba(51, 184, 204, 50);
+ border: 3px solid rgb(49, 98, 158);
+ padding: 0.5rem 0.5rem;
+ left: -300px;
+ top: 50px;
+ border-radius: 20px;
+ z-index: 6;
+}
+
+
+
 
 #pre-operative-image {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);

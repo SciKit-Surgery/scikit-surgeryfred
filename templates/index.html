@@ -66,12 +66,31 @@
 
     <div id="no-fidsdiv" class="resultbox", style="align-items:left; position:absolute; left:1280px; top:90px">
 	    No. of Fids.
-    <p id="no-fids">-</p>
+    <p id="no-fids">0</p>
       <div class="stathover">The number of fiducial markers placed.</div>
     </div>
 
-    <div id="ablation_dial", style="position:absolute; left:1150px; top:400px"  ></div>
-    <input type="button" id="ablation_button" value="Fire" onclick="ablate();" style="position:absolute; left:1280px; top:440px" disabled = true />
+    <div id="ableftdiv" class="scorebox", style="align-items:left; position:absolute; left:1150px; top:190px">
+	    Ablations Left
+    <p id="repeats">-</p>
+      <div class="stathover">The number of ablations you have left before the game ends.</div>
+    </div>
+
+    <div id="tscorediv" class="scorebox", style="align-items:left; position:absolute; left:1280px; top:190px">
+	    Total Score
+    <p id="totalscore">-</p>
+      <div class="stathover">The sum of all your scores so far.</div>
+    </div>
+
+    <div id="scorediv" class="scorebox", style="align-items:left; position:absolute; left:1150px; top:260px">
+	    Last Score
+    <p id="lastscore">-</p>
+      <div class="stathover">The score for your last ablation. You score 1000 points for a complete ablation of the target, then points are deducted for the volume of damage to surrounding tissue.</div>
+    </div>
+
+    <div id="ablation_dial", style="position:absolute; left:1150px; top:350px" 
+	    class="gameelement"></div>
+    <input type="button" id="ablation_button" value="Fire" onclick="ablate();" style="position:absolute; left:1330px; top:390px" disabled = true class=gameelement />
  
     <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
       <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
@@ -82,6 +101,7 @@
     <input type="button" id="newtargetbutton" value="New Target" class="button" onclick="reset();" />
     <input type="button" value="Download Results" class="button" onclick="downloadResults();" />
     <input type="button" id="plot_button" value="Plot Results" class="button" onclick="plotResults();" />
+    <input type="button" id="game_button" value="Play Game" class="button" onclick="gameMode();" />
   </div>
 
 </div>

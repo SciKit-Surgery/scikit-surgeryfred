@@ -67,3 +67,7 @@ function calculatescore(margin) {
             console.log("An error occured calculating the score.", err.message);
       });
 };
+
+function gameMode() {
+	console.log("Game mode pressed");
+};
