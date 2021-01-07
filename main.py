@@ -271,7 +271,7 @@ def calculatescore():
     target_radius = ablation.get("target_radius")
     margin = ablation.get("margin")
 
-    score = calculate_score(target_centre, est_target_centre, 
+    score = calculate_score(target_centre, est_target_centre,
                     target_radius, margin)
     return jsonify({'success': True,
                     'score': score})
