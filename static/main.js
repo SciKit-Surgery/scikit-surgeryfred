@@ -314,6 +314,7 @@ function placeFiducial(x, y) {
 
 	  preOpFids.push(preOpFid);
 	  intraOpFids.push(intraOpFid);
+	  noFidsText.innerHTML=intraOpFids.length;
 	  register();
 	  };
       });
@@ -439,6 +440,13 @@ function resetTarget() {
           target = [data.target[0][1], data.target[0][0], 0.0]
 	  clearCanvas(preOpCanvas);
           drawTarget(target, preOpCanvas, "#880000");
+	  actualTREText.innerHTML="-"
+	  actualFREText.innerHTML="-"
+	  expectedTREText.innerHTML="-"
+          expectedFREText.innerHTML="-"
+          expectedFLEText.innerHTML="-"
+          noFidsText.innerHTML="0"
+
 	  disable_ablation();
       });
     })
@@ -474,6 +482,7 @@ function init_fles() {
 		preOpFLEEAV, intraOpFLEEAV,
 		preOpSysError, intraOpSysError };
 
+	expectedFLEText.innerHTML=Math.round(Math.sqrt(FLE.intraOpFLEEAV)*100)/100;
       });
     })
     .catch(err => {
