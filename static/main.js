@@ -3,7 +3,8 @@
 //========================================================================
 
 //global variables
-var state = "fred" // fred, plot or game
+var state = "fred"; // fred, plot or game
+var gameon = true;
 
 //store the contour for the intra-opimage
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
@@ -19,6 +20,7 @@ const results = [];
 const preOpFids = [];   //moving
 const intraOpFids = []; //fixed
 var target = [];
+var transformed_target = [];
 
 //the fiducial localisation errors
 var FLE;
@@ -343,7 +345,8 @@ function register(){
 		if ( data.success ){
 		  results.push([data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids]);
 		  clearCanvas(intraOpTargetCanvas);
-          	  drawTarget(data.transformed_target, intraOpTargetCanvas);
+		  transformed_target = data.transformed_target;
+          	  drawTarget(transformed_target, intraOpTargetCanvas);
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
 		  actualTREText.innerHTML=Math.round(data.actual_tre*100)/100;
@@ -352,6 +355,10 @@ function register(){
 		  expectedFREText.innerHTML=Math.round(data.expected_fre*100)/100;
 		  expectedFLEText.innerHTML=Math.round(data.mean_fle*100)/100;
 		  noFidsText.innerHTML=data.no_fids;
+
+		  if ( gameon ) {
+			  enable_ablation()
+		  };
 		};
 	});
     })
@@ -431,6 +438,7 @@ function resetTarget() {
           target = [data.target[0][1], data.target[0][0], 0.0]
 	  clearCanvas(preOpCanvas);
           drawTarget(target, preOpCanvas);
+	  disable_ablation();
       });
     })
     .catch(err => {

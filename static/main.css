@@ -31,6 +31,28 @@ body {
   color: #666666;
 }
 
+#ablation_button {
+  font-family: 'Baloo Bhaina 2';
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  outline: none;
+  color: #ffffff;
+  background-color: #de1712;
+  padding: 0.5rem 0.5rem;
+  border-radius: 50%;
+  font-size: 2rem;
+  min-width: 4rem;
+}
+
+#ablation_button.disabled {
+  color: #ffffff;
+  background-color: #f0f0f0;
+}
+
+
+
 /* Main section */
 
 .main {
