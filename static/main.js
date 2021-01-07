@@ -347,7 +347,7 @@ function register(){
 		  results.push([data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids]);
 		  clearCanvas(intraOpTargetCanvas);
 		  transformed_target = data.transformed_target;
-          	  drawTarget(transformed_target, intraOpTargetCanvas);
+          	  drawTarget(transformed_target, intraOpTargetCanvas,"#dd8888");
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
 		  actualTREText.innerHTML=Math.round(data.actual_tre*100)/100;
@@ -438,7 +438,7 @@ function resetTarget() {
         resp.json().then(data => {
           target = [data.target[0][1], data.target[0][0], 0.0]
 	  clearCanvas(preOpCanvas);
-          drawTarget(target, preOpCanvas);
+          drawTarget(target, preOpCanvas, "#880000");
 	  disable_ablation();
       });
     })
@@ -509,10 +509,10 @@ function clearCanvas(canvas) {
   }
 }
 
-function drawTarget(local_target, canvas) {
+function drawTarget(local_target, canvas, fillcolour) {
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
-    ctx.fillStyle = "#880000";
+    ctx.fillStyle = fillcolour; 
     ctx.beginPath();
     ctx.arc(local_target[0] * canvasScale , local_target[1] * canvasScale, target_radius * canvasScale, 0, 2 * Math.PI);
     ctx.fill();
@@ -537,7 +537,7 @@ function drawActualFiducial(position, canvas){
 	drawCross(position, canvas, "#000000", 1, 3)
 }
 function drawActualTarget(position, canvas){
-	drawCross(position, canvas, "#0000FF", 2, 5)
+	drawCross(position, canvas, "#0000FF", 3, target_radius + 1)
 }
 
 function drawMeasuredFiducial(position, canvas){
