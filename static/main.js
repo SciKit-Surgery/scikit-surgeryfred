@@ -21,6 +21,7 @@ const preOpFids = [];   //moving
 const intraOpFids = []; //fixed
 var target = [];
 var transformed_target = [];
+target_radius = 10;
 
 //the fiducial localisation errors
 var FLE;
@@ -513,7 +514,7 @@ function drawTarget(local_target, canvas) {
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = "#880000";
     ctx.beginPath();
-    ctx.arc(local_target[0] * canvasScale , local_target[1] * canvasScale, 5 * canvasScale, 0, 2 * Math.PI);
+    ctx.arc(local_target[0] * canvasScale , local_target[1] * canvasScale, target_radius * canvasScale, 0, 2 * Math.PI);
     ctx.fill();
   }
 }

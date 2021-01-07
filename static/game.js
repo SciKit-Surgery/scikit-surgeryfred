@@ -37,11 +37,33 @@ function disable_ablation() {
 };
 
 function ablate() {
-	var val = dial.get('value');
-	console.log("Ablating: ", val);
+	var margin = dial.get('value');
+	console.log("Ablating: ", margin);
 	console.log("Target: ", target); //target from main.js
 	console.log("Transformed Target: ", transformed_target); //trans target from main.js
+	console.log(calculatescore(margin));
 	//get target pos.
 };
 
-
+function calculatescore(margin) {
+	fetch("/calculatescore", {
+		method: "POST",
+		headers: {
+        	    "Content-Type": "application/json"
+      		},
+		body: JSON.stringify({
+			"target": target,
+			"est_target": transformed_target,
+			"target_radius": target_radius,
+			"margin": margin
+		})
+	})
+	.then(resp => {
+		resp.json().then(data => {
+			console.log(data.score);
+		});
+	})
+	.catch(err => {
+            console.log("An error occured calculating the score.", err.message);
+      });
+};
