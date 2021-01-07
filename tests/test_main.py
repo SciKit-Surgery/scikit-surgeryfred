@@ -308,3 +308,25 @@ def testserve_correlation(client):
                     content_type='application/json')
     result_json = json.loads(result.data.decode())
     assert result_json.get('success', False)
+
+
+def testserve_calculatescore(client):
+    """Serve calculate score"""
+    #get should not be allowed
+    corr = client.get('/calculatescore')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(corr.data))
+    assert parser.title_ok
+
+    #returns fail when array dimensions not sufficient
+    postdata = dict (
+                    target = [[0.0, 0.0, 0.0]],
+                    est_target = [[0.0], [0.0] , [0.0]],
+                    target_radius = 5.0,
+                    margin = 0.0
+                    )
+    result = client.post('/calculatescore', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert result_json.get('success', True)
+    assert result_json.get('score', 0) == 1000
