@@ -48,6 +48,8 @@ function calculatescore(margin) {
 			updateGameStats();
 			if ( repeats == 0 )
 				endgame();
+			else
+				reset();
 
 		});
 	})
@@ -66,6 +68,9 @@ function gameMode() {
 			switchToFred();
 			button = document.getElementById('game_button');
     			button.value="Play Game"
+			show(document.getElementById('plot_button'));
+			show(document.getElementById('newtargetbutton'));
+			show(document.getElementById('downloadbutton'));
 		}
 	}
 	else
@@ -86,6 +91,7 @@ function gameMode() {
 		hide(document.getElementById('plot_button'));
 		hide(document.getElementById('newtargetbutton'));
 		hide(document.getElementById('downloadbutton'));
+		reset();
 		state = "game";
 	}
 
