@@ -4,7 +4,6 @@
 
 //global variables
 var state = "fred"; // fred, plot or game
-var gameon = true;
 
 //store the contour for the intra-opimage
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
@@ -81,12 +80,23 @@ startup();
 // Main button events
 //========================================================================
 
+function hideGameElements(){
+        document.querySelectorAll('.scorebox').forEach(function(el) {
+        hide(el);
+        });
+        document.querySelectorAll('.gameelement').forEach(function(el) {
+        hide(el);
+        });
+};
+
+
 async function startup() {
     const result = await loadDefaultContour();	
     console.log(result);
     resetTarget();
     init_fles();
     initdatabase();
+    hideGameElements();
 }
 
 function preOpImageClick(evt) {
@@ -358,7 +368,7 @@ function register(){
 		  expectedFLEText.innerHTML=Math.round(data.mean_fle*100)/100;
 		  noFidsText.innerHTML=data.no_fids;
 
-		  if ( gameon ) {
+		  if ( state == "game" ) {
 			  enable_ablation()
 		  };
 		};

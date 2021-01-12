@@ -5,26 +5,7 @@
 var dial; 
 const scores = [];
 var repeats = 0;
-
-YUI().use('dial', function(Y) {
-
-        dial = new Y.Dial({
-        min:0,
-        max:20,
-	decimalPlaces:1,
-        stepsPerRevolution:2,
-        value: 1,
-	strings : {
-		label: 'Margin',
-		resetStr:'Reset',
-		tooltipHandle:'Drag to ablation margin'
-	}
-        });
-        dial.render('#ablation_dial');
-
-
-        });
-
+var total_score = 0;
 
 function enable_ablation() {
 	document.getElementById("ablation_button").disabled = false;
@@ -61,6 +42,13 @@ function calculatescore(margin) {
 	.then(resp => {
 		resp.json().then(data => {
 			console.log(data.score);
+			scores.push(data.score);
+			total_score = total_score + data.score;
+			repeats = repeats - 1;
+			updateGameStats();
+			if ( repeats == 0 )
+				endgame();
+
 		});
 	})
 	.catch(err => {
@@ -69,5 +57,81 @@ function calculatescore(margin) {
 };
 
 function gameMode() {
-	console.log("Game mode pressed");
+        console.log("pressed game button", state, repeats)
+	if ( state == "game" ) //are already in game mode ?
+	{
+		if ( repeats == 0 ) //we can go back to FRED
+		{
+			hideGameElements();
+			switchToFred();
+			button = document.getElementById('game_button');
+    			button.value="Play Game"
+		}
+	}
+	else
+	{
+		if ( state == "plot" ) {
+			switchToFred();
+		}
+
+		console.log("Entering Game Mode");
+		scores.length = 0;
+		repeats = 20;
+		total_score = 0;
+		showGameElements();
+		updateGameStats();
+	        button = document.getElementById('game_button');
+    		button.value="Back to Fred";
+		hide(button);
+		hide(document.getElementById('plot_button'));
+		hide(document.getElementById('newtargetbutton'));
+		hide(document.getElementById('downloadbutton'));
+		state = "game";
+	}
+
+};
+
+function endgame() {
+	show(document.getElementById('game_button'));
+};
+
+
+	
+function updateGameStats() {
+	document.getElementById('repeats').innerHTML = repeats;
+	document.getElementById('totalscore').innerHTML = total_score;
+	if (scores.length > 0) 
+		document.getElementById('lastscore').innerHTML = scores[scores.length - 1];
+	else
+		document.getElementById('lastscore').innerHTML = 0;
+};
+
+
+function showGameElements(){
+        document.querySelectorAll('.scorebox').forEach(function(el) {
+        show(el);
+        });
+        document.querySelectorAll('.gameelement').forEach(function(el) {
+        show(el);
+        });
+
+	YUI().use('dial', function(Y) {
+
+        dial = new Y.Dial({
+        min:0,
+        max:20,
+	decimalPlaces:1,
+        stepsPerRevolution:2,
+        value: 1,
+	strings : {
+		label: 'Margin',
+		resetStr:'Reset',
+		tooltipHandle:'Drag to ablation margin'
+	}
+        });
+        dial.render('#ablation_dial');
+
+        });
+
+
 };
