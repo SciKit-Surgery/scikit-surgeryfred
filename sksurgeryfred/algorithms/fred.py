@@ -5,12 +5,15 @@ calibration and tracking
 import math
 import numpy as np
 
-def is_valid_fiducial(_unused_fiducial_location):
+def is_valid_fiducial(fiducial_location):
     """
     Checks the x, y, and z location of a fiducial
     :returns: true if a valid fiducial
     """
-    return True
+    #no negatives allowed
+    if np.all(np.array(fiducial_location) >= 0):
+        return True
+    return False
 
 def make_target_point(outline, edge_buffer=0.9):
     """

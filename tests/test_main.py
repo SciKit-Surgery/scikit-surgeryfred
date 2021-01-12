@@ -122,6 +122,20 @@ def testserve_placefiducial(client):
     parser.feed(str(fid.data))
     assert parser.title_ok
 
+    #not valid fid
+    x_pos = -1.0
+    y_pos = 0.0
+    pre_op_ind_fle = [0.0, 0.0, 0.0]
+    intra_op_ind_fle = [2.0, 2.0, 2.0]
+    postdata = dict(
+             x_pos=x_pos,
+             y_pos=y_pos,
+             pre_op_ind_fle=pre_op_ind_fle,
+             intra_op_ind_fle=intra_op_ind_fle)
+    fid = client.post('/placefiducial', data = json.dumps(postdata),
+                    content_type='application/json')
+    assert not json.loads(fid.data.decode()).get("valid_fid", True)
+
     #normal usage
     x_pos = 0.0
     y_pos = 0.0
@@ -294,3 +308,25 @@ def testserve_correlation(client):
                     content_type='application/json')
     result_json = json.loads(result.data.decode())
     assert result_json.get('success', False)
+
+
+def testserve_calculatescore(client):
+    """Serve calculate score"""
+    #get should not be allowed
+    corr = client.get('/calculatescore')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(corr.data))
+    assert parser.title_ok
+
+    #returns fail when array dimensions not sufficient
+    postdata = dict (
+                    target = [[0.0, 0.0, 0.0]],
+                    est_target = [[0.0], [0.0] , [0.0]],
+                    target_radius = 5.0,
+                    margin = 0.0
+                    )
+    result = client.post('/calculatescore', data = json.dumps(postdata),
+                    content_type='application/json')
+    result_json = json.loads(result.data.decode())
+    assert result_json.get('success', True)
+    assert result_json.get('score', 0) == 1000

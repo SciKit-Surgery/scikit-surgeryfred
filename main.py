@@ -13,6 +13,7 @@ from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fred import make_target_point, is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
+from sksurgeryfred.algorithms.scores import calculate_score
 from sksurgeryfred import __version__ as fredversion
 
 # Declare a flask app
@@ -254,6 +255,27 @@ def correlation():
                   'xs': x_points,
                   'ys': y_points}
     return jsonify(returnjson)
+
+
+@app.route('/calculatescore', methods=['POST'])
+def calculatescore():
+    """
+    Delegates to sksurgery.alogorithms.score to
+    calculate an ablation score.
+    """
+    jsonstring = json.dumps(request.json)
+    ablation = json.loads(jsonstring)
+
+    target_centre = np.array(ablation.get("target"))
+    est_target_centre = np.transpose(np.array(ablation.get("est_target")))
+    target_radius = ablation.get("target_radius")
+    margin = ablation.get("margin")
+
+    score = calculate_score(target_centre, est_target_centre,
+                    target_radius, margin)
+    return jsonify({'success': True,
+                    'score': score})
+
 
 
 if __name__ == '__main__':

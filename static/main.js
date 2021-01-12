@@ -3,7 +3,7 @@
 //========================================================================
 
 //global variables
-var state = "fred" // fred, plot or game
+var state = "fred"; // fred, plot or game
 
 //store the contour for the intra-opimage
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
@@ -19,6 +19,8 @@ const results = [];
 const preOpFids = [];   //moving
 const intraOpFids = []; //fixed
 var target = [];
+var transformed_target = [];
+target_radius = 10;
 
 //the fiducial localisation errors
 var FLE;
@@ -78,12 +80,23 @@ startup();
 // Main button events
 //========================================================================
 
+function hideGameElements(){
+        document.querySelectorAll('.scorebox').forEach(function(el) {
+        hide(el);
+        });
+        document.querySelectorAll('.gameelement').forEach(function(el) {
+        hide(el);
+        });
+};
+
+
 async function startup() {
     const result = await loadDefaultContour();	
     console.log(result);
     resetTarget();
     init_fles();
     initdatabase();
+    hideGameElements();
 }
 
 function preOpImageClick(evt) {
@@ -311,6 +324,7 @@ function placeFiducial(x, y) {
 
 	  preOpFids.push(preOpFid);
 	  intraOpFids.push(intraOpFid);
+	  noFidsText.innerHTML=intraOpFids.length;
 	  register();
 	  };
       });
@@ -343,7 +357,8 @@ function register(){
 		if ( data.success ){
 		  results.push([data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids]);
 		  clearCanvas(intraOpTargetCanvas);
-          	  drawTarget(data.transformed_target, intraOpTargetCanvas);
+		  transformed_target = data.transformed_target;
+          	  drawTarget(transformed_target, intraOpTargetCanvas,"#dd8888");
           	  drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
 		  actualTREText.innerHTML=Math.round(data.actual_tre*100)/100;
@@ -352,6 +367,10 @@ function register(){
 		  expectedFREText.innerHTML=Math.round(data.expected_fre*100)/100;
 		  expectedFLEText.innerHTML=Math.round(data.mean_fle*100)/100;
 		  noFidsText.innerHTML=data.no_fids;
+
+		  if ( state == "game" ) {
+			  enable_ablation()
+		  };
 		};
 	});
     })
@@ -430,7 +449,15 @@ function resetTarget() {
         resp.json().then(data => {
           target = [data.target[0][1], data.target[0][0], 0.0]
 	  clearCanvas(preOpCanvas);
-          drawTarget(target, preOpCanvas);
+          drawTarget(target, preOpCanvas, "#880000");
+	  actualTREText.innerHTML="-"
+	  actualFREText.innerHTML="-"
+	  expectedTREText.innerHTML="-"
+          expectedFREText.innerHTML="-"
+          expectedFLEText.innerHTML="-"
+          noFidsText.innerHTML="0"
+
+	  disable_ablation();
       });
     })
     .catch(err => {
@@ -465,6 +492,7 @@ function init_fles() {
 		preOpFLEEAV, intraOpFLEEAV,
 		preOpSysError, intraOpSysError };
 
+	expectedFLEText.innerHTML=Math.round(Math.sqrt(FLE.intraOpFLEEAV)*100)/100;
       });
     })
     .catch(err => {
@@ -500,12 +528,12 @@ function clearCanvas(canvas) {
   }
 }
 
-function drawTarget(local_target, canvas) {
+function drawTarget(local_target, canvas, fillcolour) {
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
-    ctx.fillStyle = "#880000";
+    ctx.fillStyle = fillcolour; 
     ctx.beginPath();
-    ctx.arc(local_target[0] * canvasScale , local_target[1] * canvasScale, 5 * canvasScale, 0, 2 * Math.PI);
+    ctx.arc(local_target[0] * canvasScale , local_target[1] * canvasScale, target_radius * canvasScale, 0, 2 * Math.PI);
     ctx.fill();
   }
 }
@@ -528,7 +556,7 @@ function drawActualFiducial(position, canvas){
 	drawCross(position, canvas, "#000000", 1, 3)
 }
 function drawActualTarget(position, canvas){
-	drawCross(position, canvas, "#0000FF", 2, 5)
+	drawCross(position, canvas, "#0000FF", 3, target_radius + 1)
 }
 
 function drawMeasuredFiducial(position, canvas){
