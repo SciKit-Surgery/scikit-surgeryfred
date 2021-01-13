@@ -291,13 +291,19 @@ function reset(){
   clearCanvas(intraOpTargetCanvas);
   clearCanvas(intraOpFiducialCanvas);
   init_fles();
-  console.log("FLE = ", FLE);
+  expectedFLEText.innerHTML=Math.round(Math.sqrt(FLE.intraOpFLEEAV)*100)/100;
 
   preOpFids.length = 0;
   intraOpFids.length = 0;
 }
 
 function placeFiducial(x, y) {
+
+      if (( state == "game" ) && ( preOpFids.length > 5 )){
+	      console.log("You can only have upto 6 fiducials during game");
+       	      return;
+      };
+
       fetch("/placefiducial", {
       method: "POST",
       headers: {
