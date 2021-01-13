@@ -4,8 +4,48 @@
 
 var dial; 
 const scores = [];
+const totalrepeats = 20; 
 var repeats = 0;
 var total_score = 0;
+const state_strings = ["Actual TRE", "FLE and no fids", "Expected FRE", "Expected TRE", "Actual FRE"]
+var state_string_vector = []
+
+function shuffleArray(array) {
+	//this is an ES6 implementation of a Durstenfeld shuffle, from 
+	//https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+	//it would be nice to test it 
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function create_state_vector(state_strings, totalrepeats){
+	//check that total repeats is a product of the length of the state vector
+	state_string_vector.length = 0;
+	if ( totalrepeats % state_strings.length > 0 ){
+		console.log('Total repeats should be a product of the length of the state vector')
+		return []
+	};
+
+	let random_states = []
+	let start_states = []
+	let blocks = totalrepeats / state_strings.length
+	for (i = 0 ; i < blocks ; i++)
+	{
+		start_states.push(state_strings[0]);
+		random_states.push(...state_strings.slice(1,state_strings.length));
+	}
+	shuffleArray(random_states);
+	state_string_vector.push(...start_states);
+	state_string_vector.push(...random_states);
+
+	return state_string_vector;
+};
+
+
+function set_statistic_visibilities(stat_state) {};
+
 
 function enable_ablation() {
 	document.getElementById("ablation_button").disabled = false;
@@ -77,7 +117,7 @@ function gameMode() {
 
 		console.log("Entering Game Mode");
 		scores.length = 0;
-		repeats = 20;
+		repeats = totalrepeats;
 		total_score = 0;
 		showGameElements();
 		updateGameStats();
@@ -89,6 +129,9 @@ function gameMode() {
 		hide(document.getElementById('downloadbutton'));
 		reset();
 		state = "game";
+
+		state_string_vector = create_state_vector(state_strings, totalrepeats);
+		console.log(state_string_vector);
 	}
 
 };
