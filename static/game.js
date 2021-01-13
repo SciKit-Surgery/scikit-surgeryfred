@@ -5,10 +5,10 @@
 var dial; 
 const scores = [];
 const totalrepeats = 20; 
-var repeats = 0;
 var total_score = 0;
 const state_strings = ["Actual TRE", "FLE and no fids", "Expected FRE", "Expected TRE", "Actual FRE"]
-var state_string_vector = []
+var state_string_vector = [];
+var stat_state = "None";
 
 function shuffleArray(array) {
 	//this is an ES6 implementation of a Durstenfeld shuffle, from 
@@ -37,8 +37,8 @@ function create_state_vector(state_strings, totalrepeats){
 		random_states.push(...state_strings.slice(1,state_strings.length));
 	}
 	shuffleArray(random_states);
-	state_string_vector.push(...start_states);
 	state_string_vector.push(...random_states);
+	state_string_vector.push(...start_states);
 
 	return state_string_vector;
 };
@@ -80,12 +80,14 @@ function calculatescore(margin) {
 			console.log(data.score);
 			scores.push(data.score);
 			total_score = total_score + data.score;
-			repeats = repeats - 1;
 			updateGameStats();
-			if ( repeats == 0 )
+			if ( state_string_vector.length <= 0 )
 				endgame();
 			else
+			  {
 				reset();
+				stat_state = state_string_vector.pop()
+			  }
 
 		});
 	})
@@ -95,10 +97,10 @@ function calculatescore(margin) {
 };
 
 function gameMode() {
-        console.log("pressed game button", state, repeats)
+        console.log("pressed game button", state, state_string_vector.length)
 	if ( state == "game" ) //are already in game mode ?
 	{
-		if ( repeats == 0 ) //we can go back to FRED
+		if (  state_string_vector.length == 0 ) //we can go back to FRED
 		{
 			hideGameElements();
 			switchToFred();
@@ -117,7 +119,6 @@ function gameMode() {
 
 		console.log("Entering Game Mode");
 		scores.length = 0;
-		repeats = totalrepeats;
 		total_score = 0;
 		showGameElements();
 		updateGameStats();
@@ -132,6 +133,7 @@ function gameMode() {
 
 		state_string_vector = create_state_vector(state_strings, totalrepeats);
 		console.log(state_string_vector);
+		stat_state = state_string_vector.pop()
 	}
 
 };
@@ -143,7 +145,7 @@ function endgame() {
 
 	
 function updateGameStats() {
-	document.getElementById('repeats').innerHTML = repeats;
+	document.getElementById('repeats').innerHTML = state_string_vector.length;
 	document.getElementById('totalscore').innerHTML = total_score;
 	if (scores.length > 0) 
 		document.getElementById('lastscore').innerHTML = scores[scores.length - 1];
