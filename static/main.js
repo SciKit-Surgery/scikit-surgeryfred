@@ -324,9 +324,11 @@ function placeFiducial(x, y) {
           var intraOpFid = data.fixed_fid;
           var preOpFid = data.moving_fid;
 	  drawMeasuredFiducial(preOpFid, preOpCanvas);
-	  drawActualFiducial([x,y], preOpCanvas);
 	  drawMeasuredFiducial(intraOpFid, intraOpFiducialCanvas);
-	  drawActualFiducial([x,y], intraOpFiducialCanvas);
+	  if ( state != "game" ){
+	  	drawActualFiducial([x,y], preOpCanvas);
+	  	drawActualFiducial([x,y], intraOpFiducialCanvas);
+	  }
 
 	  preOpFids.push(preOpFid);
 	  intraOpFids.push(intraOpFid);
@@ -365,7 +367,8 @@ function register(){
 		  clearCanvas(intraOpTargetCanvas);
 		  transformed_target = data.transformed_target;
           	  drawTarget(transformed_target, intraOpTargetCanvas,"#dd8888");
-          	  drawActualTarget(target, intraOpTargetCanvas);
+		  if ( state != "game")
+          	  	drawActualTarget(target, intraOpTargetCanvas);
 		  writeresults(data.actual_tre, data.fre, data.expected_tre, data.expected_fre, data.mean_fle, data.no_fids);
 		  actualTREText.innerHTML=Math.round(data.actual_tre*100)/100;
 		  actualFREText.innerHTML=Math.round(data.fre*100)/100;
