@@ -2,7 +2,7 @@
 // SciKit-SurgeryFRED game logic
 //========================================================================
 
-var dial; 
+var dial = null; 
 const scores = [];
 const totalrepeats = 10; 
 var total_score = 0;
@@ -188,23 +188,25 @@ function showGameElements(){
         show(el);
         });
 
-	YUI().use('dial', function(Y) {
+	if (dial == null){
+	     YUI().use('dial', function(Y) {
 
-        dial = new Y.Dial({
-        min:0,
-        max:20,
-	decimalPlaces:1,
-        stepsPerRevolution:2,
-        value: 1,
-	strings : {
+             dial = new Y.Dial({
+             min:0,
+             max:20,
+	     decimalPlaces:1,
+             stepsPerRevolution:2,
+             value: 1,
+	     strings : {
 		label: 'Margin',
 		resetStr:'Reset',
 		tooltipHandle:'Drag to ablation margin'
-	}
-        });
-        dial.render('#ablation_dial');
+	    }
+            });
+            dial.render('#ablation_dial');
 
-        });
+            });
+	}
 
 
 };
