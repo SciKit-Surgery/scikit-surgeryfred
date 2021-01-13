@@ -4,7 +4,7 @@
 
 var dial; 
 const scores = [];
-const totalrepeats = 20; 
+const totalrepeats = 10; 
 var total_score = 0;
 const state_strings = ["Actual TRE", "FLE and no fids", "Expected FRE", "Expected TRE", "Actual FRE"]
 var state_string_vector = [];
@@ -44,7 +44,31 @@ function create_state_vector(state_strings, totalrepeats){
 };
 
 
-function set_statistic_visibilities(stat_state) {};
+function set_statistic_visibilities(stat_state) {
+	document.querySelectorAll('.resultbox').forEach(function(el) {
+		hide(el);
+	});
+	if ( stat_state == "Actual TRE" ){
+		show(document.getElementById("no-fidsdiv"));
+		show(document.getElementById("actualtrediv"));
+	}
+	if ( stat_state == "FLE and no fids" ){
+		show(document.getElementById("no-fidsdiv"));
+		show(document.getElementById("expectedflediv"));
+	}
+	if ( stat_state == "Expected TRE" ){
+		show(document.getElementById("expectedtrediv"));
+	}
+	if ( stat_state == "Expected FRE" ){
+		show(document.getElementById("expectedfrediv"));
+	}
+	if ( stat_state == "Actual FRE" ){
+		show(document.getElementById("actualfrediv"));
+	}
+
+
+
+};
 
 
 function enable_ablation() {
@@ -86,7 +110,8 @@ function calculatescore(margin) {
 			else
 			  {
 				reset();
-				stat_state = state_string_vector.pop()
+				stat_state = state_string_vector.pop();
+				set_statistic_visibilities(stat_state);
 			  }
 
 		});
@@ -133,7 +158,8 @@ function gameMode() {
 
 		state_string_vector = create_state_vector(state_strings, totalrepeats);
 		console.log(state_string_vector);
-		stat_state = state_string_vector.pop()
+		stat_state = state_string_vector.pop();
+		set_statistic_visibilities(stat_state);
 	}
 
 };
