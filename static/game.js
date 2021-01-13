@@ -19,11 +19,7 @@ function disable_ablation() {
 
 function ablate() {
 	var margin = dial.get('value');
-	console.log("Ablating: ", margin);
-	console.log("Target: ", target); //target from main.js
-	console.log("Transformed Target: ", transformed_target); //trans target from main.js
-	console.log(calculatescore(margin));
-	//get target pos.
+	calculatescore(margin);
 };
 
 function calculatescore(margin) {
