@@ -166,13 +166,14 @@ def initdatabase():
     collection of results within the document
     """
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    dbdict = {
+             'fred verion': fredversion,
+             'time': timestamp
+             }
     try:
         database = firestore.Client()
         #create a new document in the results collection
-        docref = database.collection("results").add({
-            'fred verion': fredversion,
-            'time': timestamp
-        })
+        docref = database.collection("results").add(dbdict)
         return jsonify({'success': True,
                         'reference': docref[1].id})
     except DefaultCredentialsError:
@@ -186,24 +187,20 @@ def writeresults():
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
     reference = result_json.get('reference')
-    actual_tre = result_json.get('actual_tre')
-    fre = result_json.get('fre')
-    expected_tre = result_json.get('expected_tre')
-    expected_fre = result_json.get('expected_fre')
-    mean_fle = result_json.get('mean_fle')
-    no_fids = result_json.get('number_of_fids')
+
+    dbdict = {
+             'actual_tre' : result_json.get('actual_tre'),
+             'fre' : result_json.get('fre'),
+             'expected_tre' : result_json.get('expected_tre'),
+             'expected_fre' : result_json.get('expected_fre'),
+             'mean_fle' : result_json.get('mean_fle'),
+             'number_of_fids' : result_json.get('number_of_fids')
+             }
 
     try:
         database = firestore.Client()
-        reg_ref = database.collection(
-            "results").document(reference).collection("results").add({
-            'actual_tre' : actual_tre,
-            'fre' : fre,
-            'expected_tre' :expected_tre,
-            'expected_fre' :expected_fre,
-            'mean_fle' : mean_fle,
-            'number_of_fids' : no_fids
-        })
+        reg_ref = database.collection("results").document(
+                        reference).collection("results").add(dbdict)
         return jsonify({'write OK': True,
                         'reference': reg_ref[1].id})
     except DefaultCredentialsError:
@@ -218,18 +215,16 @@ def writegameresults():
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
     reference = result_json.get('reference')
-    state = result_json.get('state')
-    score = result_json.get('score')
-    reg_ref = result_json.get('reg_reference')
 
+    dbdict = {
+             'state': result_json.get('state'),
+             'score': result_json.get('score'),
+             'registration_reference': result_json.get('reg_reference')
+             }
     try:
         database = firestore.Client()
-        database.collection(
-            "results").document(reference).collection("game_results").add({
-                    'state': state,
-                    'score': score,
-                    'registration_reference': reg_ref
-        })
+        database.collection("results").document(
+                        reference).collection("game_results").add(dbdict)
         return jsonify({'write OK': True})
     except DefaultCredentialsError:
         return jsonify({'write OK': False})
