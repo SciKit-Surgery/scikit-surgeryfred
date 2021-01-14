@@ -255,6 +255,28 @@ def testserve_writeresults(client):
     assert not result_json.get('write OK', True)
 
 
+def testserve_writeigameresults(client):
+    """Serve write results"""
+    #get should not be allowed
+    database = client.get('/writegameresults')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(database.data))
+    assert parser.title_ok
+
+    postdata = dict(
+             state = 'Actual TRE',
+             score = -222,
+             reg_reference = 0
+             )
+    result = client.post('/writegameresults', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    #should return fail because we don't have a database connection
+    assert not result_json.get('write OK', True)
+
+
 def testserve_correlation(client):
     """Serve default contour"""
     #get should not be allowed
