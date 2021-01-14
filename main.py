@@ -192,7 +192,7 @@ def writeresults():
 
     try:
         database = firestore.Client()
-        database.collection(
+        reg_ref = database.collection(
             "results").document(reference).collection("results").add({
             'actual_tre' : actual_tre,
             'fre' : fre,
@@ -200,6 +200,32 @@ def writeresults():
             'expected_fre' :expected_fre,
             'mean_fle' : mean_fle,
             'number_of_fids' : no_fids
+        })
+        return jsonify({'write OK': True,
+                        'reference': reg_ref[1].id})
+    except DefaultCredentialsError:
+        return jsonify({'write OK': False})
+
+
+@app.route('/writegameresults', methods=['POST'])
+def writegameresults():
+    """
+    write the game results to a firestore database
+    """
+    jsonstring = json.dumps(request.json)
+    result_json = json.loads(jsonstring)
+    reference = result_json.get('reference')
+    state = result_json.get('state')
+    score = result_json.get('score')
+    reg_ref = result_json.get('reg_reference')
+
+    try:
+        database = firestore.Client()
+        database.collection(
+            "results").document(reference).collection("game_results").add({
+                    'state': state,
+                    'score': score,
+                    'registration_reference': reg_ref
         })
         return jsonify({'write OK': True})
     except DefaultCredentialsError:

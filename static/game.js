@@ -105,6 +105,7 @@ function calculatescore(margin) {
 			scores.push(data.score);
 			total_score = total_score + data.score;
 			updateGameStats();
+			writegameresults(stat_state, data.score, dbreference, reg_dbreference);
 			if ( state_string_vector.length <= 0 )
 				endgame();
 			else
@@ -120,6 +121,27 @@ function calculatescore(margin) {
             console.log("An error occured calculating the score.", err.message);
       });
 };
+
+function writegameresults(state, score, databasereference, reg_dbreference)
+{
+      fetch("/writegameresults", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+              "reference" : databasereference,
+              "state" : state,
+              "score" : score,
+	      "reg_reference" : reg_dbreference
+      })
+
+    })
+    .catch(err => {
+      console.log("An error occured writing game results to database", err.message);
+    });
+}
+
 
 function gameMode() {
         console.log("pressed game button", state, state_string_vector.length)
