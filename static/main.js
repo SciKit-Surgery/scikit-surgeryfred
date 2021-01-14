@@ -9,6 +9,7 @@ var state = "fred"; // fred, plot or game
 var intraOpContour = [[200,100], [300,100], [300,400], [200, 400] ];
 var canvasScale = 4; //scale the canvases so we can zoom in
 var dbreference = 0; //reference to the database document
+var reg_dbreference = 0; //reference to a specific registration
 
 //arrays of the results, decided to store these locally, to 
 //avoid problems when we're not connected to a data base, and 
@@ -408,7 +409,14 @@ function writeresults(actual_tre, fre, expected_tre, expected_fre, mean_fle, no_
 	      "mean_fle" : mean_fle, 
 	      "number_of_fids" : no_fids
       })
-
+    })
+    .then(resp => {
+      if (resp.ok)
+        resp.json().then(data => {
+                console.log("Got result write ref:", data, data.reference);
+                reg_dbreference = data.reference;
+                console.log(dbreference);
+        });
     })
     .catch(err => {
       console.log("An error occured during write", err.message);
