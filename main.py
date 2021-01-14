@@ -4,6 +4,7 @@ sksurgeryfred server
 """
 import json
 import math
+import datetime
 # Flask
 from flask import Flask, request, render_template, jsonify
 import numpy as np
@@ -164,11 +165,13 @@ def initdatabase():
     and the versions of fred, core, and fredweb. Create a sub
     collection of results within the document
     """
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
         database = firestore.Client()
         #create a new document in the results collection
         docref = database.collection("results").add({
             'fred verion': fredversion,
+            'time': timestamp
         })
         return jsonify({'success': True,
                         'reference': docref[1].id})
