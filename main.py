@@ -15,7 +15,7 @@ from sksurgeryfred.algorithms.fred import make_target_point, is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
 from sksurgeryfred.algorithms.scores import calculate_score
-from sksurgeryfred.utilities.results_database import results_database
+from sksurgeryfred.utilities.results_database import ResultsDatabase
 from sksurgeryfred import __version__ as fredversion
 
 # Declare a flask app
@@ -243,7 +243,8 @@ def writegameresults():
 @app.route('/gethighscores', methods=['POST'])
 def gethighscores():
     """
-    see if the player has achieved a high score
+    return the sorted high scores, the ranking and the
+    ref to the lowest score
     """
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
@@ -257,7 +258,7 @@ def gethighscores():
         except DefaultCredentialsError:
             return jsonify({'highscore': False})
     else:
-        database = results_database(teststring)
+        database = ResultsDatabase(teststring)
 
     high_scores = database.collection("high_scores").get()
 
@@ -267,9 +268,9 @@ def gethighscores():
         score_dict['reference'] = score.id
         high_scores_dict.append(score_dict)
 
-    sorted_scores = sorted(high_scores_dict, key=lambda k: k['score'], 
+    sorted_scores = sorted(high_scores_dict, key=lambda k: k['score'],
                            reverse = True)
-    
+
     ranking = len(sorted_scores)
     lowest_score = 0
     if len(sorted_scores) > 0:
@@ -282,10 +283,13 @@ def gethighscores():
     return jsonify({'scores': sorted_scores,
                     'ranking': ranking,
                     'lowest_ref': lowest_score})
-    
+
 
 @app.route('/addhighscore', methods=['POST'])
 def addhighscore():
+    """
+    add your score to the high scores
+    """
     return
 
 

@@ -1,6 +1,6 @@
 """Utilities to enable testing of FRED's firestore databases"""
 
-class test_score():
+class TestScore():
     """
     stores a name and a score plus implements to_dict for testing
     """
@@ -9,9 +9,9 @@ class test_score():
         :params name:
         :params score:
         """
-        self.name = name;
-        self.score = score;
-        self.id = ref
+        self.name = name
+        self.score = score
+        self.id = ref # pylint: disable=invalid-name
 
     def to_dict(self):
         """
@@ -19,7 +19,7 @@ class test_score():
         """
         return {'name' : self.name, 'score' : self.score}
 
-class test_get():
+class TestGet():
     """
     implements a get function for testing purposes
     """
@@ -30,13 +30,13 @@ class test_get():
         if teststring == 'empty':
             self.data = []
         else:
-            self.data = [test_score('Alice', 678, '78627af'), 
-                         test_score('bob', 676, '882399j')]
+            self.data = [TestScore('Alice', 678, '78627af'),
+                         TestScore('bob', 676, '882399j')]
 
     def __call__(self):
         return self.data
 
-class test_collection():
+class TestCollection():
     """
     A pretend collection for testing purposes
     """
@@ -44,14 +44,15 @@ class test_collection():
         """
         :params teststring: a string to control behaviour
         """
-        self.get = test_get(teststring)
+        self.get = TestGet(teststring)
 
     def __call__(self, collection_string):
         if collection_string == "high_scores":
             return self
+        return None
 
 
-class results_database():
+class ResultsDatabase():
     """
     Stands in as a fake database for testing purposes
     """
@@ -59,4 +60,4 @@ class results_database():
         """
         :params teststring: a string to control behaviour
         """
-        self.collection = test_collection(teststring)
+        self.collection = TestCollection(teststring)
