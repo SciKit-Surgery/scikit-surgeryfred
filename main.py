@@ -15,6 +15,7 @@ from sksurgeryfred.algorithms.fred import make_target_point, is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
 from sksurgeryfred.algorithms.scores import calculate_score
+from sksurgeryfred.utilities.results_database import results_database
 from sksurgeryfred import __version__ as fredversion
 
 # Declare a flask app
@@ -187,6 +188,7 @@ def writeresults():
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
     reference = result_json.get('reference')
+    teststring = result_json.get('teststring', None)
 
     dbdict = {
              'actual_tre' : result_json.get('actual_tre'),
@@ -196,6 +198,9 @@ def writeresults():
              'mean_fle' : result_json.get('mean_fle'),
              'number_of_fids' : result_json.get('number_of_fids')
              }
+
+    if teststring is not None:
+        return jsonify({'write OK': False})
 
     try:
         database = firestore.Client()
@@ -215,12 +220,17 @@ def writegameresults():
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
     reference = result_json.get('reference')
+    teststring = result_json.get('teststring', None)
 
     dbdict = {
              'state': result_json.get('state'),
              'score': result_json.get('score'),
              'registration_reference': result_json.get('reg_reference')
              }
+
+    if teststring is not None:
+        return jsonify({'write OK': False})
+
     try:
         database = firestore.Client()
         database.collection("results").document(
@@ -228,6 +238,55 @@ def writegameresults():
         return jsonify({'write OK': True})
     except DefaultCredentialsError:
         return jsonify({'write OK': False})
+
+
+@app.route('/gethighscores', methods=['POST'])
+def gethighscores():
+    """
+    see if the player has achieved a high score
+    """
+    jsonstring = json.dumps(request.json)
+    result_json = json.loads(jsonstring)
+    myscore = result_json.get('score')
+    teststring = result_json.get('teststring', None)
+    database = None
+
+    if teststring is None:
+        try:
+            database = firestore.Client()
+        except DefaultCredentialsError:
+            return jsonify({'highscore': False})
+    else:
+        database = results_database(teststring)
+
+    high_scores = database.collection("high_scores").get()
+
+    high_scores_dict = []
+    for score in high_scores:
+        score_dict = score.to_dict()
+        score_dict['reference'] = score.id
+        high_scores_dict.append(score_dict)
+
+    sorted_scores = sorted(high_scores_dict, key=lambda k: k['score'], 
+                           reverse = True)
+    
+    ranking = len(sorted_scores)
+    lowest_score = 0
+    if len(sorted_scores) > 0:
+        lowest_score = sorted_scores[-1].get('reference')
+
+    for rank, score in enumerate(sorted_scores):
+        if myscore > score.get('score'):
+            ranking = rank
+
+    return jsonify({'scores': sorted_scores,
+                    'ranking': ranking,
+                    'lowest_ref': lowest_score})
+    
+
+@app.route('/addhighscore', methods=['POST'])
+def addhighscore():
+    return
 
 
 @app.route('/correlation', methods=['POST'])
