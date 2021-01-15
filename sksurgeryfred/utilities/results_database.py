@@ -47,9 +47,10 @@ class TestCollection():
         self.get = TestGet(teststring)
 
     def __call__(self, collection_string):
+        returnvalue = None
         if collection_string == "high_scores":
-            return self
-        return None
+            returnvalue = self
+        return returnvalue
 
 
 class ResultsDatabase():
