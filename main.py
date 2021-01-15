@@ -290,7 +290,30 @@ def addhighscore():
     """
     add your score to the high scores
     """
-    return
+    jsonstring = json.dumps(request.json)
+    result_json = json.loads(jsonstring)
+    docref = result_json.get('docref')
+    teststring = result_json.get('teststring', None)
+    database = None
+
+    if teststring is None:
+        try:
+            database = firestore.Client()
+        except DefaultCredentialsError:
+            return jsonify({'scoreOK': False})
+    else:
+        database = ResultsDatabase(teststring)
+
+    dbdict = {
+             'score': result_json.get('score'),
+             'name': result_json.get('name'),
+             }
+    if docref == 'new score':
+        database.collection('high_scores').add(dbdict)
+    else:
+        database.collection('high_scores').document(docref).set(dbdict)
+
+    return jsonify({'scoreOK': True})
 
 
 @app.route('/correlation', methods=['POST'])
