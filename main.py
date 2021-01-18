@@ -199,10 +199,10 @@ def writeresults():
              'number_of_fids' : result_json.get('number_of_fids')
              }
 
-    if teststring is not None:
-        return jsonify({'write OK': False})
 
     try:
+        if teststring is not None:
+            raise DefaultCredentialsError
         database = firestore.Client()
         reg_ref = database.collection("results").document(
                         reference).collection("results").add(dbdict)
@@ -228,10 +228,9 @@ def writegameresults():
              'registration_reference': result_json.get('reg_reference')
              }
 
-    if teststring is not None:
-        return jsonify({'write OK': False})
-
     try:
+        if teststring is not None:
+            raise DefaultCredentialsError
         database = firestore.Client()
         database.collection("results").document(
                         reference).collection("game_results").add(dbdict)
