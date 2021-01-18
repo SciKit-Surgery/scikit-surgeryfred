@@ -36,6 +36,30 @@ class TestGet():
     def __call__(self):
         return self.data
 
+
+class TestAddSet():
+    """
+    implements a get function for testing purposes
+    """
+    def __call__(self, dictionary):
+        return "Add OK"
+
+
+class TestDoc():
+    """
+    implements a document for testing purposes
+    """
+
+    def __init__(self):
+        """
+        :params teststring: a string to control behaviour
+        """
+        self.set = TestAddSet()
+
+    def __call__(self, docref):
+        return self
+
+
 class TestCollection():
     """
     A pretend collection for testing purposes
@@ -45,6 +69,8 @@ class TestCollection():
         :params teststring: a string to control behaviour
         """
         self.get = TestGet(teststring)
+        self.add = TestAddSet()
+        self.document = TestDoc()
 
     def __call__(self, collection_string):
         returnvalue = None

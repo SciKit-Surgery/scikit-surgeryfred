@@ -314,6 +314,41 @@ def testserve_gethighscores(client):
     assert result_json.get('scores')[0].get('name') == 'Alice'
 
 
+def testserve_addhighscores(client):
+    """Serve write results"""
+    #get should not be allowed
+    database = client.get('/addhighscore')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(database.data))
+    assert parser.title_ok
+
+    postdata = dict(
+             score = -222,
+             name = 'Alice',
+             teststring = 'empty'
+             )
+    result = client.post('/addhighscore', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    assert result_json.get('scoreOK')
+
+
+    postdata = dict(
+             score = -222,
+             name = 'Alice',
+             teststring = 'empty',
+             docref = '882399j'
+             )
+    result = client.post('/addhighscore', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    assert result_json.get('scoreOK')
+
+
 def testserve_correlation(client):
     """Serve default contour"""
     #get should not be allowed

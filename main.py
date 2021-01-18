@@ -291,7 +291,7 @@ def addhighscore():
     """
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
-    docref = result_json.get('docref')
+    docref = result_json.get('docref', 'new score')
     teststring = result_json.get('teststring', None)
     database = None
 
