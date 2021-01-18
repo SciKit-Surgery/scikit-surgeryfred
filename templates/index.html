@@ -91,7 +91,28 @@
     <div id="ablation_dial", style="position:absolute; left:1150px; top:350px" 
 	    class="gameelement" class="hidden"></div>
     <input type="button" id="ablation_button" class="gameelement" class = "hidden" value="Fire" onclick="ablate();" style="position:absolute; left:1330px; top:390px" disabled = true class=gameelement />
- 
+
+    <div class="form-popup" id="submitScoreForm" class = "hidden">
+  	<form action="/action_page.php" class="form-container">
+    <h1>High Score</h1>
+    <p>You have a high score, enter your name to be recorded in the hall of fame.</p>
+    <label for="name"><b>Name</b></label>
+    <input type="text" placeholder="Enter Name" name="name" required>
+    <button type="submit" class="btn" onclick="submitHighScore()">Submit</button>
+    <button type="button" class="btn cancel" onclick="closeSubmitScoreForm()">Cancel</button>
+  </form>
+</div>
+
+    <div id="highScoreTable">
+	<tr>
+		<p id = "name_00">-</p>
+		<td>
+		<p id = "score_00">-</p>
+	<tr>
+		<p id = "name_01">-</p>
+		<td>
+		<p id = "score_01">-</p>
+    </div>
     <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
       <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
     </svg>

@@ -98,6 +98,7 @@ async function startup() {
     init_fles();
     initdatabase();
     hideGameElements();
+    hide(document.getElementById('submitScoreForm'));
 }
 
 function preOpImageClick(evt) {
@@ -248,6 +249,15 @@ function makeScatterPlot(index, xlabel, corrdata, canvas){
       });
 }
 
+function hideCanvases(){
+
+    hide(preOpImage);
+    hide(preOpCanvas);
+    hide(intraOpContourCanvas);
+    hide(intraOpFiducialCanvas);
+    hide(intraOpTargetCanvas);
+}
+
 function switchToFred(){
     console.log("Switching to fred");
     show(preOpImage);
@@ -269,11 +279,7 @@ function switchToFred(){
 
 
 function switchToChartView(){
-    hide(preOpImage);
-    hide(preOpCanvas);
-    hide(intraOpContourCanvas);
-    hide(intraOpFiducialCanvas);
-    hide(intraOpTargetCanvas);
+    hideCanvases();
     hide(document.getElementById("logo"));
     document.querySelectorAll('.resultbox').forEach(function(el) {
    	hide(el);

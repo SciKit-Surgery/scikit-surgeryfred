@@ -4,11 +4,14 @@
 
 var dial = null; 
 const scores = [];
-const totalrepeats = 10; 
+const totalrepeats = 5; 
 var total_score = 0;
 const state_strings = ["Actual TRE", "FLE and no fids", "Expected FRE", "Expected TRE", "Actual FRE"]
 var state_string_vector = [];
 var stat_state = "None";
+var high_scores;
+var ranking;
+var lowest_ref;
 
 function shuffleArray(array) {
 	//this is an ES6 implementation of a Durstenfeld shuffle, from 
@@ -188,10 +191,51 @@ function gameMode() {
 
 function endgame() {
 	show(document.getElementById('game_button'));
+ 	fetch("/gethighscores", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                        "score": total_score,
+                })
+        })
+        .then(resp => {
+                resp.json().then(data => {
+			high_scores = data.scores;
+			ranking = data.ranking;
+			lowest_ref = data.lowest_score;
+			
+			hideCanvases();
+			if ( ranking < 16 ) {
+				show(document.getElementById('submitScoreForm'));
+			}
+			else 
+			    showHighScores();
+
+                });
+        })
+        .catch(err => {
+            console.log("An error occured getting high scores.", err.message);
+	});
 };
 
-
+function showHighScores() {
+	//puts high scores into table
+	console.log(high_scores);
+	if ( high_scores.length > 0 ){
+		document.getElementById('name_00').innerHTML = high_scores.top_score;
+	}
 	
+	}
+function submitHighScore() {
+	//puts new name into high_scores at appropriate place, and 
+	//submits name to database
+}
+
+function closeSubmitScoreForm() {
+	//just closes this form
+}
 function updateGameStats() {
 	document.getElementById('repeats').innerHTML = state_string_vector.length;
 	document.getElementById('totalscore').innerHTML = total_score;
