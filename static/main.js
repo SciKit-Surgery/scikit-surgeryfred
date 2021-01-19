@@ -99,6 +99,7 @@ async function startup() {
     initdatabase();
     hideGameElements();
     hide(document.getElementById('submitScoreForm'));
+    hide(document.getElementById('highScoreTable'));
 }
 
 function preOpImageClick(evt) {

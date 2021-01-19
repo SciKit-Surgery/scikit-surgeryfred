@@ -154,6 +154,8 @@ function gameMode() {
 		if (  state_string_vector.length == 0 ) //we can go back to FRED
 		{
 			hideGameElements();
+			hide(document.getElementById('submitScoreForm'));
+			hide(document.getElementById('highScoreTable'));
 			switchToFred();
 			button = document.getElementById('game_button');
     			button.value="Play Game"
@@ -223,12 +225,22 @@ function endgame() {
 
 function showHighScores() {
 	//puts high scores into table
+	show(document.getElementById('highScoreTable'));
 	console.log(high_scores);
-	if ( high_scores.length > 0 ){
-		document.getElementById('name_00').innerHTML = high_scores[0].name;
-		document.getElementById('score_00').innerHTML = high_scores[0].score;
-
+	let scores=""
+	let names=""
+    	for (let i = 0; i < high_scores.length; i++) {
+		if ( high_scores.length > i ){
+			names = names + high_scores[i].name + "<br>";
+			scores = scores + high_scores[i].score + "<br>";
+		}
 	}
+	console.log(names);
+	console.log(scores);
+
+
+	document.getElementById('names').innerHTML = names;
+	document.getElementById('scores').innerHTML = scores;
 	
 };
 
@@ -248,7 +260,7 @@ function submitHighScore() {
 		high_scores[ranking] = score_dict;
 	else
 		high_scores.push(score_dict);
-
+	hide(document.getElementById('submitScoreForm'));
 	showHighScores();
 
 	if (high_scores.length >= numberOfHighScores)
@@ -274,7 +286,7 @@ function submitHighScore() {
 }
 
 function closeSubmitScoreForm() {
-	show(document.getElementById('submitScoreForm'));
+	hide(document.getElementById('submitScoreForm'));
 	showHighScores();
 
 }
