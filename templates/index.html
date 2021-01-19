@@ -101,21 +101,28 @@
     <button type="button" class="btn cancel" onclick="closeSubmitScoreForm()">Cancel</button>
 </div>
 
-    <div id="highScoreTable">
+    <div id="highScoreTable" style="position:absolute; left:200px; top:50px; border:2px solid rgb(49, 98, 158); width:400px">
 	<table id="highscoretable" >
 	<tr>
-		<td style="width:60rem">
+		<td style="width:50px">
+			<p>Rank</p>
+		</td>
+
+		<td style="width:300px">
 			<p>Player Name</p>
 		</td>
-		<td style="width:60rem">
+		<td style="width:50px">
 			<p>Score</p>
 		</td>
 
 	<tr>
-		<td style="width:60rem">
+		<td>
+		<p id = "ranks">-</p>
+                </td>
+		<td>
 		<p id = "names">-</p>
 		</td>
-		<td style="width:10rem">
+		<td>
 		<p id = "scores">-</p>
 		</td>
 	</tr>

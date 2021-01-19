@@ -227,15 +227,18 @@ function showHighScores() {
 	show(document.getElementById('highScoreTable'));
 	let scores=""
 	let names=""
+	let ranks=""
     	for (let i = 0; i < high_scores.length; i++) {
 		if ( high_scores.length > i ){
 			names = names + high_scores[i].name + "<br>";
 			scores = scores + high_scores[i].score + "<br>";
+			ranks = ranks + i + "<br>";
 		}
 	}
 
 	document.getElementById('names').innerHTML = names;
 	document.getElementById('scores').innerHTML = scores;
+	document.getElementById('ranks').innerHTML = ranks;
 	
 };
 
