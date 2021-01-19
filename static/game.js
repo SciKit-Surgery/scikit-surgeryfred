@@ -4,7 +4,7 @@
 
 var dial = null; 
 const scores = [];
-const totalrepeats = 5; 
+const totalrepeats = 10; 
 var total_score = 0;
 const state_strings = ["Actual TRE", "FLE and no fids", "Expected FRE", "Expected TRE", "Actual FRE"]
 var state_string_vector = [];
