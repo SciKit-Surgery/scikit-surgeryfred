@@ -9,6 +9,10 @@ var total_score = 0;
 const state_strings = ["Actual TRE", "FLE and no fids", "Expected FRE", "Expected TRE", "Actual FRE"]
 var state_string_vector = [];
 var stat_state = "None";
+var high_scores = [];
+var ranking;
+var lowest_ref;
+const numberOfHighScores = 16;
 
 function shuffleArray(array) {
 	//this is an ES6 implementation of a Durstenfeld shuffle, from 
@@ -101,7 +105,6 @@ function calculatescore(margin) {
 	})
 	.then(resp => {
 		resp.json().then(data => {
-			console.log(data.score);
 			scores.push(data.score);
 			total_score = total_score + data.score;
 			updateGameStats();
@@ -150,6 +153,8 @@ function gameMode() {
 		if (  state_string_vector.length == 0 ) //we can go back to FRED
 		{
 			hideGameElements();
+			hide(document.getElementById('submitScoreForm'));
+			hide(document.getElementById('highScoreTable'));
 			switchToFred();
 			button = document.getElementById('game_button');
     			button.value="Play Game"
@@ -188,10 +193,96 @@ function gameMode() {
 
 function endgame() {
 	show(document.getElementById('game_button'));
+ 	fetch("/gethighscores", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                        "score": total_score,
+                })
+        })
+        .then(resp => {
+                resp.json().then(data => {
+			high_scores = data.scores;
+			ranking = data.ranking;
+			lowest_ref = data.lowest_ref;
+			
+			hideCanvases();
+			if ( ranking < numberOfHighScores ) {
+				show(document.getElementById('submitScoreForm'));
+			}
+			else 
+			    showHighScores();
+
+                });
+        })
+        .catch(err => {
+            console.log("An error occured getting high scores.", err.message);
+	});
 };
 
+function showHighScores() {
+	//puts high scores into table
+	show(document.getElementById('highScoreTable'));
+	let scores=""
+	let names=""
+	let ranks=""
+    	for (let i = 0; i < high_scores.length; i++) {
+		if ( high_scores.length > i ){
+			names = names + high_scores[i].name + "<br>";
+			scores = scores + high_scores[i].score + "<br>";
+			ranks = ranks + i + "<br>";
+		}
+	}
 
+	document.getElementById('names').innerHTML = names;
+	document.getElementById('scores').innerHTML = scores;
+	document.getElementById('ranks').innerHTML = ranks;
 	
+};
+
+function submitHighScore() {
+	//puts new name into high_scores at appropriate place, and 
+	//submits name to database
+	console.log("length", high_scores.length);
+	console.log("ranking", ranking);
+	if (high_scores.length < numberOfHighScores){
+	    lowest_ref = "new score";
+	    high_scores.push(high_scores[high_scores.length - 1])
+	}
+    	for (let i = high_scores.length - 1; i > ranking; i--) {
+		high_scores[i] = high_scores[i-1];
+	}
+	let name = document.getElementById('nameid').value;
+	let score_dict = {
+			"score": total_score,
+                        "name" : name,
+                        "docref" : lowest_ref 
+	}
+	high_scores[ranking] = score_dict;
+
+	hide(document.getElementById('submitScoreForm'));
+	showHighScores();
+
+	fetch("/addhighscore", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(score_dict)
+        })
+        .catch(err => {
+            console.log("An error occured submiting high score.", err.message);
+        });
+
+}
+
+function closeSubmitScoreForm() {
+	hide(document.getElementById('submitScoreForm'));
+	showHighScores();
+
+}
 function updateGameStats() {
 	document.getElementById('repeats').innerHTML = state_string_vector.length;
 	document.getElementById('totalscore').innerHTML = total_score;

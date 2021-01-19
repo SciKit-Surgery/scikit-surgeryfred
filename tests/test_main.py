@@ -244,7 +244,8 @@ def testserve_writeresults(client):
              expected_tre = 0.0,
              expected_fre = 0.0,
              mean_fle = 0.0,
-             number_of_fids = 0
+             number_of_fids = 0,
+             teststring = 'testing'
              )
     result = client.post('/writeresults', data = json.dumps(postdata),
                     content_type='application/json')
@@ -255,7 +256,7 @@ def testserve_writeresults(client):
     assert not result_json.get('write OK', True)
 
 
-def testserve_writeigameresults(client):
+def testserve_writegameresults(client):
     """Serve write results"""
     #get should not be allowed
     database = client.get('/writegameresults')
@@ -266,7 +267,8 @@ def testserve_writeigameresults(client):
     postdata = dict(
              state = 'Actual TRE',
              score = -222,
-             reg_reference = 0
+             reg_reference = 0,
+             teststring = 'testing'
              )
     result = client.post('/writegameresults', data = json.dumps(postdata),
                     content_type='application/json')
@@ -275,6 +277,76 @@ def testserve_writeigameresults(client):
 
     #should return fail because we don't have a database connection
     assert not result_json.get('write OK', True)
+
+
+def testserve_gethighscores(client):
+    """Serve write results"""
+    #get should not be allowed
+    database = client.get('/gethighscores')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(database.data))
+    assert parser.title_ok
+
+    postdata = dict(
+             score = -222,
+             teststring = 'empty'
+             )
+    result = client.post('/gethighscores', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    #should return ranking zero
+    assert result_json.get('ranking') == 0
+
+    postdata = dict(
+             score = 677,
+             teststring = 'notempty'
+             )
+    result = client.post('/gethighscores', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    #should return ranking 1
+    assert result_json.get('ranking') == 1
+    assert result_json.get('lowest_ref') == '882399j'
+    assert result_json.get('scores')[0].get('name') == 'Alice'
+
+
+def testserve_addhighscores(client):
+    """Serve write results"""
+    #get should not be allowed
+    database = client.get('/addhighscore')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(database.data))
+    assert parser.title_ok
+
+    postdata = dict(
+             score = -222,
+             name = 'Alice',
+             teststring = 'empty'
+             )
+    result = client.post('/addhighscore', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    assert result_json.get('scoreOK')
+
+
+    postdata = dict(
+             score = -222,
+             name = 'Alice',
+             teststring = 'empty',
+             docref = '882399j'
+             )
+    result = client.post('/addhighscore', data = json.dumps(postdata),
+                    content_type='application/json')
+
+    result_json = json.loads(result.data.decode())
+
+    assert result_json.get('scoreOK')
 
 
 def testserve_correlation(client):

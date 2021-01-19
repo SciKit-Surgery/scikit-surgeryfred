@@ -15,6 +15,7 @@ from sksurgeryfred.algorithms.fred import make_target_point, is_valid_fiducial
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.fle import FLE
 from sksurgeryfred.algorithms.scores import calculate_score
+from sksurgeryfred.utilities.results_database import ResultsDatabase
 from sksurgeryfred import __version__ as fredversion
 
 # Declare a flask app
@@ -187,6 +188,7 @@ def writeresults():
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
     reference = result_json.get('reference')
+    teststring = result_json.get('teststring', None)
 
     dbdict = {
              'actual_tre' : result_json.get('actual_tre'),
@@ -197,7 +199,10 @@ def writeresults():
              'number_of_fids' : result_json.get('number_of_fids')
              }
 
+
     try:
+        if teststring is not None:
+            raise DefaultCredentialsError
         database = firestore.Client()
         reg_ref = database.collection("results").document(
                         reference).collection("results").add(dbdict)
@@ -215,19 +220,100 @@ def writegameresults():
     jsonstring = json.dumps(request.json)
     result_json = json.loads(jsonstring)
     reference = result_json.get('reference')
+    teststring = result_json.get('teststring', None)
 
     dbdict = {
              'state': result_json.get('state'),
              'score': result_json.get('score'),
              'registration_reference': result_json.get('reg_reference')
              }
+
     try:
+        if teststring is not None:
+            raise DefaultCredentialsError
         database = firestore.Client()
         database.collection("results").document(
                         reference).collection("game_results").add(dbdict)
         return jsonify({'write OK': True})
     except DefaultCredentialsError:
         return jsonify({'write OK': False})
+
+
+@app.route('/gethighscores', methods=['POST'])
+def gethighscores():
+    """
+    return the sorted high scores, the ranking and the
+    ref to the lowest score
+    """
+    jsonstring = json.dumps(request.json)
+    result_json = json.loads(jsonstring)
+    myscore = result_json.get('score')
+    teststring = result_json.get('teststring', None)
+    database = None
+
+    if teststring is None:
+        try:
+            database = firestore.Client()
+        except DefaultCredentialsError:
+            return jsonify({'highscore': False})
+    else:
+        database = ResultsDatabase(teststring)
+
+    high_scores = database.collection("high_scores").get()
+
+    high_scores_dict = []
+    for score in high_scores:
+        score_dict = score.to_dict()
+        score_dict['reference'] = score.id
+        high_scores_dict.append(score_dict)
+
+    sorted_scores = sorted(high_scores_dict, key=lambda k: k['score'],
+                           reverse = True)
+
+    ranking = len(sorted_scores)
+    lowest_score = 0
+    if len(sorted_scores) > 0:
+        lowest_score = sorted_scores[-1].get('reference')
+
+    for rank, score in enumerate(sorted_scores):
+        if myscore > score.get('score'):
+            ranking = rank
+            break
+
+    return jsonify({'scores': sorted_scores,
+                    'ranking': ranking,
+                    'lowest_ref': lowest_score})
+
+
+@app.route('/addhighscore', methods=['POST'])
+def addhighscore():
+    """
+    add your score to the high scores
+    """
+    jsonstring = json.dumps(request.json)
+    result_json = json.loads(jsonstring)
+    docref = result_json.get('docref', 'new score')
+    teststring = result_json.get('teststring', None)
+    database = None
+
+    if teststring is None:
+        try:
+            database = firestore.Client()
+        except DefaultCredentialsError:
+            return jsonify({'scoreOK': False})
+    else:
+        database = ResultsDatabase(teststring)
+
+    dbdict = {
+             'score': result_json.get('score'),
+             'name': result_json.get('name'),
+             }
+    if docref == 'new score':
+        database.collection('high_scores').add(dbdict)
+    else:
+        database.collection('high_scores').document(docref).set(dbdict)
+
+    return jsonify({'scoreOK': True})
 
 
 @app.route('/correlation', methods=['POST'])
