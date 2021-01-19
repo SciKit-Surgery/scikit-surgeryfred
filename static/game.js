@@ -207,7 +207,7 @@ function endgame() {
                 resp.json().then(data => {
 			high_scores = data.scores;
 			ranking = data.ranking;
-			lowest_ref = data.lowest_score;
+			lowest_ref = data.lowest_ref;
 			
 			hideCanvases();
 			if ( ranking < numberOfHighScores ) {
@@ -235,9 +235,6 @@ function showHighScores() {
 			scores = scores + high_scores[i].score + "<br>";
 		}
 	}
-	console.log(names);
-	console.log(scores);
-
 
 	document.getElementById('names').innerHTML = names;
 	document.getElementById('scores').innerHTML = scores;
@@ -247,8 +244,14 @@ function showHighScores() {
 function submitHighScore() {
 	//puts new name into high_scores at appropriate place, and 
 	//submits name to database
+	console.log("length", high_scores.length);
+	console.log("ranking", ranking);
+	if (high_scores.length < numberOfHighScores)
+	    high_scores.push(high_scores[high_scores.length - 1])
+
     	for (let i = high_scores.length - 1; i > ranking; i--) {
-		high_scores[i] = high_scores[i-1]
+		high_scores[i] = high_scores[i-1];
+		console.log("swapping", i, ranking);
 	}
 	let name = document.getElementById('nameid').value;
 	let score_dict = {
@@ -263,21 +266,17 @@ function submitHighScore() {
 	hide(document.getElementById('submitScoreForm'));
 	showHighScores();
 
-	if (high_scores.length >= numberOfHighScores)
-		score_ref = lowest_ref;
-	else
-		score_ref = 'new score';
-
+	if (high_scores.length > numberOfHighScores)
+	{
+		score_dict.docref = lowest_ref;
+		console.log("overwriting", lowest_ref);
+	}
 	fetch("/addhighscore", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                        "score": total_score,
-			"name" : name,
-			"docref" : score_ref 
-                })
+                body: JSON.stringify(score_dict)
         })
         .catch(err => {
             console.log("An error occured submiting high score.", err.message);

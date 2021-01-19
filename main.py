@@ -278,6 +278,7 @@ def gethighscores():
     for rank, score in enumerate(sorted_scores):
         if myscore > score.get('score'):
             ranking = rank
+            break
 
     return jsonify({'scores': sorted_scores,
                     'ranking': ranking,
@@ -307,6 +308,7 @@ def addhighscore():
              'score': result_json.get('score'),
              'name': result_json.get('name'),
              }
+    print ("Docref = ", docref)
     if docref == 'new score':
         database.collection('high_scores').add(dbdict)
     else:
