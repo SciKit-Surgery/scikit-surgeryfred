@@ -308,7 +308,6 @@ def addhighscore():
              'score': result_json.get('score'),
              'name': result_json.get('name'),
              }
-    print ("Docref = ", docref)
     if docref == 'new score':
         database.collection('high_scores').add(dbdict)
     else:

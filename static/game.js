@@ -105,7 +105,6 @@ function calculatescore(margin) {
 	})
 	.then(resp => {
 		resp.json().then(data => {
-			console.log(data.score);
 			scores.push(data.score);
 			total_score = total_score + data.score;
 			updateGameStats();
@@ -226,7 +225,6 @@ function endgame() {
 function showHighScores() {
 	//puts high scores into table
 	show(document.getElementById('highScoreTable'));
-	console.log(high_scores);
 	let scores=""
 	let names=""
     	for (let i = 0; i < high_scores.length; i++) {
@@ -246,31 +244,24 @@ function submitHighScore() {
 	//submits name to database
 	console.log("length", high_scores.length);
 	console.log("ranking", ranking);
-	if (high_scores.length < numberOfHighScores)
+	if (high_scores.length < numberOfHighScores){
+	    lowest_ref = "new score";
 	    high_scores.push(high_scores[high_scores.length - 1])
-
+	}
     	for (let i = high_scores.length - 1; i > ranking; i--) {
 		high_scores[i] = high_scores[i-1];
-		console.log("swapping", i, ranking);
 	}
 	let name = document.getElementById('nameid').value;
 	let score_dict = {
 			"score": total_score,
                         "name" : name,
-                        "docref" : "new score"
+                        "docref" : lowest_ref 
 	}
-	if (high_scores.length > ranking) 
-		high_scores[ranking] = score_dict;
-	else
-		high_scores.push(score_dict);
+	high_scores[ranking] = score_dict;
+
 	hide(document.getElementById('submitScoreForm'));
 	showHighScores();
 
-	if (high_scores.length > numberOfHighScores)
-	{
-		score_dict.docref = lowest_ref;
-		console.log("overwriting", lowest_ref);
-	}
 	fetch("/addhighscore", {
                 method: "POST",
                 headers: {
