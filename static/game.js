@@ -9,9 +9,10 @@ var total_score = 0;
 const state_strings = ["Actual TRE", "FLE and no fids", "Expected FRE", "Expected TRE", "Actual FRE"]
 var state_string_vector = [];
 var stat_state = "None";
-var high_scores;
+var high_scores = [];
 var ranking;
 var lowest_ref;
+const numberOfHighScores = 16;
 
 function shuffleArray(array) {
 	//this is an ES6 implementation of a Durstenfeld shuffle, from 
@@ -207,7 +208,7 @@ function endgame() {
 			lowest_ref = data.lowest_score;
 			
 			hideCanvases();
-			if ( ranking < 16 ) {
+			if ( ranking < numberOfHighScores ) {
 				show(document.getElementById('submitScoreForm'));
 			}
 			else 
@@ -224,17 +225,58 @@ function showHighScores() {
 	//puts high scores into table
 	console.log(high_scores);
 	if ( high_scores.length > 0 ){
-		document.getElementById('name_00').innerHTML = high_scores.top_score;
+		document.getElementById('name_00').innerHTML = high_scores[0].name;
+		document.getElementById('score_00').innerHTML = high_scores[0].score;
+
 	}
 	
-	}
+};
+
 function submitHighScore() {
 	//puts new name into high_scores at appropriate place, and 
 	//submits name to database
+    	for (let i = high_scores.length - 1; i > ranking; i--) {
+		high_scores[i] = high_scores[i-1]
+	}
+	let name = document.getElementById('nameid').value;
+	let score_dict = {
+			"score": total_score,
+                        "name" : name,
+                        "docref" : "new score"
+	}
+	if (high_scores.length > ranking) 
+		high_scores[ranking] = score_dict;
+	else
+		high_scores.push(score_dict);
+
+	showHighScores();
+
+	if (high_scores.length >= numberOfHighScores)
+		score_ref = lowest_ref;
+	else
+		score_ref = 'new score';
+
+	fetch("/addhighscore", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                        "score": total_score,
+			"name" : name,
+			"docref" : score_ref 
+                })
+        })
+        .catch(err => {
+            console.log("An error occured submiting high score.", err.message);
+        });
+
 }
 
 function closeSubmitScoreForm() {
-	//just closes this form
+	show(document.getElementById('submitScoreForm'));
+	showHighScores();
+
 }
 function updateGameStats() {
 	document.getElementById('repeats').innerHTML = state_string_vector.length;

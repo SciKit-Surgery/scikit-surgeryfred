@@ -308,7 +308,7 @@ def testserve_gethighscores(client):
 
     result_json = json.loads(result.data.decode())
 
-    #should return ranking zero
+    #should return ranking 1 
     assert result_json.get('ranking') == 1
     assert result_json.get('lowest_ref') == '882399j'
     assert result_json.get('scores')[0].get('name') == 'Alice'

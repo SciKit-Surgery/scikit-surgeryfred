@@ -93,14 +93,12 @@
     <input type="button" id="ablation_button" class="gameelement" class = "hidden" value="Fire" onclick="ablate();" style="position:absolute; left:1330px; top:390px" disabled = true class=gameelement />
 
     <div class="form-popup" id="submitScoreForm" class = "hidden">
-  	<form action="/action_page.php" class="form-container">
     <h1>High Score</h1>
     <p>You have a high score, enter your name to be recorded in the hall of fame.</p>
     <label for="name"><b>Name</b></label>
-    <input type="text" placeholder="Enter Name" name="name" required>
+    <input type="text" name="name" id="nameid" required>
     <button type="submit" class="btn" onclick="submitHighScore()">Submit</button>
     <button type="button" class="btn cancel" onclick="closeSubmitScoreForm()">Cancel</button>
-  </form>
 </div>
 
     <div id="highScoreTable">
