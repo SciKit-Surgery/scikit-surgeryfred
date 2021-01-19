@@ -29,6 +29,12 @@ tox.ini
 .coveralls.yml
 .gitattributes
 .github
+scikit-surgeryfred01-3da4c49e5b37.json
+scikit-surgeryfred-ec711b0964d6.json
+setupdatabase.bash
+node_modules/
+package-lock.json
+package.json
 doc/
 
 # Python pycache:
