@@ -516,7 +516,7 @@ function init_fles() {
 		preOpFLEEAV, intraOpFLEEAV,
 		preOpSysError, intraOpSysError };
 
-	expectedFLEText.innerHTML=Math.round(Math.sqrt(FLE.intraOpFLEEAV)*100)/100;
+	expectedFLEText.innerHTML = Math.round(Math.sqrt(FLE.intraOpFLEEAV)*100)/100;
       });
     })
     .catch(err => {

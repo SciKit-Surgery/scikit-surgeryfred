@@ -211,6 +211,10 @@ function endgame() {
 			hideCanvases();
 			if ( ranking < numberOfHighScores ) {
 				show(document.getElementById('submitScoreForm'));
+				document.getElementById('submitScoreForm').addEventListener("keypress", function (e) {
+					if (e.key === 'Enter')
+						submitHighScore();
+				});
 			}
 			else 
 			    showHighScores();
@@ -245,8 +249,7 @@ function showHighScores() {
 function submitHighScore() {
 	//puts new name into high_scores at appropriate place, and 
 	//submits name to database
-	console.log("length", high_scores.length);
-	console.log("ranking", ranking);
+	document.getElementById('submitScoreForm').removeEventListener("keypress", function (e){});
 	if (high_scores.length < numberOfHighScores){
 	    lowest_ref = "new score";
 	    high_scores.push(high_scores[high_scores.length - 1])
