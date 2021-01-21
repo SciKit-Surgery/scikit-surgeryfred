@@ -6,10 +6,10 @@ Fiducial Registration Educational Demonstration
    :target: https://github.com/UCL/scikit-surgeryfred
    :alt: Logo
 
-Try FRED here ->
-.. image:: https://github.com/UCL/scikit-surgeryfred/raw/58-gif/tryit.gif 
+.. image:: https://github.com/UCL/scikit-surgeryfred/raw/58-gif/tryfred.gif 
    :height: 128px
    :target: https://scikit-surgeryfred.ew.r.appspot.com/
+   :align: right
    :alt: try it
 
 |
