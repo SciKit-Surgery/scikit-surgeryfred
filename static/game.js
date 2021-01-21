@@ -108,7 +108,7 @@ function calculatescore(margin) {
 			scores.push(data.score);
 			total_score = total_score + data.score;
 			updateGameStats();
-			writegameresults(stat_state, data.score, dbreference, reg_dbreference);
+			writegameresults(stat_state, data.score, margin, dbreference, reg_dbreference);
 			if ( state_string_vector.length <= 0 )
 				endgame();
 			else
@@ -125,7 +125,7 @@ function calculatescore(margin) {
       });
 };
 
-function writegameresults(state, score, databasereference, reg_dbreference)
+function writegameresults(state, score, margin, databasereference, reg_dbreference)
 {
       fetch("/writegameresults", {
       method: "POST",
@@ -136,6 +136,7 @@ function writegameresults(state, score, databasereference, reg_dbreference)
               "reference" : databasereference,
               "state" : state,
               "score" : score,
+	      "margin" : margin,
 	      "reg_reference" : reg_dbreference
       })
 

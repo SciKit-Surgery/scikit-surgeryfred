@@ -225,6 +225,7 @@ def writegameresults():
     dbdict = {
              'state': result_json.get('state'),
              'score': result_json.get('score'),
+             'margin': result_json.get('margin'),
              'registration_reference': result_json.get('reg_reference')
              }
 
