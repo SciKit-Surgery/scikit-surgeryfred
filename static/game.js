@@ -12,7 +12,7 @@ var stat_state = "None";
 var high_scores = [];
 var ranking;
 var lowest_ref;
-const numberOfHighScores = 16;
+const numberOfHighScores = 12;
 
 function shuffleArray(array) {
 	//this is an ES6 implementation of a Durstenfeld shuffle, from 
