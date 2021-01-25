@@ -29,8 +29,8 @@ Fiducial Registration Educational Demonstration
    :target: https://doi.org/10.1007/s11548-020-02180-5
    :alt: The SciKit-Surgery paper
 
-.. image:: https://zenodo.org/badge/269602581.svg
-   :target: https://zenodo.org/badge/latestdoi/269602581
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4314970.svg
+   :target: https://doi.org/10.5281/zenodo.4314970
    :alt: DOI - Zenodo
 
 .. image:: https://img.shields.io/badge/Video-Registration-blueviolet
