@@ -33,6 +33,10 @@ Fiducial Registration Educational Demonstration
    :target: https://doi.org/10.5281/zenodo.4314970
    :alt: DOI - Zenodo
 
+.. image:: https://img.shields.io/badge/Video-SPIE2021-blueviolet
+   :target: https://www.youtube.com/watch?v=PaXytDjojOI
+   :alt: Our SPIE 2021 Talk
+
 .. image:: https://img.shields.io/badge/Video-Registration-blueviolet
    :target: https://www.youtube.com/watch?v=t_6CH5uroYo
    :alt: Video Demonstration on YouTube
