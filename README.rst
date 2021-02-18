@@ -25,9 +25,9 @@ Fiducial Registration Educational Demonstration
     :target: http://scikit-surgeryfred.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://img.shields.io/badge/Cite-SciKit--Surgery-informational
-   :target: https://doi.org/10.1007/s11548-020-02180-5
-   :alt: The SciKit-Surgery paper
+.. image:: https://img.shields.io/badge/Cite-SciKit--SurgeryFRED-informational
+   :target: https://doi.org/10.1117/12.2580159
+   :alt: The SciKit-SurgeryFRED paper
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4314970.svg
    :target: https://doi.org/10.5281/zenodo.4314970
@@ -50,7 +50,13 @@ Fiducial Registration Educational Demonstration is intended to be used as part o
 
 Citing
 ------
-If you use SciKit-SurgeryFRED in your research or teaching please cite it. Individual releases can be cited via the Zenodo tag. SciKit-Surgery should be cited as:
+If you use SciKit-SurgeryFRED in your research or teaching please cite our paper:
+
+Stephen Thompson, Tom Dowrick, Mian Ahmad, Jeremy Opie, and Matthew J. Clarkson "Are fiducial registration error and target registration error correlated? SciKit-SurgeryFRED for teaching and research", Proc. SPIE 11598, Medical Imaging 2021: Image-Guided Procedures, Robotic Interventions, and Modeling, 115980U (15 February 2021); https://doi.org/10.1117/12.2580159 
+
+Specific releases can be cited via the Zenodo tag. 
+
+SciKit-Surgery can also be cited as:
 
 Thompson S, Dowrick T, Ahmad M, et al. "SciKit-Surgery: compact libraries for surgical navigation." International Journal of Computer Assisted Radiology and Surgery. 2020 May. DOI: 10.1007/s11548-020-02180-5.
 
