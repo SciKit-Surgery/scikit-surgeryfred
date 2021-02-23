@@ -25,8 +25,8 @@ Fiducial Registration Educational Demonstration
     :target: http://scikit-surgeryfred.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://img.shields.io/badge/Cite-SciKit--SurgeryFRED-informational
-   :target: https://doi.org/10.1117/12.2580159
+.. image:: https://img.shields.io/badge/Read-SciKit--SurgeryFRED-informational
+   :target: https://discovery.ucl.ac.uk/id/eprint/10112339/7/Thompson_115980U.pdf
    :alt: The SciKit-SurgeryFRED paper
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4314970.svg
@@ -62,7 +62,7 @@ Specific releases can be cited via the Zenodo tag.
 
 SciKit-Surgery can also be cited as:
 
-Thompson S, Dowrick T, Ahmad M, et al. "SciKit-Surgery: compact libraries for surgical navigation." International Journal of Computer Assisted Radiology and Surgery. 2020 May. DOI: 10.1007/s11548-020-02180-5.
+Thompson S, Dowrick T, Ahmad M, et al. "SciKit-Surgery: compact libraries for surgical navigation." International Journal of Computer Assisted Radiology and Surgery. 2020 May. https://doi.org/10.1007/s11548-020-02180-5
 
 Developing
 ----------
