@@ -1,4 +1,6 @@
-#Script to download and parse results from firestore
+"""
+Script to download and parse results from firestore
+"""
 
 from google.cloud import firestore
 
@@ -11,4 +13,3 @@ for result in results:
     game_results = result.reference.collection("game_results").get()
     for game_result in game_results:
         print (game_result.to_dict())
-
