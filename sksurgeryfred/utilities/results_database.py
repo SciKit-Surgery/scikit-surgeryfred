@@ -74,7 +74,7 @@ class TestCollection():
 
     def __call__(self, collection_string):
         returnvalue = None
-        if collection_string == "high_scores":
+        if collection_string in ("high_scores", "results"):
             returnvalue = self
         return returnvalue
 
