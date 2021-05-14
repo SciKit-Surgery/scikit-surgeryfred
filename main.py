@@ -30,6 +30,13 @@ def index():
     """
     return render_template('index.html')
 
+@app.route('/startfred', methods=['POST'])
+def startfred():
+    """
+    returns the fred page
+    """
+    return render_template('fred.html')
+
 @app.route('/defaultcontour', methods=['POST'])
 def defaultcontour():
     """
