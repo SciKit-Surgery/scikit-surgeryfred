@@ -6,7 +6,7 @@ import json
 import math
 import datetime
 # Flask
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_file
 import numpy as np
 from google.cloud import firestore
 from google.auth.exceptions import DefaultCredentialsError
@@ -22,6 +22,15 @@ from sksurgeryfred import __version__ as fredversion
 app = Flask(__name__)
 
 # Load model
+
+@app.route('/favicon.ico', methods=['GET'])
+def favicon():
+    """
+    returns the icon
+    """
+    print ("Trying to send icon")
+    return send_file('favicon.ico', mimetype='image/ico')
+
 
 @app.route('/', methods=['GET'])
 def index():
