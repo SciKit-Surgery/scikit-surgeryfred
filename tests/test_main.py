@@ -40,6 +40,8 @@ class FredHTMLParser(HTMLParser): #pylint: disable = abstract-method
         if self.found_title:
             if data == self.target_title:
                 self.title_ok = True
+            else:
+                print(data, " not equal to ", self.target_title)
             self.found_title = False
 
 
