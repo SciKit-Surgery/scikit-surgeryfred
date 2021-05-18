@@ -40,6 +40,8 @@ class FredHTMLParser(HTMLParser): #pylint: disable = abstract-method
         if self.found_title:
             if data == self.target_title:
                 self.title_ok = True
+            else:
+                print(data, " not equal to ", self.target_title)
             self.found_title = False
 
 
@@ -55,6 +57,28 @@ def testserveindex(client):
     parser = FredHTMLParser('405 Method Not Allowed')
     parser.feed(str(index.data))
     assert parser.title_ok
+
+
+def testservefred(client):
+    """Serve up FRED"""
+
+    #get call to startfred should fail
+    index = client.get('/startfred')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(index.data))
+    assert parser.title_ok
+
+    #post call to startfred should be ok
+    index = client.post('/startfred')
+    parser = FredHTMLParser('SciKit-SurgeryFRED')
+    parser.feed(str(index.data))
+    assert parser.title_ok
+
+
+def testservefavicon(client):
+    """serve favicon.ico"""
+    _index = client.get('/favicon.ico')
+
 
 def testserve_defaultcontour(client):
     """Serve default contour"""

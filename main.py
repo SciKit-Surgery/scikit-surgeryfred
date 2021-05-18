@@ -6,7 +6,7 @@ import json
 import math
 import datetime
 # Flask
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_file
 import numpy as np
 from google.cloud import firestore
 from google.auth.exceptions import DefaultCredentialsError
@@ -23,12 +23,27 @@ app = Flask(__name__)
 
 # Load model
 
+@app.route('/favicon.ico', methods=['GET'])
+def favicon():
+    """
+    returns the icon
+    """
+    return send_file('favicon.ico', mimetype='image/ico')
+
+
 @app.route('/', methods=['GET'])
 def index():
     """
     returns the main page, template/index.html
     """
     return render_template('index.html')
+
+@app.route('/startfred', methods=['POST'])
+def startfred():
+    """
+    returns the fred page
+    """
+    return render_template('fred.html')
 
 @app.route('/defaultcontour', methods=['POST'])
 def defaultcontour():

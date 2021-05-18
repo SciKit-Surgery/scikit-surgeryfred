@@ -14,167 +14,30 @@
       style="z-index:1; position:absolute; left:50px; top:10px;"/>
   </div>
 
-
-<div class="main" style"width:100%; overflow:hidden position:absolute; left:0px; top:100px">
-    <div id="image-box" 
-     style="position:absolute; left:0px; top:120px;">
-    <img id="pre-operative-image" src = "static/brain512.png" 
-      width="458px" height="512px" type="image/x-png"
-      style="z-index:1; position:absolute; left:50px; top:0px;"/>
-    <canvas id="pre-operative-canvas" width="1832px" height="2048px"
-      style="z-index:2; position:absolute; left:50px; top:0px; width:458px; height:512px">
-    </canvas>
-    <canvas id="intra-operative-contour" width="2048px" height="2048px"
-      style="z-index:3; position:absolute; left:650px; top:0px; width:512px; height:512px">
-	    Browser doesn't support canvas's </canvas>
-    <canvas id="intra-operative-fiducials" width="2048px" height="2048px"
-      style="z-index:4; position:absolute; left:650px; top:0px; width:512px; height:512px"></canvas>
+<div style="width:96%; overflow:hidden; position:absolute; left:2%; top:100px">
+	<p>	This is the <a href=http://scikit-surgery.org  "http::/www.scikitsurgery.com"a>SciKit-Surgery</a> <u>F</u>iducial <u>R</u>egistration <u>E</u>ducational <u>D</u>emonstrator (FRED). SciKit-SurgeryFRED is designed for teaching and research on the registration algorithms commonly used for image guided surgery. You can find a tutorial on how to use SciKit-SurgeryFRED <a href=https://mphy0026.readthedocs.io/en/latest/summerschool/registration_demo.html#fidregistrationtutorial>here</a>.
+	</p>
+	<p>SciKit-SurgeryFRED collects anonymous usage data to examine the relationship between registration error and treatment margins. By using SciKit-SurgeryFRED you may be contributing to future research in this important field. Click on the "Try Fred" button below if you are happy to continue.
+	</p>
+  </div>
  
-    <canvas id="intra-operative-target" width="2048px" height="2048px"
-      style="z-index:5; position:absolute; left:650px; top:0px; width:512px; height:512px"></canvas>
- 
-    <div id="actualtrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:-50px">
-	    Actual TRE
-	    <p id="actual-TRE"> - </p>
-      <div class="stathover">Target Registration Error, the difference between the actual target position in the intra-operative image and the position estimated by registration.</div>
-    </div>
-
-    <div id="actualfrediv" class="resultbox", style="align-items:left; position:absolute; left:1280px; top:-50px">
-	    Actual FRE
-	    <p id="actual-FRE"> - </p>
-      <div class="stathover">Fiducial Registration Error, the least squares residual error of the fiducial markers</div>
-    </div>
-
-    <div id="expectedtrediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:020px">
-	    Expected TRE
-	    <p id="expected-TRE"> -</p>
-      <div class="stathover">Expected value of the Target Registration Error, a statistic calculated from expected value of the fiducial localisation error and the geometry of the fiducial markers and target.</div>
-    </div>
-
-    <div id="expectedfrediv" class="resultbox", style="align-items:left; position:absolute; left:1280px; top:20px">
-	    Expected FRE
-            <p id="expected-FRE">-</p>
-      <div class="stathover">Expected value of Fiducial Registration Error, a statistic calculated from expected value of the fiducial localisation error. Increases in inverse proportion to the number of fiducial markers</div>
-    </div>
-
-    <div id="expectedflediv" class="resultbox", style="align-items:left; position:absolute; left:1150px; top:90px">
-	    Expected FLE
-      <p id="expected-FLE">-</p>
-      <div class="stathover">Expected value of the Fiducial Localisation Error. The expected error when locating an individual fiducial marker.</div>
-    </div>
-
-
-    <div id="no-fidsdiv" class="resultbox", style="align-items:left; position:absolute; left:1280px; top:90px">
-	    No. of Fids.
-    <p id="no-fids">0</p>
-      <div class="stathover">The number of fiducial markers placed.</div>
-    </div>
-
-    <div id="ableftdiv" class="scorebox", class="hidden" style="align-items:left; position:absolute; left:1150px; top:190px">
-	    Ablations Left
-    <p id="repeats">-</p>
-      <div class="stathover">The number of ablations you have left before the game ends.</div>
-    </div>
-
-    <div id="tscorediv" class="scorebox", class="hidden" style="align-items:left; position:absolute; left:1280px; top:190px">
-	    Total Score
-    <p id="totalscore">-</p>
-      <div class="stathover">The sum of all your scores so far.</div>
-    </div>
-
-    <div id="scorediv" class="scorebox", class="hidden" style="align-items:left; position:absolute; left:1150px; top:260px">
-	    Last Score
-    <p id="lastscore">-</p>
-      <div class="stathover">The score for your last ablation. You score 1000 points for a complete ablation of the target, then points are deducted for the volume of damage to surrounding tissue.</div>
-    </div>
-
-    <div id="ablation_dial", style="position:absolute; left:1150px; top:350px" 
-	    class="gameelement" class="hidden"></div>
-    <input type="button" id="ablation_button" class="gameelement" class = "hidden" value="Fire" onclick="ablate();" style="position:absolute; left:1330px; top:390px" disabled = true class=gameelement />
-
-    <div class="form-popup" id="submitScoreForm" class = "hidden">
-    <h1>High Score</h1>
-    <p>You have a high score, enter your name to be recorded in the hall of fame.</p>
-    <label for="name"><b>Name</b></label>
-    <input type="text" name="name" id="nameid" required>
-    <button type="submit" class="btn" onclick="submitHighScore()">Submit</button>
-    <button type="button" class="btn cancel" onclick="closeSubmitScoreForm()">Cancel</button>
-</div>
-
-    <div id="highScoreTable" style="position:absolute; left:200px; top:50px; border:2px solid rgb(49, 98, 158); width:400px">
-    <h2>Hall of Fame</h2>
-	<table id="highscoretable" >
-	<tr>
-		<td style="width:50px">
-			<p>Rank</p>
-		</td>
-
-		<td style="width:300px">
-			<p>Player Name</p>
-		</td>
-		<td style="width:50px">
-			<p>Score</p>
-		</td>
-
-	<tr>
-		<td>
-		<p id = "ranks">-</p>
-                </td>
-		<td>
-		<p id = "names">-</p>
-		</td>
-		<td>
-		<p id = "scores">-</p>
-		</td>
-	</tr>
-	</table>
-    </div>
-    <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
-      <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
-    </svg>
+<div style="width:96%; overflow:hidden; position:absolute; left:2%; top:230px">
+	<input type="button" id="go_to_fred" value="Try FRED" onclick="startfredo();" style="position:relative; left:40%; top:0px; background-color: rgb(49, 98, 158); padding: 0.5rem 1.2rem; color: #ffffff; border-radius: 8px; font-size: 2rem;" enabled = true />
   </div>
 
-  <div style="margin-bottom: 2rem; position:absolute; left:650px;">
-    <input type="button" id="newtargetbutton" value="New Target" class="button" onclick="reset();" />
-    <input type="button" id="downloadbutton" value="Download Results" class="button" onclick="downloadResults();" />
-    <input type="button" id="plot_button" value="Plot Results" class="button" onclick="plotResults();" />
-    <input type="button" id="game_button" value="Play Game" class="button" onclick="gameMode();" />
-  </div>
+  <div style="width:80%; overflow:hidden; position:relative; left:10%; top:300px">
+	  <p>You can get in touch via <a href="mailto:s.thompson@ucl.ac.uk">email</a> or by our <a href="https://github.com/ucl/scikit-surgeryfred">GitHub page</a>. </p>
+	  <p>You can also checkout our presentation and/or <a href="https://discovery.ucl.ac.uk/id/eprint/10112339/7/Thompson_115980U.pdf">publication</a> from <a href="https://www.spiedigitallibrary.org/conference-proceedings-of-spie/browse/SPIE-Medical-Imaging/2021">SPIE Medical Imaging 2021</a>.</p>
+<iframe width="480" height="270" src="https://www.youtube.com/embed/PaXytDjojOI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-</div>
-
-  <div style="margin-bottom: 2rem; position:absolute; left:0px; top:80px">
-<table id="plot-table" class="hidden">
-	<tr>
-		<td style="width:550px">
-			<div class = "result-plot" >
-    				<img src = "static/fredlogo.svg" width = "450px"> 
-				<p id="result-text" style="font-size:1.8rem; font-weight: 300;text-align:center">0 Registrations</p>
-			</div></td>
-		<td style="width:550px">
-			<div id = "trevsfre-plot" class = "result-plot">
-				<canvas id="trevsfre-canvas" width = "450px" height ="300px">trevsfrecanvas</canvas>
-			</div></td>
-		<td style="width:550px">
-			<div id = "trevsexptre-plot" class = "result-plot"> 
-				<canvas id="trevsexptre-canvas" width = "450px" height ="300px">trevsexptrecanvas</canvas>
-			</div></td>
-	</tr>
-	<tr style="height:650px">
-		<td style="width:550px">
-			<div id = "trevsexpfre-plot" class = "result-plot">
-				<canvas id="trevsexpfre-canvas" width = "450px" height ="300px">trevsexptrecanvas</canvas>
-                        </div></td>
-		<td style="width:550px">
-			<div id = "trevsfle-plot" class = "result-plot"> 
-				<canvas id="trevsfle-canvas" width = "450px" height ="300px">trevsflecanvas</canvas>
-			</div></td>
-		<td style="width:550px">
-			<div id = "trevsnofids-plot" class = "result-plot"> 
-				<canvas id="trevsnofids-canvas" width = "450px" height ="300px">trevsnofidscanvas</canvas>
-			</div></td>
-	</tr>
-</table>
+<iframe src="https://thompson318.github.io/scikit-surgeryfred-paper/surgeryfred-paper.html" width="90%" height="600px" style="border:2px solid; border-color: rgb(49, 98, 158)">
+</iframe>
   </div>
+<footer>
 </body>
+
+
+     <script src="{{ url_for('static',filename='introduction.js') }}"></script>
+</footer>
+
 {% endblock %}
