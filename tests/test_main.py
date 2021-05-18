@@ -56,6 +56,28 @@ def testserveindex(client):
     parser.feed(str(index.data))
     assert parser.title_ok
 
+
+def testservefred(client):
+    """Serve up FRED"""
+
+    #get call to startfred should fail
+    index = client.get('/startfred')
+    parser = FredHTMLParser('405 Method Not Allowed')
+    parser.feed(str(index.data))
+    assert parser.title_ok
+
+    #post call to startfred should be ok
+    index = client.post('/startfred')
+    parser = FredHTMLParser('SciKit-SurgeryFRED')
+    parser.feed(str(index.data))
+    assert parser.title_ok
+
+
+def testservefavicon(client):
+    """serve favicon.ico"""
+    _index = client.get('/favicon.ico')
+
+
 def testserve_defaultcontour(client):
     """Serve default contour"""
     #get should not be allowed

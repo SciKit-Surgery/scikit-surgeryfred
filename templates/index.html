@@ -14,14 +14,29 @@
       style="z-index:1; position:absolute; left:50px; top:10px;"/>
   </div>
 
-<div class="main" style"width:100%; overflow:hidden position:absolute; left:0px; top:100px">
-This is SciKit-SurgeryFRED, press the button to continue.
-
-	<input type="button" id="go_to_fred" value="Continue" onclick="startfredo();" style="position:relative; left:0.5; top:390px" enabled = true />
+<div style="width:96%; overflow:hidden; position:absolute; left:2%; top:100px">
+	<p>	This is the <a href=http://scikit-surgery.org  "http::/www.scikitsurgery.com"a>SciKit-Surgery</a> <u>F</u>iducial <u>R</u>egistration <u>E</u>ducational <u>D</u>emonstrator (FRED). SciKit-SurgeryFRED is designed for teaching and research on the registration algorithms commonly used for image guided surgery. You can find a tutorial on how to use SciKit-SurgeryFRED <a href=https://mphy0026.readthedocs.io/en/latest/summerschool/registration_demo.html#fidregistrationtutorial>here</a>.
+	</p>
+	<p>SciKit-SurgeryFRED collects anonymous usage data to examine the relationship between registration error and treatment margins. By using SciKit-SurgeryFRED you may be contributing to future research in this important field. Click on the "Try Fred" button below if you are happy to continue.
+	</p>
   </div>
+ 
+<div style="width:96%; overflow:hidden; position:absolute; left:2%; top:230px">
+	<input type="button" id="go_to_fred" value="Try FRED" onclick="startfredo();" style="position:relative; left:40%; top:0px; background-color: rgb(49, 98, 158); padding: 0.5rem 1.2rem; color: #ffffff; border-radius: 8px; font-size: 2rem;" enabled = true />
+  </div>
+
+  <div style="width:80%; overflow:hidden; position:relative; left:10%; top:300px">
+	  <p>You can get in touch via <a href="mailto:s.thompson@ucl.ac.uk">email</a> or by our <a href="https://github.com/ucl/scikit-surgeryfred">GitHub page</a>. </p>
+	  <p>You can also checkout our presentation and/or <a href="https://discovery.ucl.ac.uk/id/eprint/10112339/7/Thompson_115980U.pdf">publication</a> from <a href="https://www.spiedigitallibrary.org/conference-proceedings-of-spie/browse/SPIE-Medical-Imaging/2021">SPIE Medical Imaging 2021</a>.</p>
+<iframe width="480" height="270" src="https://www.youtube.com/embed/PaXytDjojOI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe src="https://thompson318.github.io/scikit-surgeryfred-paper/surgeryfred-paper.html" width="90%" height="600px" style="border:2px solid; border-color: rgb(49, 98, 158)">
+</iframe>
+  </div>
+<footer>
 </body>
 
-<footer>
+
      <script src="{{ url_for('static',filename='introduction.js') }}"></script>
 </footer>
 

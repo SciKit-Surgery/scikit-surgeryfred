@@ -28,7 +28,6 @@ def favicon():
     """
     returns the icon
     """
-    print ("Trying to send icon")
     return send_file('favicon.ico', mimetype='image/ico')
 
 
