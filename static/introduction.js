@@ -18,7 +18,6 @@ function startfredo() {
       .then(resp => resp.text())
       .then(data => {
 		      console.log(data);
-		      document.write('crumbs');
 		      document.write(data);
 	            })
     .catch(err => {
