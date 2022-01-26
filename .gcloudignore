@@ -37,6 +37,9 @@ package-lock.json
 package.json
 doc/
 
+# results files
+results*
+
 # Python pycache:
 __pycache__/
 # Ignored by the build system
