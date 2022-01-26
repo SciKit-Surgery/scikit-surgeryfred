@@ -182,8 +182,10 @@ def initdatabase():
     collection of results within the document
     """
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #we need to set fredversion manually when deploying
+    #see issue #54. i.e. 'fred version': 'v0.1.5',
     dbdict = {
-             'fred verion': fredversion,
+             'fred version': fredversion,
              'time': timestamp
              }
     try:
