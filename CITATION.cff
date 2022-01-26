@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use SciKit-SurgeryFRED packages in your research, please cite it as below."
+authors:
+- family-names: "Thompson"
+  given-names: "Stephen"
+  orcid: "https://orcid.org/0000-0001-7286-1326"
+title: "SciKit-Surgery"
+url: "https://github.com/SciKit-Surgery/scikit-surgery"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Thompson"
+    given-names: "Stephen"
+    orcid: "https://orcid.org/0000-0001-7286-1326"
+  - family-names: "Dowrick"
+    given-names: "Thomas"
+    orcid: "https://orcid.org/0000-0002-2712-4447"
+  - family-names: "Ahmad"
+    given-names: "Mian"
+    orcid: "https://orcid.org/0000-0002-4706-4146"
+  - family-names: "Opie"
+    given-names: "Jeremy"
+  - family-names: "Clarkson"
+    given-names: "Matthew"
+    orcid: "https://orcid.org/0000-0002-5565-1252"
+  doi: 10.1117/12.2580159 
+  journal: "Proc. SPIE Medical Imaging 2021: Image-Guided Procedures, Robotic Interventions, and Modeling"
+  title: "Are fiducial registration error and target registration error correlated? SciKit-SurgeryFRED for teaching and research."
+  volume: 11598
+  issue: 11598oU
+  year: 2021
