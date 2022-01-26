@@ -45,6 +45,10 @@ Fiducial Registration Educational Demonstration
    :target: https://www.youtube.com/watch?v=ansH1w2ST-g
    :alt: Video Demonstration of Game on YouTube
 
+.. image:: https://img.shields.io/twitter/follow/scikit_surgery?style=social
+   :target: https://twitter.com/scikit_surgery?ref_src=twsrc%5Etfw
+   :alt: Follow scikit_surgery on twitter
+
 
 Author: Stephen Thompson
 
