@@ -38,7 +38,8 @@ package.json
 doc/
 
 # results files
-results*
+results*.csv
+results*.txt
 
 # Python pycache:
 __pycache__/
