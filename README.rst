@@ -1,24 +1,24 @@
 Fiducial Registration Educational Demonstration
 ===============================================
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/raw/master/static/fredlogo.svg
+.. image:: https://github.com/SciKit-Surgery/scikit-surgeryfred/raw/master/static/fredlogo.svg
    :width: 256px
-   :target: https://github.com/UCL/scikit-surgeryfred
+   :target: https://github.com/SciKit-Surgery/scikit-surgeryfred
    :alt: Logo
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/raw/master/tryfred.gif 
+.. image:: https://github.com/SciKit-Surgery/scikit-surgeryfred/raw/master/tryfred.gif 
    :height: 128px
    :target: https://scikit-surgeryfred.ew.r.appspot.com/
    :alt: try fred
 
 |
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/workflows/.github/workflows/ci.yml/badge.svg
-   :target: https://github.com/UCL/scikit-surgeryfred/actions
+.. image:: https://github.com/SciKit-Surgery/scikit-surgeryfred/workflows/.github/workflows/ci.yml/badge.svg
+   :target: https://github.com/SciKit-Surgery/scikit-surgeryfred/actions
    :alt: GitHub Actions CI status
 
-.. image:: https://coveralls.io/repos/github/UCL/scikit-surgeryfred/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/UCL/scikit-surgeryfred?branch=master
+.. image:: https://coveralls.io/repos/github/SciKit-Surgery/scikit-surgeryfred/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/SciKit-Surgery/scikit-surgeryfred?branch=master
     :alt: Test coverage
 
 .. image:: https://readthedocs.org/projects/scikit-surgeryfred/badge/?version=latest
@@ -74,7 +74,7 @@ You can clone the repository using the following command:
 
 ::
 
-    git clone https://github.com/UCL/scikit-surgeryfred
+    git clone https://github.com/SciKit-Surgery/scikit-surgeryfred
 
 
 Contributing
@@ -103,12 +103,12 @@ Supported by `Wellcome`_ and `EPSRC`_.
 
 
 .. _`Wellcome EPSRC Centre for Interventional and Surgical Sciences`: http://www.ucl.ac.uk/weiss
-.. _`source code repository`: https://github.com/UCL/scikit-surgeryfred
+.. _`source code repository`: https://github.com/SciKit-Surgery/scikit-surgeryfred
 .. _`Documentation`: https://scikit-surgeryfred.readthedocs.io
-.. _`SciKit-Surgery`: https://github.com/UCL/scikit-surgery/wiki
+.. _`SciKit-Surgery`: https://github.com/SciKit-Surgery
 .. _`University College London (UCL)`: http://www.ucl.ac.uk/
 .. _`Wellcome`: https://wellcome.ac.uk/
 .. _`EPSRC`: https://www.epsrc.ac.uk/
-.. _`contributing guidelines`: https://github.com/UCL/scikit-surgeryfred/blob/master/CONTRIBUTING.rst
-.. _`license file`: https://github.com/UCL/scikit-surgeryfred/blob/master/LICENSE
+.. _`contributing guidelines`: https://github.com/SciKit-Surgery/scikit-surgeryfred/blob/master/CONTRIBUTING.rst
+.. _`license file`: https://github.com/SciKit-Surgery/scikit-surgeryfred/blob/master/LICENSE
 

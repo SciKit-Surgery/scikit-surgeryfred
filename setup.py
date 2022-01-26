@@ -17,7 +17,7 @@ setup(
     description='FRED provides an interactive demonstration of fiducial based registration for teaching purposes',
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    url='https://github.com/UCL/scikit-surgeryfred',
+    url='https://github.com/SciKit-Surgery/scikit-surgeryfred',
     author='Stephen Thompson',
     author_email='s.thompson@ucl.ac.uk',
     license='BSD-3 license',
