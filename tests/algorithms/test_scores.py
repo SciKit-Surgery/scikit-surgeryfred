@@ -4,7 +4,7 @@
 import math
 import numpy as np
 
-import sksurgeryfred.algorithms.scores as scores
+from sksurgeryfred.algorithms import scores
 
 # Pytest style
 
