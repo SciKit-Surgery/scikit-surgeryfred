@@ -91,6 +91,8 @@ Useful links
 ^^^^^^^^^^^^
 
 * `Source code repository`_
+* `Google Cloud Firestore (login required)`
+* `Google Cloud Console (login required)`
 
 
 Licensing and copyright
@@ -115,4 +117,5 @@ Supported by `Wellcome`_ and `EPSRC`_.
 .. _`EPSRC`: https://www.epsrc.ac.uk/
 .. _`contributing guidelines`: https://github.com/SciKit-Surgery/scikit-surgeryfred/blob/master/CONTRIBUTING.rst
 .. _`license file`: https://github.com/SciKit-Surgery/scikit-surgeryfred/blob/master/LICENSE
-
+.. _`Google Cloud Firestore (login required)`: https://console.cloud.google.com/firestore/databases?hl=en&project=scikit-surgeryfred
+.. _`Google Cloud Console (login required)` : https://console.cloud.google.com/home/dashboard?hl=en&project=scikit-surgeryfred
