@@ -91,8 +91,8 @@ Useful links
 ^^^^^^^^^^^^
 
 * `Source code repository`_
-* `Google Cloud Firestore (login required)`
-* `Google Cloud Console (login required)`
+* `Google Cloud Firestore (login required)`_
+* `Google Cloud Console (login required)`_
 
 
 Licensing and copyright
